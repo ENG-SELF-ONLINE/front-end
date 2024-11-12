@@ -1,0 +1,5 @@
+.main-menu-container {
+    display: flex;
+    align-items: center;
+    position: static;
+}

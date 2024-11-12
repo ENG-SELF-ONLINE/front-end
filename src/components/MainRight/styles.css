@@ -1,0 +1,121 @@
+.main-right {
+    width: 384px;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'GOST Type A', cursive;
+    background-color: #EFEFEF;
+    padding-top: 19px;
+    top: 0;
+}
+
+.main-right-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.main-right-clone {
+    width: 384px;
+    position: static;
+    visibility: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'GOST Type A', cursive;
+    background-color: #EFEFEF;
+    /*padding-top: 19px;*/
+}
+
+@media (max-width: 768px) {
+    .main-right {
+        width: 100%;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    .header {
+        flex-direction: column; /* Элементы в колонку на мобильном */
+        align-items: flex-start;
+    }
+    .level-container {
+        margin-bottom: 10px; /* Отступ между уровнями и иконками */
+    }
+    .progress-items {
+        flex-direction: column; /* Элементы в колонку на мобильном */
+    }
+    .progress-item {
+        margin: 16px 0; /* Отступы между элементами */
+    }
+}
+
+.progress-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px; /* Отступ сверху */
+    width: 312px;
+}
+
+.progress-items {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px; /* Отступ сверху */
+    justify-content: space-between; /* Выравнивание по центру */
+}
+
+.progress-item {
+    display: flex;
+    align-items: center;
+    margin: 0 0 16px 0; /* Отступы между элементами */
+    justify-content: space-between;
+}
+
+.grammar-icon,
+.reading-icon,
+.listening-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 16px; /* Отступ между иконкой и текстом */
+}
+
+.progress-info {
+    display: flex;
+    flex-direction: column;
+    margin-right: 16px; /* Отступ между текстом и прогресс-баром */
+    margin-left: 19px;
+    width: 190px;
+}
+
+.subtext {
+    font-size: 12px;
+    color: #888;
+}
+
+.activity-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px; /* Отступ сверху */
+    width: 312px;
+}
+
+.activity-items {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px; /* Отступ сверху */
+    justify-content: space-between; /* Выравнивание по центру */
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    margin: 0 0 16px 0; /* Отступы между элементами */
+}
+
+.activity-info {
+    display: flex;
+    flex-direction: column;
+    margin-right: 16px; /* Отступ между текстом и прогресс-баром */
+    margin-left: 19px;
+}

@@ -1,0 +1,109 @@
+.main-page {
+    display: flex;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.center-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    padding-top: 10px;
+    /* Динамический отступ слева */
+    /*margin-left: calc(267px + (100vw - 270px - 384px - 700px) / 2); !* Вычисляем позицию слева *!*/
+}
+
+.chart-container {
+    width: 100%;
+}
+
+.week-nav {
+    display: flex;
+    gap: 16px;
+    position: relative;
+    width: 700px; /* Ширина кнопок */
+    justify-content: space-between; /* Размещение кнопок по краям */
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid #f0f0f0;
+    margin-bottom: 5px;
+}
+
+.prev-week,
+.next-week {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.prev-week.disabled {
+    opacity: 0.5; /* Делаем кнопку неактивной */
+    cursor: default; /* Убираем курсор указателя */
+}
+
+.prev-week svg,
+.next-week svg {
+    width: 20px;
+    height: 20px;
+}
+
+.word-stats {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 10px;
+    border: 2px solid #f0f0f0;
+    width: 700px; /* Ширина кнопок */
+    margin-bottom: 5px;
+}
+
+.word-chart {
+    width: 300px;
+    height: 300px;
+}
+
+.word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.word-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-stats {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 10px;
+    border: 2px solid #f0f0f0;
+    width: 700px; /* Ширина кнопок */
+    margin-bottom: 5px;
+}
+
+.main-chart {
+    width: 300px;
+    height: 300px;
+}
+
+.main-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.main-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
