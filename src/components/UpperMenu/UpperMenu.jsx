@@ -1,7 +1,6 @@
-import {Progress} from "antd";
-import {Link} from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import React from "react";
+import {Progress} from "antd";
 import './styles.css';
 import heart from './images/heart.png';
 import avatar from './images/avatar.png';
@@ -26,11 +25,19 @@ const UpperMenu = () => {
                     <span className="level">A2</span>
                 </div>
                 {Object.entries(icons).slice(0, 3).map(([key, src]) => (
-                    <Link key={key} className={`header-icon ${key}-icon`} type="button"
-                          to={key === 'heart' ? '/favorites' : key === 'avatar' ? '/profile' : '/exit'}>
+                    <div key={key} className={`header-icon ${key}-icon`} type="button"
+                         onClick={() => {
+                             if (key === 'heart') {
+                                 window.location.href = '/favourites';
+                             } else if (key === 'avatar') {
+                                 window.location.href = '/profile';
+                             } else if (key === 'exit') {
+                                 window.location.href = '/exit';
+                             }
+                         }}>
                         <img src={src}
                              alt={key === 'heart' ? 'Избранные книги' : key === 'avatar' ? 'Аватар' : 'Выход'}/>
-                    </Link>
+                    </div>
                 ))}
             </div>
             <div className="header-clone"></div>

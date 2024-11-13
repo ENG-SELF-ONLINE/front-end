@@ -3,11 +3,11 @@ import React from "react";
 import "./styles.css";
 import PropTypes from "prop-types";
 
-const Book = ({ bookData }) => {
+const Book = ({ bookData, onClick }) => {
     // bookData - это объект, который передается из BooksPage
 
     return (
-        <div className="book-card">
+        <div className="book-card" onClick={onClick}>
             {bookData && (
                 <>
                     <div

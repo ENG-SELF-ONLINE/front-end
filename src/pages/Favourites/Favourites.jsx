@@ -1,17 +1,15 @@
 // eslint-disable-next-line no-unused-vars
 import React, {useEffect, useState} from "react";
+import './styles.css'
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import Search from "antd/es/input/Search.js";
-import "./styles.css";
-import {Pagination} from "antd";
 import Book from "../../components/Book/Book.jsx";
-import {useNavigate, useParams} from "react-router-dom";
+import {Pagination} from "antd";
+import Search from "antd/es/input/Search.js";
+import {useNavigate} from "react-router-dom";
 
 const BooksPage = () => {
-    const { level } = useParams();
     const navigate = useNavigate(); // Инициализация navigate
-    const [activeLevel, setActiveLevel] = useState(level || "A1");
     const [books] = useState([
         {
             id: 1,
@@ -74,24 +72,6 @@ const BooksPage = () => {
             author: "Автор книги 10"
         },
     ]);
-    const getLevelDescription = (level) => {
-        switch (level) {
-            case 'A1':
-                return 'Elementary';
-            case 'A2':
-                return 'Pre-intermediate';
-            case 'B1':
-                return 'Intermediate';
-            case 'B2':
-                return 'Upper-intermediate';
-            case 'C1':
-                return 'Advanced';
-            case 'C2':
-                return 'Proficiency';
-            default:
-                return '';
-        }
-    };
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages] = useState(5); // Заглушка для totalPages
 
@@ -99,7 +79,7 @@ const BooksPage = () => {
         // Заглушка для fetchBooks
         // const fetchBooks = async () => {
         //   try {
-        //     const response = await fetch(`/api/books?level=${activeLevel}&page=${currentPage}`);
+        //     const response = await fetch(`/api/favourites&page=${currentPage}`);
         //     const data = await response.json();
         //     setBooks(data.books);
         //     setTotalPages(data.totalPages);
@@ -108,11 +88,7 @@ const BooksPage = () => {
         //   }
         // };
         // fetchBooks();
-    }, [activeLevel, currentPage]);
-
-    useEffect(() => {
-        setActiveLevel(level); // Обновляем activeLevel при изменении level
-    }, [level]);
+    }, [currentPage]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -140,7 +116,7 @@ const BooksPage = () => {
                 </div>
                 <div className="content">
                     <h2 className="level-title">
-                        {activeLevel}: {getLevelDescription(activeLevel)}
+                        Список избранных книг:
                     </h2>
                     <div className="books-grid">
                         {books.map((book) => (

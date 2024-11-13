@@ -1,0 +1,279 @@
+.book-info-page {
+    display: flex;
+}
+
+.book-main-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.book-info-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.story-container1 {
+    flex: 0 0 auto;
+    margin-top: 50px;
+}
+.story-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.card-container1 {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 178px;
+}
+.image-container-with-text {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    max-width: initial;
+    height: 280px;
+    border: 1px solid #95aad3;
+    border-radius: 18px;
+    object-fit: cover;
+}
+.numeric-info-container {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 4px;
+}
+.flex-row-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.image-with-text-overlay2 {
+    box-sizing: border-box;
+    display: block;
+    width: 25px;
+    max-width: initial;
+    height: 25px;
+    border: none;
+    object-fit: cover;
+}
+.number-text-divider {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    margin-left: 4px;
+    font: 500 16px Inter, sans-serif;
+    color: black;
+}
+.image-with-text-overlay1 {
+    box-sizing: border-box;
+    display: block;
+    width: 26px;
+    max-width: initial;
+    height: 22.7px;
+    border: none;
+    object-fit: cover;
+}
+.story-card-container {
+    box-sizing: border-box;
+    flex: 0 1 auto;
+    max-width: 1028px;
+    margin-left: 34px;
+}
+.story-container3 {
+    box-sizing: border-box;
+    width: 100%;
+}
+.fantasy-card-with-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.epic-title-text-style {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 36px Inter, sans-serif;
+    color: #583d3d;
+}
+.fantasy-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 14px;
+}
+.fantasy-image-style {
+    box-sizing: border-box;
+    display: block;
+    width: 30px;
+    max-width: initial;
+    height: 27px;
+    border: none;
+    object-fit: cover;
+}
+.fantasy-title {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    margin-left: 35px;
+    font: 600 20px Inter, sans-serif;
+    color: #959595;
+}
+.author-name-text-style {
+    padding: 0;
+    margin: 0;
+    font: 500 24px Inter, sans-serif;
+    color: rgba(0, 0, 0, 0.4);
+}
+.narrative-text-style {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    margin-top: 33px;
+    font: 500 20px Inter, sans-serif;
+    color: black;
+    text-align: left;
+}
+.book-summary-text-style {
+    box-sizing: border-box;
+    max-width: 1026px;
+    padding: 0;
+    margin: 0;
+    margin-top: 26px;
+    font: 500 20px Inter, sans-serif;
+    color: #583d3d;
+    text-align: left;
+}
+.strong-emphasis-text-style {
+    font: 600 20px Inter, sans-serif;
+    color: black;
+    text-align: left;
+}
+.download-section2 {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: stretch;
+    justify-content: space-between;
+    width: 100%;
+    height: 48px;
+    padding-right: 23px;
+    margin-top: 26px;
+}
+.download-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 177px;
+    min-width: 177px;
+    height: 48px;
+    font: 600 20px Inter, sans-serif;
+    color: white;
+    cursor: pointer;
+    background: rgba(88, 61, 61, 0.6);
+    border: none;
+}
+.file-icon {
+    box-sizing: border-box;
+    display: block;
+    width: 19px;
+    max-width: initial;
+    height: 19px;
+    margin-left: -1px;
+    border: none;
+    object-fit: cover;
+}
+.download-section {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+.green-box-with-text {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    width: 192px;
+    padding-right: 39px;
+    padding-left: 38px;
+    background: rgba(52, 201, 36, 0.8);
+}
+.center-heading {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 20px Inter, sans-serif;
+    color: white;
+    text-align: center;
+}
+.cancel-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 192px;
+    min-width: 192px;
+    height: 48px;
+    margin-left: 23px;
+    font: 600 20px Inter, sans-serif;
+    color: white;
+    cursor: pointer;
+    background: rgba(238, 32, 77, 0.8);
+    border: none;
+}
+
+.completed-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 192px;
+    min-width: 192px;
+    height: 48px;
+    margin-left: 23px;
+    font: 600 20px Inter, sans-serif;
+    color: white;
+    cursor: pointer;
+    background: rgba(52, 201, 36, 0.8);
+    border: none;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Занимает всю высоту экрана */
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; /* Светлый цвет фона */
+    border-top: 8px solid #3498db; /* Цвет верхней части */
+    border-radius: 50%;
+    width: 50px; /* Ширина кружка */
+    height: 50px; /* Высота кружка */
+    animation: spin 2s linear infinite; /* Анимация вращения */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
