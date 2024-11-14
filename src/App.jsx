@@ -6,17 +6,18 @@ import AuthPage from "./pages/AuthPage/AuthPage.jsx";
 import BooksPage from "./pages/BooksPage/BooksPage.jsx";
 import Favourites from "./pages/Favourites/Favourites.jsx";
 import BookInfoPage from "./pages/BookInfoPage/BookInfoPage.jsx";
+import Translator from "./pages/Translator/Translator.jsx";
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {/*<Route path="/" element={<AuthPage />} />*/}
-                <Route path="/" element={<BookInfoPage />} />
+                <Route path="/" element={<AuthPage />} />
                 <Route path="/statistics" element={<MainPage />} />
                 <Route path="/reading/:level" element={<BooksPage />} />
                 <Route path="/favourites" element={<Favourites />} />
                 <Route path="/books/:bookId" element={<BookInfoPage />} />
+                <Route path="/translator" element={<Translator />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>

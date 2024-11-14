@@ -1,0 +1,234 @@
+.translator-page {
+    display: flex;
+}
+
+.input-container {
+    width: 570px;
+    height: 358px;
+    margin: 0 10px;
+}
+
+.translation-input,
+.translation-output {
+    width: 570px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-height: 335px; /* Установите минимальную высоту */
+    box-sizing: border-box;
+    resize: none;
+}
+
+.translator-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.translator-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.weekly-task-manager {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-width: 1599px;
+    background: white;
+}
+.content-panel {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    gap: 48px;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding-top: 19px;
+    margin-left: 43px;
+}
+.header-container {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 21px;
+    align-items: center;
+    align-self: flex-end;
+    justify-content: flex-start;
+    height: 61px;
+    background: #d9d9d9;
+    border-radius: 30px;
+}
+.task-category-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.centered-text-bold-ubuntu {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 33px;
+    padding: 0;
+    margin: 0;
+    font: 500 20px Ubuntu, sans-serif;
+    color: #583d3d;
+    text-align: center;
+}
+.centered-text-bold-red-bg {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 33px;
+    padding: 0;
+    margin: 0 0 0 0;
+    font: 500 20px Ubuntu, sans-serif;
+    color: #583d3d;
+    text-align: center;
+}
+.avatar-image-display-style {
+    box-sizing: border-box;
+    display: block;
+    width: 50px;
+    max-width: initial;
+    height: 50px;
+    border: none;
+    border-radius: 30px;
+    object-fit: cover;
+}
+.image-box {
+    box-sizing: border-box;
+    display: block;
+    width: 25px;
+    max-width: initial;
+    height: 25px;
+    border: none;
+    object-fit: cover;
+}
+.translator-title {
+    flex: 0 0 auto;
+    padding: 0;
+    font: 600 36px Inter, sans-serif;
+    color: #272829;
+    font-family: 'GOST Type A', cursive;
+    margin-top: 37px;
+    margin-left: 44px;
+}
+.translation-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 48px;
+    margin: 48px auto;
+}
+.input-containers {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+.text-center-vertical {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    width: 570px;
+}
+.language-heading-style {
+    display: flex;
+    flex: 0 0 auto; /* Important - сохраняет ширину элемента в соответствии с содержимым */
+    align-self: flex-start; /* Или align-self: center, но не с justify-content */
+    padding: 0;
+    margin: 0;
+    font: 600 16px Inter, sans-serif;
+    color: #583d3d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%; /* Или другой размер, если нужно */
+    justify-content: center;
+    font-family: 'GOST Type A', cursive;
+}
+.language-container {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    height: 335px;
+    background: rgba(217, 217, 217, 0.3);
+    border-radius: 30px;
+}
+.text-image-container {
+    cursor: pointer; /* Указатель при наведении */
+    box-sizing: border-box;
+    display: block;
+    width: 60px;
+    height: 25px;
+    margin: 10px; /* Добавьте margin для отступов */
+    text-align: center;
+}
+.translate-button-container {
+    box-sizing: border-box;
+    display: flex;
+    gap: 64px;
+    height: 48px;
+    margin: 51px auto 0;
+}
+.translation-container1 {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    min-width: 192px;
+    padding-right: 49px;
+    padding-left: 49px;
+    background: #95aad3;
+    border-radius: 10px;
+}
+.highlighted-text {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 16px Inter, sans-serif;
+    color: white;
+}
+.move-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 192px;
+    min-width: 192px;
+    height: 48px;
+    font: 600 16px Inter, sans-serif;
+    font-family: 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: rgba(88, 61, 61, 0.8);
+    border: none;
+    border-radius: 10px;
+}
+
+.translate-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 192px;
+    min-width: 192px;
+    height: 48px;
+    font: 600 16px Inter, sans-serif;
+    font-family: 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: #95AAD3;
+    border: none;
+    border-radius: 10px;
+}

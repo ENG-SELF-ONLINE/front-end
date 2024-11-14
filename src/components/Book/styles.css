@@ -2,6 +2,7 @@
     width: 177px;
     height: 324px;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .cover {

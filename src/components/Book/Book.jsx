@@ -33,6 +33,7 @@ Book.propTypes = {
         title: PropTypes.string.isRequired,
         author: PropTypes.string.isRequired,
     }).isRequired,
+    onClick: PropTypes.func.isRequired,
 };
 
 export default Book;
