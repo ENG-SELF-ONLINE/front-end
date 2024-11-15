@@ -1,0 +1,183 @@
+.settings-page {
+    display: flex;
+}
+
+.settings-main-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.settings-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.settings-main-content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+.settings-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.user-profile-card {
+    display: flex;
+    flex-direction: column;
+    margin-top: 37px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: row;
+    width: 940px;
+    margin: 0 auto;
+}
+
+.user-photo-block {
+    display: flex;
+    flex-direction: column;
+    width: 203px;
+    align-items: center;
+}
+
+.change-photo {
+    text-decoration: none;
+    cursor: pointer;
+    font: 20px 'GOST Type A', cursive;
+    color: #434549;
+}
+
+.user-data {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: 750px;
+    margin-left: 20px;
+    justify-content: space-around;
+}
+
+.user-data-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 110px;
+}
+
+.user-data-item label {
+    font: 16px 'GOST Type A', cursive;
+    color: #583d3d;
+}
+
+.user-data-item input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font: 400 16px 'Inter', sans-serif;
+    color: #583d3d;
+    width: 291px;
+    height: 56px;
+}
+
+.user-data-item button {
+    background-color: transparent;
+    border: none;
+    font: 400 14px 'Inter', sans-serif;
+    color: #583d3d;
+    cursor: pointer;
+}
+
+.first-line, .second-line {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.password-data {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.password-data-item {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    height: 110px;
+}
+
+.notification-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.password-visible {
+    cursor: pointer;
+}
+
+.password-data input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font: 400 16px 'Inter', sans-serif;
+    color: #583d3d;
+    width: 291px;
+    height: 56px;
+}
+
+.password-data label {
+    font: 16px 'GOST Type A', cursive;
+    color: #583d3d;
+}
+
+.password-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.change-password, .notification-title {
+    text-decoration: none;
+    font: 16px 'GOST Type A', cursive;
+    color: #434549;
+}
+
+.notification-title {
+    margin-right: 10px;
+}
+
+.save-button-container {
+    box-sizing: border-box;
+    display: flex;
+    gap: 64px;
+    height: 48px;
+    margin: 51px auto 0;
+}
+
+.save-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 192px;
+    min-width: 192px;
+    height: 48px;
+    font: 600 16px Inter, sans-serif;
+    font-family: 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: rgba(88, 61, 61, 0.8);
+    border: none;
+    border-radius: 10px;
+}

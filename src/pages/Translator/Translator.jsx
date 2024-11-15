@@ -28,8 +28,8 @@ const Translator = () => {
                 <div className="translator-upper-content">
                     <UpperMenu />
                 </div>
-                <p className="translator-title">Переводчик</p>
                 <div className="translation-container">
+                    <h1 className="translator-title">Translator</h1>
                     <div className="input-containers">
                         <div className="input-container">
                             <p className="language-heading-style">
@@ -50,7 +50,7 @@ const Translator = () => {
                             className="text-image-container"
                             onClick={handleLanguageSwitch}
                         >
-                            <img src={move} alt="" />
+                            <img src={move} alt=""/>
                         </div>
                         <div className="input-container">
                             <p className="language-heading-style">

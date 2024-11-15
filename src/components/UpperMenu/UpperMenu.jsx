@@ -30,7 +30,7 @@ const UpperMenu = () => {
                              if (key === 'heart') {
                                  window.location.href = '/favourites';
                              } else if (key === 'avatar') {
-                                 window.location.href = '/profile';
+                                 window.location.href = '/settings';
                              } else if (key === 'exit') {
                                  window.location.href = '/exit';
                              }

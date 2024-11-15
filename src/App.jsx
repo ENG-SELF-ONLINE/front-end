@@ -7,6 +7,7 @@ import BooksPage from "./pages/BooksPage/BooksPage.jsx";
 import Favourites from "./pages/Favourites/Favourites.jsx";
 import BookInfoPage from "./pages/BookInfoPage/BookInfoPage.jsx";
 import Translator from "./pages/Translator/Translator.jsx";
+import Settings from "./pages/Settings/Settings.jsx";
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/favourites" element={<Favourites />} />
                 <Route path="/books/:bookId" element={<BookInfoPage />} />
                 <Route path="/translator" element={<Translator />} />
+                <Route path="/settings" element={<Settings />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>
