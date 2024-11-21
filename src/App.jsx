@@ -9,6 +9,7 @@ import BookInfoPage from "./pages/BookInfoPage/BookInfoPage.jsx";
 import Translator from "./pages/Translator/Translator.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
 import Dictionary from "./pages/Dictionary/Dictionary.jsx";
+import DeckPage from "./pages/DeckPage/DeckPage.jsx";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/translator" element={<Translator />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/dictionary" element={<Dictionary />} />
+                <Route path="/decks/:deckId" element={<DeckPage />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>
