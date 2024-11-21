@@ -8,6 +8,7 @@ import Favourites from "./pages/Favourites/Favourites.jsx";
 import BookInfoPage from "./pages/BookInfoPage/BookInfoPage.jsx";
 import Translator from "./pages/Translator/Translator.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
+import Dictionary from "./pages/Dictionary/Dictionary.jsx";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/books/:bookId" element={<BookInfoPage />} />
                 <Route path="/translator" element={<Translator />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/dictionary" element={<Dictionary />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>

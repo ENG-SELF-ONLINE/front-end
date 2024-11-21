@@ -1,0 +1,37 @@
+.deck-card {
+    width: 216px;
+    height: 195px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.deck-cover {
+    width: 216px;
+    height: 147px;
+    background-size: cover;
+    background-position: center;
+}
+
+.deck-info {
+    height: 44px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 16px;
+    color: #583D3D;
+    font-weight: bold;
+}
+
+.author {
+    font-size: 14px;
+    color: #000000;
+    opacity: 0.4;
+}
+
+h3, p {
+    margin: 0;
+    font-family: 'GOST Type A', cursive;
+}

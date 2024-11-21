@@ -8,7 +8,7 @@ import {Pagination} from "antd";
 import Search from "antd/es/input/Search.js";
 import {useNavigate} from "react-router-dom";
 
-const BooksPage = () => {
+const Favourites = () => {
     const navigate = useNavigate(); // Инициализация navigate
     const [books] = useState([
         {
@@ -137,4 +137,4 @@ const BooksPage = () => {
     );
 };
 
-export default BooksPage;
+export default Favourites;
