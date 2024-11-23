@@ -8,7 +8,8 @@ import {useNavigate} from "react-router-dom";
 import CardMenuContainer from "../../components/CardMenuContainer/CardMenuContainer.jsx";
 
 const mockDecks = [
-    { id: 1, title: "Животные", newItems: 10, learning: 5, repeatable: 15 }
+    { id: 1, title: "Животные", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
+        newItems: 10, learning: 5, repeatable: 15 }
 ];
 
 const DeckPage = () => {
@@ -53,7 +54,7 @@ const DeckPage = () => {
                     <h1 className="deck-title">{deckTitle}</h1>
                     <div className="card-container-with-stats">
                         <div className="card-deck-stats-container1">
-                            <CardMenuContainer/>
+                            <CardMenuContainer deckData={selectedDeck}/>
                             <div className="card-deck-stats-container">
                                 <div className="learning-status-container">
                                     <div className="status-panel">

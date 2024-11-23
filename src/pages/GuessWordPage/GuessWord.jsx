@@ -8,7 +8,8 @@ import Word from "../../components/Word/Word.jsx";
 
 const mockDecks = [
     {
-        id: 1, title: "Животные", newItems: 10, learning: 5, repeatable: 15, words: [
+        id: 1, title: "Животные", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
+        newItems: 10, learning: 5, repeatable: 15, words: [
             {
                 id: 1,
                 word: "Cat",
@@ -85,10 +86,10 @@ const GuessWord = () => {
                     <h1 className="guess-title">{deckTitle}</h1>
                     <div className="guess-container-with-stats">
                         <div className="card-guess-stats-container1">
-                            <CardMenuContainer />
+                            <CardMenuContainer deckData={selectedDeck} />
                             <div className="card-guess-stats-container">
                                 {currentWord && <Word wordData={currentWord}/>}
-                                {showTranslation && <p>{currentWord.translation}</p>}
+                                {showTranslation && <p className="translation-word">{currentWord.translation}</p>}
                                 <div className="buttons-container">
                                     {showAnswerButton && <button onClick={handleShowAnswer}>Ответ</button>}
                                     <button onClick={handleNextWord}>Заменить слово</button>
