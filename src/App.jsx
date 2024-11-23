@@ -10,6 +10,7 @@ import Translator from "./pages/Translator/Translator.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
 import Dictionary from "./pages/Dictionary/Dictionary.jsx";
 import DeckPage from "./pages/DeckPage/DeckPage.jsx";
+import GuessWord from "./pages/GuessWordPage/GuessWord.jsx";
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/dictionary" element={<Dictionary />} />
                 <Route path="/decks/:deckId" element={<DeckPage />} />
+                <Route path="/decks/learning" element={<GuessWord />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>

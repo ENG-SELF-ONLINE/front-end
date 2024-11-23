@@ -1,0 +1,30 @@
+.word-card {
+    width: 216px;
+    height: 177px;
+    overflow: hidden;
+}
+
+.word-cover {
+    width: 216px;
+    height: 147px;
+    background-size: cover;
+    background-position: center;
+}
+
+.word-info {
+    height: 44px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 16px;
+    color: #583D3D;
+    font-weight: bold;
+}
+
+h3, p {
+    margin: 0;
+    font-family: 'GOST Type A', cursive;
+}

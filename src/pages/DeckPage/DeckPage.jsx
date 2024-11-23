@@ -4,6 +4,8 @@ import './styles.css'
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import {Button} from "@mui/base";
+import {useNavigate} from "react-router-dom";
+import CardMenuContainer from "../../components/CardMenuContainer/CardMenuContainer.jsx";
 
 const mockDecks = [
     { id: 1, title: "Животные", newItems: 10, learning: 5, repeatable: 15 }
@@ -13,6 +15,7 @@ const DeckPage = () => {
     // Устанавливаем начальное состояние с использованием данных из mockDecks
     const [selectedDeck] = useState(mockDecks[0]); // Выбираем первую колоду по умолчанию
     const { title: deckTitle, newItems, learning, repeatable } = selectedDeck;
+    const navigate = useNavigate(); // Инициализация navigate
 
     // useEffect(() => {
     //     const fetchDeckData = async () => {
@@ -34,16 +37,9 @@ const DeckPage = () => {
     //     fetchDeckData();
     // }, []);
 
-    const handleAddDeck = () => {
-        console.log("Добавить колоду!");
-    };
-
-    const handleListDecks = () => {
-        console.log("Список колод!");
-    };
-
-    const handleViewDecks = () => {
-        console.log("Назад к колодам!");
+    const handleLearnWord = () => {
+        console.log("Учить слова!");
+        navigate(`/decks/learning`);
     };
 
     return (
@@ -57,21 +53,7 @@ const DeckPage = () => {
                     <h1 className="deck-title">{deckTitle}</h1>
                     <div className="card-container-with-stats">
                         <div className="card-deck-stats-container1">
-                            <div className="card-menu-container">
-                                <div className="card-button-group">
-                                    <Button className="deck-button" onClick={handleViewDecks}>
-                                        Колоды
-                                    </Button>
-                                    <div className="card-separator" />
-                                    <Button className="deck-button" onClick={handleAddDeck}>
-                                        Добавить
-                                    </Button>
-                                    <div className="card-separator" />
-                                    <Button className="deck-button" onClick={handleListDecks}>
-                                        Список
-                                    </Button>
-                                </div>
-                            </div>
+                            <CardMenuContainer/>
                             <div className="card-deck-stats-container">
                                 <div className="learning-status-container">
                                     <div className="status-panel">
@@ -100,7 +82,9 @@ const DeckPage = () => {
                                     </div>
                                 </div>
                                 <div className="learning-button-container">
-                                    <Button className="learn-button-style">Учить</Button>
+                                    <Button className="learn-button-style" onClick={handleLearnWord}>
+                                        Учить
+                                    </Button>
                                 </div>
                             </div>
                         </div>

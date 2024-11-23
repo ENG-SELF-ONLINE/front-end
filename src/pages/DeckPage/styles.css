@@ -16,13 +16,6 @@
     justify-content: right;
     width: 100%;
 }
-.deck-button {
-    font: 24px 'GOST Type A', cursive;
-    color: black;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
 .deck-title {
     flex: 0 0 auto;
     padding: 0;
@@ -38,33 +31,12 @@
     gap: 48px;
     margin: 0 auto;
 }
-.card-menu-container {
-    flex: 0 0 auto;
-}
-.card-button-group {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    gap: 31.5px;
-    align-items: center;
-    justify-content: center;
-    height: 60px;
-    background: rgba(149, 170, 211, 0.3);
-    border-radius: 20px;
-}
 .deck-title-text-style {
     flex: 0 0 auto;
     padding: 0;
     margin: 0;
     font: 600 24px Inter, sans-serif;
     color: black;
-}
-.card-separator {
-    box-sizing: border-box;
-    flex: 0 0 auto;
-    width: 1px;
-    height: 51px;
-    border-left: 1px solid black;
 }
 .deck-title-heading {
     flex: 0 0 auto;

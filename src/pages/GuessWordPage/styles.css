@@ -1,0 +1,105 @@
+.guess-page {
+    display: flex;
+}
+
+.guess-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.guess-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+.guess-title {
+    flex: 0 0 auto;
+    padding: 0;
+    color: #272829;
+    font-family: 'GOST Type A', cursive;
+    margin-top: 37px;
+    margin-bottom: 0;
+}
+.guess-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 48px;
+    margin: 0 auto;
+}
+.guess-container-with-stats {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Кнопки будут внизу */
+    min-width: 846px;
+    min-height: 600px;
+    background: rgba(217, 217, 217, 0.3);
+    border: 1px solid #272829;
+    border-radius: 20px;
+}
+.card-guess-stats-container1 {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-around;
+    min-width: 521px;
+    padding-top: 8px;
+}
+.card-guess-stats-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 68px;
+    min-height: 460px;
+    justify-content: space-around;
+}
+.buttons-container {
+    display: flex;
+    gap: 10px; /* Отступ между кнопками */
+    margin-top: 20px; /* Отступ от перевода */
+}
+
+.buttons-container button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* Плавный переход цвета при наведении */
+}
+
+.buttons-container button:hover {
+    background-color: #f0f0f0; /* Цвет при наведении */
+}
+
+.buttons-container button:focus {
+    outline: none;
+}
+
+/* Стили для кнопок сложности (можно настроить по своему вкусу) */
+.buttons-container button[data-difficulty="hard"] {
+    background-color: #e74c3c; /* Красный для "Трудно" */
+    color: white;
+}
+
+.buttons-container button[data-difficulty="medium"] {
+    background-color: #f39c12; /* Оранжевый для "Хорошо" */
+    color: white;
+}
+
+.buttons-container button[data-difficulty="easy"] {
+    background-color: #2ecc71; /* Зеленый для "Легко" */
+    color: white;
+}
+
+p {
+    font-size: 24px;
+}
