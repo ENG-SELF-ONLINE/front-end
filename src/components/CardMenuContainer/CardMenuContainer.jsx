@@ -4,7 +4,8 @@ import { Button } from '@mui/base';
 import './styles.css';
 import {Input, Modal} from "antd";
 import Deck from "../Deck/Deck.jsx";
-import PropTypes from "prop-types"; // Импортируем стили, если это необходимо
+import PropTypes from "prop-types";
+import {useNavigate} from "react-router-dom"; // Импортируем стили, если это необходимо
 
 const CardMenuContainer = ({ deckData }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -12,6 +13,7 @@ const CardMenuContainer = ({ deckData }) => {
     const [imageUrl, setImageUrl] = useState(null);
     const [word, setWord] = useState('');
     const [translation, setTranslation] = useState('');
+    const navigate = useNavigate(); // Инициализация navigate
 
     useEffect(() => {
         // Обновляем состояние при изменении deckData
@@ -27,10 +29,12 @@ const CardMenuContainer = ({ deckData }) => {
 
     const handleListDecks = () => {
         console.log("Список колод!");
+        navigate(`/decks/${deckData.id}/words`);
     };
 
     const handleViewDecks = () => {
         console.log("Назад к колодам!");
+        navigate(`/dictionary`);
     };
 
     const resetModal = () => {
@@ -106,6 +110,7 @@ CardMenuContainer.propTypes = {
     deckData: PropTypes.shape({
         coverImage: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
+        id: PropTypes.number.isRequired,
     }).isRequired,
 };
 

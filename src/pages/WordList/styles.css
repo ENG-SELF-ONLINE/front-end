@@ -1,0 +1,218 @@
+.word-list-page {
+    display: flex;
+}
+
+.word-list-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.word-list-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+.word-list-title {
+    flex: 0 0 auto;
+    padding: 0;
+    color: #272829;
+    font-family: 'GOST Type A', cursive;
+    margin-top: 37px;
+    margin-bottom: 0;
+}
+.word-list-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 48px;
+    margin: 0 auto;
+}
+.word-list-container-with-stats {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 846px;
+    min-height: 600px;
+    background: rgba(217, 217, 217, 0.3);
+    border: 1px solid #272829;
+    border-radius: 20px;
+}
+.word-list-stats-container1 {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-around;
+    min-width: 521px;
+    padding-top: 8px;
+}
+.word-list-stats-container2 {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-around;
+    min-width: 521px;
+    padding-top: 8px;
+}
+.vertical-centered-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 34px;
+}
+.word-translation-view-action-container {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 507px;
+}
+.word-translation-display-style {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 20px Inter, sans-serif;
+    color: black;
+}
+.highlighted-text {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 20px Inter, sans-serif;
+    color: #010101;
+}
+.flex-row-with-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 62px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+.flex-container-with-buttons {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+.animal-title {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 16px Inter, sans-serif;
+    color: #020202;
+}
+.animal-title-text-style {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 600 16px Inter, sans-serif;
+    color: black;
+}
+.button-style-primary {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    width: 100px;
+    min-width: 100px;
+    height: 32px;
+    margin-right: 18px;
+    font: 600 16px Inter, sans-serif;
+    color: white;
+    cursor: pointer;
+    background: rgba(147, 197, 253, 0.8);
+    border: none;
+    border-radius: 10px;
+    justify-content: center;
+}
+.action-button {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    width: 100px;
+    min-width: 100px;
+    height: 32px;
+    font: 600 16px Inter, sans-serif;
+    color: white;
+    cursor: pointer;
+    background: rgba(238, 32, 77, 0.8);
+    border: none;
+    border-radius: 10px;
+    justify-content: center;
+}
+.border-separator {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: -0.5px;
+    border-top: 1px solid black;
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    /*justify-content: space-around;*/
+    justify-content: center;
+}
+
+.ant-modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-containers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.right-continer {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.create-button-modal {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    margin-top: 20px;
+    width: 150px;
+    min-width: 150px;
+    height: 36px;
+    font: 16px 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: #95AAD3;
+    border: none;
+    border-radius: 10px;
+}
+
+.word-card-menu {
+    font-size: 16px;
+    margin-top: 8px;
+}

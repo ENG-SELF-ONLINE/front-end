@@ -40,7 +40,7 @@ const DeckPage = () => {
 
     const handleLearnWord = () => {
         console.log("Учить слова!");
-        navigate(`/decks/learning`);
+        navigate(`/decks/${selectedDeck.id}/learning`);
     };
 
     return (
