@@ -8,6 +8,8 @@ import {Pagination} from "antd";
 import Book from "../../components/Book/Book.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 
+const ITEMS_PER_PAGE = 10;
+
 const BooksPage = () => {
     const { level } = useParams();
     const navigate = useNavigate(); // Инициализация navigate
@@ -73,6 +75,12 @@ const BooksPage = () => {
             title: "Название книги 10",
             author: "Автор книги 10"
         },
+        {
+            id: 11,
+            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
+            title: "Название книги 11",
+            author: "Автор книги 11"
+        },
     ]);
     const getLevelDescription = (level) => {
         switch (level) {
@@ -93,7 +101,6 @@ const BooksPage = () => {
         }
     };
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(5); // Заглушка для totalPages
 
     useEffect(() => {
         // Заглушка для fetchBooks
@@ -123,6 +130,14 @@ const BooksPage = () => {
         navigate(`/books/${bookId}`); // Используйте navigate для перехода на страницу
     };
 
+    // Вычисляем индексы для текущей страницы
+    const totalBooks = books.length;
+
+    // Вычисляем книги, которые нужно отображать на текущей странице
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentBooks = books.slice(startIndex, endIndex);
+
     return (
         <div className="container">
             <Sidebar/>
@@ -143,7 +158,7 @@ const BooksPage = () => {
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
                     <div className="books-grid">
-                        {books.map((book) => (
+                        {currentBooks.map((book) => (
                             <Book key={book.id} bookData={book} onClick={() => handleBookClick(book.id)}/>
                         ))}
                     </div>
@@ -151,8 +166,9 @@ const BooksPage = () => {
                         <Pagination
                             current={currentPage}
                             onChange={handlePageChange}
-                            total={totalPages * 10}
+                            total={totalBooks}
                             showSizeChanger={false}
+                            pageSize={ITEMS_PER_PAGE}
                         />
                     </div>
                 </div>

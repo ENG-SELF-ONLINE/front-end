@@ -24,14 +24,12 @@
     flex-direction: column; /* Добавляем flex-direction: column */
 }
 
-.books-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between; /* Используем space-around */
-    column-gap: 38px;
-    width: 100%;
-    height: 750px;
-    align-items: center;
+.books-grid-favourites {
+    display: grid; /* Используем grid вместо flex, чтобы гибко управлять расположением */
+    grid-template-columns: repeat(5, 0fr); /* 5 колонок одинаковой ширины */
+    min-height: 720px;
+    padding-top: 30px;
+    justify-content: space-between;
 }
 
 .level-title {

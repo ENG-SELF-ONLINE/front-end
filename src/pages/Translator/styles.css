@@ -231,3 +231,23 @@
     border: none;
     border-radius: 10px;
 }
+
+.deck-containers {
+    display: grid; /* Используем grid вместо flex, чтобы гибко управлять расположением */
+    grid-template-columns: repeat(5, 1fr); /* 5 колонок одинаковой ширины */
+    gap: 10px; /* Пространство между элементами */
+    height: 665px;
+}
+
+.deck-option {
+    min-width: 100px; /* Минимальная ширина колоды (можно настроить по вашему усмотрению) */
+    margin-bottom: 20px; /* Отступ снизу для каждого элемента, если используется grid, это не обязательно */
+}
+
+.deck-containers .empty-deck {
+    visibility: hidden; /* Скрываем пустые элементы */
+}
+
+.deck-dimmed {
+    opacity: 0.5; /* Установка прозрачности */
+}
