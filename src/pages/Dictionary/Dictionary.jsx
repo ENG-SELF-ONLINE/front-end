@@ -9,6 +9,8 @@ import {useNavigate} from "react-router-dom";
 import Deck from "../../components/Deck/Deck.jsx";
 import {Button} from "@mui/base";
 
+const ITEMS_PER_PAGE = 15;
+
 const Dictionary = () => {
     const navigate = useNavigate(); // Инициализация navigate
     const [decks] = useState([
@@ -102,9 +104,14 @@ const Dictionary = () => {
             title: "Животные",
             author: "24 слова"
         },
+        {
+            id: 16,
+            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
+            title: "Животные",
+            author: "24 слова"
+        },
     ]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(5); // Заглушка для totalPages
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
     const [imageUrl, setImageUrl] = useState(null);
@@ -146,6 +153,13 @@ const Dictionary = () => {
         setIsModalVisible(false);
     };
 
+    // Вычисляем индексы для текущей страницы
+    const totalDecks = decks.length;
+
+    // Вычисляем книги, которые нужно отображать на текущей странице
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentDecks = decks.slice(startIndex, endIndex);
 
     return (
         <div className="container">
@@ -158,7 +172,7 @@ const Dictionary = () => {
                 <div className="content">
                     <h2 className="level-title">Ваши колоды:</h2>
                     <div className="decks-grid">
-                        {decks.map((deck) => (
+                        {currentDecks.map((deck) => (
                             <Deck key={deck.id} deckData={deck} onClick={() => handleBookClick(deck.id)} />
                         ))}
                     </div>
@@ -166,8 +180,9 @@ const Dictionary = () => {
                         <Pagination
                             current={currentPage}
                             onChange={handlePageChange}
-                            total={totalPages * 10}
+                            total={totalDecks}
                             showSizeChanger={false}
+                            pageSize={ITEMS_PER_PAGE}
                         />
                         <Button className="create-button" onClick={() => setIsModalVisible(true)}>Создать</Button>
                     </div>
