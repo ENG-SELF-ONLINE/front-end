@@ -1,0 +1,128 @@
+.activity-page {
+    display: flex;
+}
+
+.activity-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.activity-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.activity-title {
+    flex: 0 0 auto;
+    padding: 0;
+    color: #272829;
+    font-family: 'GOST Type A', cursive;
+    margin-top: 37px;
+    margin-bottom: 0;
+}
+
+.activity-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 37px;
+    margin: 0 auto;
+}
+
+.project-timer-container {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 70%;
+}
+.project-info-container1 {
+    flex: 1 0 auto;
+}
+.transparent-input-style {
+    box-sizing: border-box;
+    width: 100%;
+    font: 400 15px Inter, sans-serif;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+.input-style-8bc68c0e::placeholder {
+    color: #ccd6e8;
+}
+.project-info-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 26px;
+    gap: 16px;
+}
+.project-thumbnail {
+    box-sizing: border-box;
+    display: block;
+    width: 25px;
+    max-width: initial;
+    height: 25px;
+    border: none;
+    object-fit: cover;
+}
+.project-title-text-style {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    margin-left: 26px;
+    font: 500 15px Inter, sans-serif;
+    color: #583d3d;
+}
+.time-button-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 40px;
+}
+.time-display-style {
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
+    font: 500 20px Inter, sans-serif;
+    color: black;
+}
+.start-button-style {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 101px;
+    min-width: 101px;
+    height: 48px;
+    margin-left: 45px;
+    font: 600 16px Inter, sans-serif;
+    color: white;
+    cursor: pointer;
+    background: #95aad3;
+    border: none;
+    border-radius: 10px;
+}
+
+.weekly-activity {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.weekly-activity-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 900px;
+}

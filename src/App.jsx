@@ -12,6 +12,7 @@ import Dictionary from "./pages/Dictionary/Dictionary.jsx";
 import DeckPage from "./pages/DeckPage/DeckPage.jsx";
 import GuessWord from "./pages/GuessWordPage/GuessWord.jsx";
 import WordList from "./pages/WordList/WordList.jsx";
+import Tracker from "./pages/Tracker/Tracker.jsx";
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/decks/:deckId" element={<DeckPage />} />
                 <Route path="/decks/:deckId/learning" element={<GuessWord />} />
                 <Route path="/decks/:deckId/words" element={<WordList />} />
+                <Route path="/tracker" element={<Tracker />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>
