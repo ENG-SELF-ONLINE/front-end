@@ -13,6 +13,9 @@ import DeckPage from "./pages/DeckPage/DeckPage.jsx";
 import GuessWord from "./pages/GuessWordPage/GuessWord.jsx";
 import WordList from "./pages/WordList/WordList.jsx";
 import Tracker from "./pages/Tracker/Tracker.jsx";
+import Grammar from "./pages/Grammar/Grammar.jsx";
+import Topic from "./pages/Topic/Topic.jsx";
+import Test from "./pages/Test/Test.jsx";
 
 function App() {
     return (
@@ -30,6 +33,9 @@ function App() {
                 <Route path="/decks/:deckId/learning" element={<GuessWord />} />
                 <Route path="/decks/:deckId/words" element={<WordList />} />
                 <Route path="/tracker" element={<Tracker />} />
+                <Route path="/grammar/:level" element={<Grammar />} />
+                <Route path="/grammar/:level/:topicId" element={<Topic />} />
+                <Route path="/grammar/:level/:topicId/test" element={<Test />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>

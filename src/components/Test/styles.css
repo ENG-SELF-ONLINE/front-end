@@ -1,0 +1,8 @@
+.test-button-container {
+    text-align: center; /* Центрируем кнопку */
+    margin-top: 20px;   /* Добавляем отступ сверху */
+}
+
+.article-container {
+    margin-top: 20px;
+}

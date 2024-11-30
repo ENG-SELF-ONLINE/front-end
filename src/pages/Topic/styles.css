@@ -1,0 +1,47 @@
+.topic-page {
+    display: flex;
+}
+
+.topic-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.topic-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.topic-title {
+    flex: 0 0 auto;
+    padding: 0;
+    color: #272829;
+    font-family: 'GOST Type A', cursive;
+    margin-top: 37px;
+    margin-bottom: 0;
+}
+
+.topic-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 37px;
+    margin: 0 auto;
+}
+
+.topic-level-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.topic-content {
+    width: 1250px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column; /* Добавляем flex-direction: column */
+}

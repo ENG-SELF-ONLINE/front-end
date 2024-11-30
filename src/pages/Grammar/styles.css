@@ -1,0 +1,61 @@
+.grammar-page {
+    display: flex;
+}
+
+.grammar-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.grammar-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.grammar-title {
+    flex: 0 0 auto;
+    padding: 0;
+    color: #272829;
+    font-family: 'GOST Type A', cursive;
+    margin-top: 37px;
+    margin-bottom: 0;
+}
+
+.grammar-container {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 37px;
+    margin: 0 auto;
+}
+
+.grammar-level-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.grammar-content {
+    width: 1250px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column; /* Добавляем flex-direction: column */
+}
+
+.grammar-topics {
+    list-style: none;
+    padding: 0;
+}
+
+.grammar-topics li {
+    margin-bottom: 10px;
+}
+
+.grammar-topics a {
+    text-decoration: none;
+    color: blue;
+}
