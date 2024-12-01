@@ -43,7 +43,7 @@ const Test = () => {
                     <h2 className="topic-level-title">
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
-                    <TestComponent/>
+                    <TestComponent currentLevel={activeLevel}/>
                 </div>
             </div>
         </div>

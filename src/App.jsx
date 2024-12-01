@@ -16,6 +16,8 @@ import Tracker from "./pages/Tracker/Tracker.jsx";
 import Grammar from "./pages/Grammar/Grammar.jsx";
 import Topic from "./pages/Topic/Topic.jsx";
 import Test from "./pages/Test/Test.jsx";
+import Listening from "./pages/Listening/Listening.jsx";
+import ListeningTest from "./pages/ListeningTest/ListeningTest.jsx";
 
 function App() {
     return (
@@ -36,6 +38,8 @@ function App() {
                 <Route path="/grammar/:level" element={<Grammar />} />
                 <Route path="/grammar/:level/:topicId" element={<Topic />} />
                 <Route path="/grammar/:level/:topicId/test" element={<Test />} />
+                <Route path="/listening/:level" element={<Listening />} />
+                <Route path="/listening/:level/:topicId" element={<ListeningTest />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>

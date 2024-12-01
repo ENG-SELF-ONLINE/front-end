@@ -1,13 +1,12 @@
+import {useParams} from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import React, {useEffect, useState} from "react";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import './styles.css'
-import {useParams} from "react-router-dom";
-import Article from "../../components/Article/Article.jsx";
+import ListeningTestComponent from "../../components/ListeningTest/ListeningTestComponent.jsx";
 
-const Grammar = () => {
-    const { level, topicId } = useParams();
+const ListeningTest = () => {
+    const { level } = useParams();
     const [activeLevel, setActiveLevel] = useState(level || "A1");
 
     const getLevelDescription = (level) => {
@@ -44,11 +43,11 @@ const Grammar = () => {
                     <h2 className="topic-level-title">
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
-                    <Article activeLevel={activeLevel} topicId={topicId} />
+                    <ListeningTestComponent currentLevel={activeLevel} />
                 </div>
             </div>
         </div>
     );
 };
 
-export default Grammar;
+export default ListeningTest;

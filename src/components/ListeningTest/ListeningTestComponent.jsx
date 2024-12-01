@@ -2,65 +2,42 @@
 import React, { useState, useEffect } from 'react';
 import './styles.css';
 import { Button } from "antd";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
-const TestComponent = ({ currentLevel }) => {
+const ListeningTestComponent = ({ currentLevel }) => {
     const [showAnswers, setShowAnswers] = useState(false);
     const [testPassed, setTestPassed] = useState(false);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const navigate = useNavigate(); // Инициализация navigate
 
+    const audioSrc = "path/to/your/audio/file.mp3"; // Замените на ваш путь к аудиофайлу
+
     const questions = [
         {
-            question: "What is the past tense of 'go'?",
-            options: ["goed", "gone", "went"],
-            answer: "went"
+            question: "What did the speaker mention about their day?",
+            options: ["It was boring.", "It was exciting.", "It was long."],
+            answer: "It was exciting."
         },
         {
-            question: "Which of the following is a regular verb?",
-            options: ["eat", "run", "walk", "drink"],
-            answer: "walk"
+            question: "Which activity did the speaker do?",
+            options: ["Went shopping", "Visited a friend", "Watched a movie"],
+            answer: "Visited a friend"
         },
         {
-            question: "What is the present participle of 'work'?",
-            options: ["working", "worked", "work", "works"],
-            answer: "working"
+            question: "What time did they finish their activity?",
+            options: ["In the morning", "In the afternoon", "In the evening"],
+            answer: "In the evening"
         },
         {
-            question: "Choose the correct past participle of 'swim'.",
-            options: ["swam", "swimming", "swum", "swimmed"],
-            answer: "swum"
+            question: "How did they feel at the end of the day?",
+            options: ["Tired", "Happy", "Sad"],
+            answer: "Happy"
         },
         {
-            question: "Which sentence uses the present simple tense correctly?",
-            options: ["I am go to the shop.", "I goes to the shop.", "I go to the shop.", "I went to the shop."],
-            answer: "I go to the shop."
-        },
-        {
-            question: "What is the future simple tense of 'play'?",
-            options: ["will playing", "will play", "playing", "played"],
-            answer: "will play"
-        },
-        {
-            question: "What is the past perfect tense of 'eat'?",
-            options: ["had eaten", "ate", "has eaten", "have eaten"],
-            answer: "had eaten"
-        },
-        {
-            question: "What is the future perfect tense of 'see'?",
-            options: ["will have seen", "will seen", "will be seen", "have seen"],
-            answer: "will have seen"
-        },
-        {
-            question: "What is the present perfect tense of 'read'?",
-            options: ["read", "have read", "has reading", "had read"],
-            answer: "have read"
-        },
-        {
-            question: "Which sentence correctly uses the past continuous tense?",
-            options: ["I was playing football.", "I played football.", "I am playing football.", "I play football."],
-            answer: "I was playing football."
+            question: "What was the weather like?",
+            options: ["Sunny", "Rainy", "Cloudy"],
+            answer: "Sunny"
         }
     ];
 
@@ -94,11 +71,15 @@ const TestComponent = ({ currentLevel }) => {
     };
 
     const handleNext = () => {
-        navigate(`/grammar/${currentLevel}`); // Переход на страницу /grammar/A1
+        navigate(`/listening/${currentLevel}`); // Переход на страницу с текущим уровнем
     };
 
     return (
         <div className="article-container">
+            <audio controls>
+                <source src={audioSrc} type="audio/mpeg" />
+                Ваш браузер не поддерживает аудиоплеер.
+            </audio>
             {selectedQuestions.map((question, index) => (
                 <div key={index}>
                     <h3>{question.question}</h3>
@@ -119,7 +100,7 @@ const TestComponent = ({ currentLevel }) => {
                         ))}
                     </ul>
                     {showAnswers && (
-                        <p>
+                        <p style={{marginBottom: '20px'}}>
                             Правильный ответ: {question.answer}
                         </p>
                     )}
@@ -134,4 +115,4 @@ const TestComponent = ({ currentLevel }) => {
     );
 };
 
-export default TestComponent;
+export default ListeningTestComponent;

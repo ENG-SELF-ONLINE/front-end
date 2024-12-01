@@ -5,7 +5,8 @@ import './styles.css'
 import {Button} from "antd";
 import {useNavigate} from "react-router-dom";
 
-const Article = () => {
+// eslint-disable-next-line react/prop-types
+const Article = ({activeLevel, topicId}) => {
 
     const navigate = useNavigate(); // Инициализация navigate
     const articleData = [{
@@ -44,7 +45,7 @@ const Article = () => {
 
     const handleStartTest = () => {
         console.log('clicked');
-        navigate(`/grammar/A1/1/test`); // Используйте navigate для перехода на страницу
+        navigate(`/grammar/${activeLevel}/${topicId}/test`); // Используйте navigate для перехода на страницу
     };
 
     const renderContent = (article) => {
