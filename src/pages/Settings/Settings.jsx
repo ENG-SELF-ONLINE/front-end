@@ -40,6 +40,14 @@ const Settings = () => {
         setShowPassword(!showPassword);
     };
 
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setUserData((prevData) => ({
+            ...prevData,
+            [id]: value, // Обновляем поле с id, которое соответствует полю ввода
+        }));
+    };
+
     return (
         <div className="settings-page">
             <Sidebar/>
@@ -85,6 +93,7 @@ const Settings = () => {
                                             type="text"
                                             id="firstName"
                                             value={userData.firstName}
+                                            onChange={handleInputChange} // Добавьте обработчик изменения
                                         />
                                     </div>
                                 </div>
@@ -116,6 +125,7 @@ const Settings = () => {
                                             type="text"
                                             id="lastName"
                                             value={userData.lastName}
+                                            onChange={handleInputChange} // Добавьте обработчик изменения
                                         />
                                     </div>
                                 </div>
