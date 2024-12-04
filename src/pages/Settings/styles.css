@@ -154,6 +154,10 @@
     color: #434549;
 }
 
+.change-password {
+    cursor: pointer;
+}
+
 .notification-title {
     margin-right: 10px;
 }

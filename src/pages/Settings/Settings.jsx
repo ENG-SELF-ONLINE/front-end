@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-unused-vars
-import React, {useState} from 'react';
-import './styles.css'
+import React, { useState, useRef } from 'react';
+import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import avatar from "./images/avatar.png";
 import visible from "./images/visible.png";
-import {Button, Switch} from "antd";
+import { Button, Switch, Modal, Input } from "antd";
 
 const Settings = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -14,19 +14,43 @@ const Settings = () => {
         password: "password123",
         firstName: "Иван",
         lastName: "Иванов",
-        emailNotifications: true, // Заглушка для уведомлений
+        emailNotifications: true,
     });
+    const [newPassword, setNewPassword] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [photo, setPhoto] = useState(avatar);
+    const fileInputRef = useRef(null); // Создаем реф для input
 
-    const handleChangePhoto = () => {
-        console.log("Изменить фото");
+    const handleChangePhoto = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPhoto(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleChangePassword = () => {
-        console.log("Изменить пароль");
+        setIsModalVisible(true);
+    };
+
+    const handleOk = () => {
+        setUserData((prevData) => ({
+            ...prevData,
+            password: newPassword,
+        }));
+        setNewPassword('');
+        setIsModalVisible(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
     };
 
     const handleSave = () => {
-        console.log("SAVE");
+        console.log("SAVE", userData);
     };
 
     const handleToggleNotifications = () => {
@@ -44,26 +68,41 @@ const Settings = () => {
         const { id, value } = e.target;
         setUserData((prevData) => ({
             ...prevData,
-            [id]: value, // Обновляем поле с id, которое соответствует полю ввода
+            [id]: value,
         }));
+    };
+
+    const handleChangePhotoClick = () => {
+        fileInputRef.current.click(); // Программно вызываем клик на input
     };
 
     return (
         <div className="settings-page">
-            <Sidebar/>
+            <Sidebar />
             <div className="settings-main-info">
                 <div className="settings-upper-content">
-                    <UpperMenu/>
+                    <UpperMenu />
                 </div>
                 <div className="settings-main-content">
                     <h1 className="settings-title">Settings</h1>
                     <div className="user-profile-card">
                         <div className="user-info">
                             <div className="user-photo-block">
-                                <img src={avatar} alt="Аватар"/>
-                                <a href="/change-photo" onClick={handleChangePhoto} className="change-photo">
+                                <img style={{height: '235px', width: '200px', borderRadius: '30px'}} src={photo} alt="Аватар" />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleChangePhoto}
+                                    className="change-photo-input"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }} // Скрываем input
+                                />
+                                <span
+                                    className="change-photo"
+                                    onClick={handleChangePhotoClick} // Добавляем обработчик клика
+                                >
                                     Изменить фото
-                                </a>
+                                </span>
                             </div>
                             <div className="user-data">
                                 <div className="first-line">
@@ -73,12 +112,10 @@ const Settings = () => {
                                             type="text"
                                             id="login"
                                             value={userData.login}
-                                            readOnly // Делаем поле только для чтения
+                                            readOnly
                                         />
                                         <div className="notification-block">
-                                            <p className="notification-title">
-                                                Уведомления на почту:
-                                            </p>
+                                            <p className="notification-title">Уведомления на почту:</p>
                                             <Switch
                                                 checked={userData.emailNotifications}
                                                 onChange={handleToggleNotifications}
@@ -93,7 +130,7 @@ const Settings = () => {
                                             type="text"
                                             id="firstName"
                                             value={userData.firstName}
-                                            onChange={handleInputChange} // Добавьте обработчик изменения
+                                            onChange={handleInputChange}
                                         />
                                     </div>
                                 </div>
@@ -103,20 +140,19 @@ const Settings = () => {
                                             <label htmlFor="password">Пароль</label>
                                             <div className="password-block">
                                                 <input
-                                                    type={showPassword ? "text" : "password"} // Показывает пароль, если showPassword
+                                                    type={showPassword ? "text" : "password"}
                                                     id="password"
                                                     value={userData.password}
                                                     readOnly
                                                 />
                                                 <div className="password-visible" type={'button'}
                                                      onClick={handleShowPassword}>
-                                                    <img src={visible} alt="Показать/Скрыть пароль"/>
+                                                    <img src={visible} alt="Показать/Скрыть пароль" />
                                                 </div>
                                             </div>
-                                            <a href="/change-password" onClick={handleChangePassword}
-                                               className="change-password">
+                                            <span onClick={handleChangePassword} className="change-password">
                                                 Изменить пароль
-                                            </a>
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="user-data-item">
@@ -125,7 +161,7 @@ const Settings = () => {
                                             type="text"
                                             id="lastName"
                                             value={userData.lastName}
-                                            onChange={handleInputChange} // Добавьте обработчик изменения
+                                            onChange={handleInputChange}
                                         />
                                     </div>
                                 </div>
@@ -137,6 +173,13 @@ const Settings = () => {
                     </div>
                 </div>
             </div>
+            <Modal title="Изменить пароль" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Input.Password
+                    placeholder="Введите новый пароль"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                />
+            </Modal>
         </div>
     );
 };
