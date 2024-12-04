@@ -2,7 +2,20 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Menu } from 'antd';
-import { BarChartOutlined, ReadOutlined, FileWordOutlined, SoundOutlined, UnorderedListOutlined, TranslationOutlined, AuditOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+    BarChartOutlined,
+    ReadOutlined,
+    FileWordOutlined,
+    SoundOutlined,
+    UnorderedListOutlined,
+    TranslationOutlined,
+    AuditOutlined,
+    SettingOutlined,
+    HeartOutlined,
+    UsergroupAddOutlined,
+    RobotOutlined,
+    ClockCircleOutlined
+} from '@ant-design/icons';
 
 // Генерация элементов уровня (A1-C2) для Reading, Grammar и Listening
 const generateLevelItems = (type) => {
@@ -30,49 +43,67 @@ const getLevelDescription = (level) => {
 const menuItems = [
     {
         key: '1',
-        icon: <BarChartOutlined/>,
+        icon: <BarChartOutlined />,
         label: 'Statistics',
         path: '/statistics', // Добавляем путь для Statistics
     },
     {
+        key: '2',
+        icon: <UsergroupAddOutlined />, // Изменяем иконку на друзей
+        label: 'Friends',
+        path: '/friends', // Добавляем путь для Friends
+    },
+    {
+        key: '3',
+        icon: <HeartOutlined />, // Изменяем иконку на сердечко
+        label: 'Favourites',
+        path: '/favourites', // Добавляем путь для Favourites
+    },
+    {
         key: 'sub1',
         label: 'Reading',
-        icon: <ReadOutlined/>,
+        icon: <ReadOutlined />,
         children: generateLevelItems('Reading'),
     },
     {
         key: 'sub2',
         label: 'Grammar',
-        icon: <FileWordOutlined/>,
+        icon: <FileWordOutlined />,
         children: generateLevelItems('Grammar'),
     },
     {
         key: 'sub3',
         label: 'Listening',
-        icon: <SoundOutlined/>,
+        icon: <SoundOutlined />,
         children: generateLevelItems('Listening'),
     },
     {
-        key: '2',
-        icon: <UnorderedListOutlined/>,
+        key: '4',
+        icon: <UnorderedListOutlined />,
         label: 'Dictionary',
         path: '/dictionary', // Добавляем путь для Dictionary
     },
     {
-        key: '3',
-        icon: <TranslationOutlined/>,
+        key: '5',
+        icon: <TranslationOutlined />,
         label: 'Translator',
         path: '/translator', // Добавляем путь для Translator
     },
     {
-        key: '4',
-        icon: <AuditOutlined/>,
+        key: '6',
+        icon: <ClockCircleOutlined />,
         label: 'Tracker',
         path: '/tracker', // Добавляем путь для Tracker
     },
     {
-        key: '5',
-        icon: <SettingOutlined/>,
+        key: '7',
+        icon: <RobotOutlined />, // Изменяем иконку на робота
+        label: 'AI Helper',
+        path: '/helper', // Добавляем путь для AI Helper
+    },
+    {
+        key: '8',
+        icon: <SettingOutlined />,
         label: 'Settings',
         path: '/settings', // Добавляем путь для Settings
     },
@@ -90,8 +121,7 @@ const StyledMenu = styled(Menu)`
         color: #583D3D;
         margin-top: 10px;
     }
-;
-`
+`;
 
 const MenuItems = () => {
     const handleClick = (e) => {

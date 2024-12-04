@@ -1,0 +1,111 @@
+.friends-page {
+    display: flex;
+}
+
+.friends-main-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.friends-upper-content {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.friends-main-content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 800px;
+}
+
+.friends-info {
+    width: 800px;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.friends-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.friends-col {
+    font-family: 'GOST Type A', cursive;
+    font-size: 16px;
+}
+
+.friends-list {
+    list-style: none;
+    padding: 0;
+}
+
+.friends-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Отступ между элементами списка */
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.friends-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.friends-name {
+    flex-grow: 1;
+}
+
+.friends-actions {
+    display: flex;
+    align-items: center;
+}
+
+.friends-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.friends-modal-containers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 300px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.friends-create-button-modal {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    margin-top: 20px;
+    width: 150px;
+    min-width: 150px;
+    height: 36px;
+    font: 16px 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: #95AAD3;
+    border: none;
+    border-radius: 10px;
+}
