@@ -76,7 +76,7 @@ const ListeningTestComponent = ({ currentLevel }) => {
 
     return (
         <div className="article-container">
-            <audio controls>
+            <audio controls style={{ marginBottom: '20px' }}>
                 <source src={audioSrc} type="audio/mpeg" />
                 Ваш браузер не поддерживает аудиоплеер.
             </audio>

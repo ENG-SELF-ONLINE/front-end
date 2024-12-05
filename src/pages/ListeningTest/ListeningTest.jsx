@@ -4,6 +4,7 @@ import React, {useEffect, useState} from "react";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import ListeningTestComponent from "../../components/ListeningTest/ListeningTestComponent.jsx";
+import './styles.css'
 
 const ListeningTest = () => {
     const { level } = useParams();
@@ -33,14 +34,14 @@ const ListeningTest = () => {
     }, [level]);
 
     return (
-        <div className="topic-page">
+        <div className="listening-test-page">
             <Sidebar />
-            <div className="topic-main">
-                <div className="topic-upper-content">
+            <div className="listening-test-main">
+                <div className="listening-test-upper-content">
                     <UpperMenu />
                 </div>
-                <div className="topic-content">
-                    <h2 className="topic-level-title">
+                <div className="listening-test-content">
+                    <h2 className="listening-test-level-title">
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
                     <ListeningTestComponent currentLevel={activeLevel} />

@@ -5,6 +5,7 @@ import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import { Button, Input, Modal } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import {useNavigate} from "react-router-dom";
 
 const Friends = () => {
     const [friends, setFriends] = useState([
@@ -16,6 +17,7 @@ const Friends = () => {
     const [email, setEmail] = useState('');
     const [foundUser, setFoundUser] = useState(null);
     const [errorMessage, setErrorMessage] = useState(''); // Добавляем состояние для сообщения об ошибке
+    const navigate = useNavigate(); // Инициализация navigate
 
     const handleAddFriend = () => {
         if (foundUser) {
@@ -27,6 +29,10 @@ const Friends = () => {
     const handleDeleteFriend = (friendId) => {
         setFriends(friends.filter((friend) => friend.id !== friendId));
     };
+
+    const handleVisitFriendProfile = (friendId) => {
+        navigate(`/friends/${friendId}`);
+    }
 
     const handleSearchUser = () => {
         const users = [
@@ -80,13 +86,17 @@ const Friends = () => {
                     </div>
                     <ul className="friends-list">
                         {friends.map((friend) => (
-                            <li key={friend.id} className="friends-item">
-                                <img src={friend.avatar} alt={friend.name} className="friends-avatar" />
+                            <li key={friend.id} className="friends-item"
+                                onClick={() => handleVisitFriendProfile(friend.id)}>
+                                <img src={friend.avatar} alt={friend.name} className="friends-avatar"/>
                                 <div className="friends-name">
                                     <span>{friend.name} {friend.surname}</span>
                                 </div>
                                 <div className="friends-actions">
-                                    <Button type="link" onClick={() => handleDeleteFriend(friend.id)}>
+                                    <Button type="link" onClick={(e) => {
+                                        e.stopPropagation(); // Останавливаем всплытие события, чтобы не вызывался onClick у li
+                                        handleDeleteFriend(friend.id);
+                                    }}>
                                         Удалить
                                     </Button>
                                 </div>
@@ -103,9 +113,9 @@ const Friends = () => {
                         visible={isModalVisible}
                         footer={null}
                         onCancel={resetModal}
-                        style={{ font: "16px 'GOST Type A', cursive" }}
+                        style={{font: "16px 'GOST Type A', cursive"}}
                     >
-                        <div className="friends-modal-containers" style={{ display: 'flex', alignItems: 'center' }}>
+                        <div className="friends-modal-containers" style={{display: 'flex', alignItems: 'center'}}>
                             <Input
                                 placeholder="E-mail"
                                 onChange={(e) => setEmail(e.target.value)}

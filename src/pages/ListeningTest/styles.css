@@ -1,0 +1,30 @@
+.listening-test-page {
+    display: flex;
+}
+
+.listening-test-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.listening-test-upper-content{
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin-top: 19px;
+    justify-content: right;
+    width: 100%;
+}
+
+.listening-test-level-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.listening-test-content {
+    width: 1250px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column; /* Добавляем flex-direction: column */
+}

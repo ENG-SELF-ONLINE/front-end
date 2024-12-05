@@ -19,6 +19,7 @@ import Test from "./pages/Test/Test.jsx";
 import Listening from "./pages/Listening/Listening.jsx";
 import ListeningTest from "./pages/ListeningTest/ListeningTest.jsx";
 import Friends from "./pages/Friends/Friends.jsx";
+import FriendProfile from "./pages/FriendProfile/FriendProfile.jsx";
 
 function App() {
     return (
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/listening/:level" element={<Listening />} />
                 <Route path="/listening/:level/:topicId" element={<ListeningTest />} />
                 <Route path="/friends" element={<Friends />} />
+                <Route path="/friends/:friendId" element={<FriendProfile />} />
                 {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>
