@@ -73,7 +73,6 @@ const UpperMenu = () => {
                     </div>
                 ))}
             </div>
-            <div className="header-clone"></div>
 
             <Drawer
                 title="Уведомления"

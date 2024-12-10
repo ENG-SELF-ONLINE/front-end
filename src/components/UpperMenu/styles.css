@@ -1,4 +1,4 @@
-.header, .header-clone {
+.header {
     display: flex;
     align-items: center;
     justify-content: space-between; /* Размещение элементов равномерно */
@@ -6,23 +6,13 @@
     border-radius: 30px;
     width: 384px;
     height: 60px;
-}
-
-.header {
-    position: fixed;
-    /*margin-top: 19px; !* Отступ сверху *!*/
+    position: static;
 }
 
 .upper-menu-container {
     display: flex;
     align-items: center;
     position: static;
-}
-
-.header-clone {
-    position: static;
-    visibility: hidden;
-    /*margin-top: 19px; !* Отступ сверху *!*/
 }
 
 .level-container {
