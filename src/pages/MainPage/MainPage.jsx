@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './styles.css';
 import MainRight from "../../components/MainRight/MainRight.jsx";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
@@ -15,9 +15,9 @@ import {
     Title,
     Tooltip
 } from 'chart.js';
-import {Bar, Doughnut} from 'react-chartjs-2';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
+import { Bar, Doughnut } from 'react-chartjs-2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 ChartJS.register(
     CategoryScale,
@@ -33,36 +33,59 @@ ChartJS.register(
 
 const MainPage = () => {
     const [activeWeek, setActiveWeek] = useState(0);
-    const [weekData, setWeekData] = useState(null); // Данные для текущей недели
-    const [totalTime, setTotalTime] = useState(null); // Общее время за неделю
-    const [wordData, setWordData] = useState(null); // Данные для круговой диаграммы слов
-    const [learnData, setLearnData] = useState(null); // Данные для круговой диаграммы слов
+    const [weekData, setWeekData] = useState(null);
+    const [totalTime, setTotalTime] = useState(null);
+    const [wordData, setWordData] = useState(null);
+    const [learnData, setLearnData] = useState(null);
+    const [hasNextWeekData, setHasNextWeekData] = useState(true); // Состояние для отслеживания наличия данных
 
     useEffect(() => {
-        // Заглушка для запроса к бэкэнду
         const fetchWeekData = async () => {
-            // Здесь будет запрос к бэкэнду, который должен вернуть данные по активной неделе
-            // Например, fetch('/api/week-data?week=' + activeWeek)
+            // Здесь будет ваш реальный запрос к API
+            // const response = await fetch(`/api/week-data?week=${activeWeek}`);
+            // const mockData = await response.json();
 
-            // Заглушка:
-            const mockData = {
-                reading: [2, 4, 3, 1, 5, 2, 1],
-                listening: [1, 3, 2, 4, 1, 3, 2],
-                practice: [3, 1, 4, 2, 2, 1, 3],
-                totalTime: 15,
-                newWords: 20,
-                learnedWords: 35,
-                removedWords: 5
-            };
+            // Пример использования заглушки данных для 3 недель
+            const mockDataSets = [
+                {
+                    reading: [2, 4, 3, 1, 5, 2, 1],
+                    listening: [1, 3, 2, 4, 1, 3, 2],
+                    practice: [3, 1, 4, 2, 2, 1, 3],
+                    totalTime: 15,
+                    newWords: 20,
+                    learnedWords: 35,
+                    removedWords: 5
+                },
+                {
+                    reading: [3, 2, 1, 4, 0, 2, 3],
+                    listening: [0, 1, 1, 0, 1, 0, 0],
+                    practice: [2, 2, 2, 2, 2, 2, 2],
+                    totalTime: 10,
+                    newWords: 10,
+                    learnedWords: 20,
+                    removedWords: 2
+                },
+            ];
 
-            const totalTime = mockData.reading.reduce((sum, value) => sum + value, 0) +
-                mockData.listening.reduce((sum, value) => sum + value, 0) +
-                mockData.practice.reduce((sum, value) => sum + value, 0);
+            const selectedData = mockDataSets[activeWeek];
+            if (selectedData) {
+                const totalTime = selectedData.reading.reduce((sum, value) => sum + value, 0) +
+                    selectedData.listening.reduce((sum, value) => sum + value, 0) +
+                    selectedData.practice.reduce((sum, value) => sum + value, 0);
 
-            setWeekData(mockData);
-            setTotalTime(totalTime);
-            setWordData(mockData);
-            setLearnData(mockData);
+                setWeekData(selectedData);
+                setTotalTime(totalTime);
+                setWordData(selectedData);
+                setLearnData(selectedData);
+                setHasNextWeekData(mockDataSets[activeWeek + 1] !== undefined); // Проверяем, есть ли данные для следующей недели
+            } else {
+                // Если данных нет, обнуляем все состояния
+                setWeekData(null);
+                setTotalTime(null);
+                setWordData(null);
+                setLearnData(null);
+                setHasNextWeekData(false); // Нет данных для следующей недели
+            }
         };
 
         fetchWeekData();
@@ -192,7 +215,9 @@ const MainPage = () => {
     };
 
     const handleNextWeek = () => {
-        setActiveWeek(prevWeek => prevWeek + 1);
+        if(hasNextWeekData) {
+            setActiveWeek(prevWeek => prevWeek + 1);
+        }
     };
 
     return (
@@ -201,14 +226,13 @@ const MainPage = () => {
             <div className="main-page">
                 <div className="center-content">
                     <div className="week-nav">
-                        <button className={`prev-week ${activeWeek === 0 ? 'disabled' : ''}`} onClick={handlePrevWeek}
-                                disabled={activeWeek === 0}>
+                        <button className={`prev-week ${activeWeek === 0 ? 'disabled' : ''}`} onClick={handlePrevWeek} disabled={activeWeek === 0}>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </button>
                         <div className="chart-container">
                             <Bar data={data} options={options}/>
                         </div>
-                        <button className="next-week" onClick={handleNextWeek}>
+                        <button className={`next-week ${!hasNextWeekData ? 'disabled' : ''}`} onClick={handleNextWeek} disabled={!hasNextWeekData}>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </button>
                     </div>

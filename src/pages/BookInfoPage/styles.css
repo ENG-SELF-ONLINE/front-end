@@ -79,12 +79,19 @@
 }
 .image-with-text-overlay1 {
     box-sizing: border-box;
-    display: block;
-    width: 26px;
+    display: flex;
     max-width: initial;
-    height: 22.7px;
     border: none;
     object-fit: cover;
+    align-items: center;
+}
+.fantasy-container svg {
+    width: 25px;
+    height: 25px;
+}
+.flex-row-container svg {
+    width: 25px;
+    height: 25px;
 }
 .story-card-container {
     box-sizing: border-box;
@@ -116,21 +123,21 @@
     align-items: center;
     justify-content: flex-start;
     margin-left: 14px;
+    cursor: pointer;
 }
 .fantasy-image-style {
     box-sizing: border-box;
-    display: block;
-    width: 30px;
+    display: flex;
     max-width: initial;
-    height: 27px;
     border: none;
     object-fit: cover;
+    align-items: center;
 }
+
 .fantasy-title {
     flex: 0 0 auto;
     padding: 0;
-    margin: 0;
-    margin-left: 35px;
+    margin: 0 0 0 14px;
     font: 600 20px Inter, sans-serif;
     color: #959595;
 }

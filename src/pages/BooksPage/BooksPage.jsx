@@ -11,7 +11,7 @@ import {useNavigate, useParams} from "react-router-dom";
 const ITEMS_PER_PAGE = 10;
 
 const BooksPage = () => {
-    const { level } = useParams();
+    const {level} = useParams();
     const navigate = useNavigate(); // Инициализация navigate
     const [activeLevel, setActiveLevel] = useState(level || "A1");
     const [books] = useState([
@@ -100,6 +100,8 @@ const BooksPage = () => {
                 return '';
         }
     };
+
+    const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
@@ -119,6 +121,7 @@ const BooksPage = () => {
 
     useEffect(() => {
         setActiveLevel(level); // Обновляем activeLevel при изменении level
+        setSearchTerm(""); // Сбрасываем поисковый запрос
     }, [level]);
 
     const handlePageChange = (page) => {
@@ -130,13 +133,31 @@ const BooksPage = () => {
         navigate(`/books/${bookId}`); // Используйте navigate для перехода на страницу
     };
 
+
+    // const searchBooks = async (query) => {
+    //     const response = await fetch(`/api/books/search?query=${query}`);
+    //     const data = await response.json();
+    //     return data; // предполагается, что данные - это массив книг
+    // };
+
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+        setCurrentPage(1); // Сброс текущей страницы при новом поиске
+    };
+
+    // Фильтрация книг по поисковому запросу
+    const filteredBooks = books.filter(book =>
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     // Вычисляем индексы для текущей страницы
-    const totalBooks = books.length;
+    const totalBooks = filteredBooks.length;
 
     // Вычисляем книги, которые нужно отображать на текущей странице
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentBooks = books.slice(startIndex, endIndex);
+    const currentBooks = filteredBooks.slice(startIndex, endIndex);
 
     return (
         <div className="container">
@@ -144,12 +165,12 @@ const BooksPage = () => {
             <div className="main-container-book">
                 <div className="upper-container">
                     <Search
-                        placeholder="Search"
-                        // onSearch={onSearch}
+                        placeholder="Поиск"
                         style={{
                             width: 472
                         }}
                         size="large"
+                        onSearch={handleSearch}
                     />
                     <UpperMenu/>
                 </div>

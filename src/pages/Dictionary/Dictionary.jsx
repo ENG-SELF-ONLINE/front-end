@@ -13,7 +13,7 @@ const ITEMS_PER_PAGE = 15;
 
 const Dictionary = () => {
     const navigate = useNavigate(); // Инициализация navigate
-    const [decks] = useState([
+    const [decks, setDecks] = useState([
         {
             id: 1,
             coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
@@ -95,7 +95,7 @@ const Dictionary = () => {
         {
             id: 14,
             coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
+            title: "Грибы",
             author: "24 слова"
         },
         {
@@ -111,6 +111,8 @@ const Dictionary = () => {
             author: "24 слова"
         },
     ]);
+
+    const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
@@ -118,17 +120,6 @@ const Dictionary = () => {
 
     useEffect(() => {
         // Заглушка для fetchBooks
-        // const fetchBooks = async () => {
-        //   try {
-        //     const response = await fetch(`/api/favourites&page=${currentPage}`);
-        //     const data = await response.json();
-        //     setBooks(data.books);
-        //     setTotalPages(data.totalPages);
-        //   } catch (error) {
-        //     console.error("Ошибка при получении данных:", error);
-        //   }
-        // };
-        // fetchBooks();
     }, [currentPage]);
 
     const handlePageChange = (page) => {
@@ -136,14 +127,27 @@ const Dictionary = () => {
     };
 
     const handleBookClick = (deckId) => {
-        console.log('clicked');
-        navigate(`/decks/${deckId}`); // Используйте navigate для перехода на страницу
+        navigate(`/decks/${deckId}`);
     };
 
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+        setCurrentPage(1);
+    };
+
+    const filteredDecks = decks.filter(deck =>
+        deck.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const handleCreate = () => {
-        console.log('Create deck:', cardTitle, imageUrl);
-        // Логика для создания колоды
-        // После создания можно закрыть модал
+        const newDeck = {
+            id: decks.length + 1, // Простой способ генерации уникального ID
+            coverImage: imageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
+            title: cardTitle || 'Название колоды',
+            author: '0 слов'
+        };
+
+        setDecks([...decks, newDeck]); // Добавляем новую колоду в состояние
         resetModal();
     };
 
@@ -153,20 +157,22 @@ const Dictionary = () => {
         setIsModalVisible(false);
     };
 
-    // Вычисляем индексы для текущей страницы
-    const totalDecks = decks.length;
-
-    // Вычисляем книги, которые нужно отображать на текущей странице
+    const totalDecks = filteredDecks.length;
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentDecks = decks.slice(startIndex, endIndex);
+    const currentDecks = filteredDecks.slice(startIndex, endIndex);
 
     return (
         <div className="container">
             <Sidebar />
             <div className="main-container-book">
                 <div className="upper-container">
-                    <Search placeholder="Search" style={{ width: 472 }} size="large" />
+                    <Search
+                        placeholder="Поиск"
+                        style={{ width: 472 }}
+                        size="large"
+                        onSearch={handleSearch}
+                    />
                     <UpperMenu />
                 </div>
                 <div className="content">
@@ -217,12 +223,11 @@ const Dictionary = () => {
                                 </div>
                             </div>
                             <div className="right-container">
-                                {/* Передаем данные Deck */}
                                 <Deck
                                     deckData={{
-                                        coverImage: imageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5', // Используем imageUrl или пустую строку
-                                        title: cardTitle || 'Название колоды', // Используем cardTitle или запасное имя
-                                        author: '0 слов', // Замените на реальный автор, если необходимо
+                                        coverImage: imageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
+                                        title: cardTitle || 'Название колоды',
+                                        author: '0 слов',
                                     }}
                                 />
                             </div>

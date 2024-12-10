@@ -1,29 +1,27 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
+import {useEffect} from 'react';
+import {Menu} from 'antd';
 import styled from 'styled-components';
-import { Menu } from 'antd';
+import {useLocation} from 'react-router-dom';
 import {
     BarChartOutlined,
-    ReadOutlined,
+    ClockCircleOutlined,
     FileWordOutlined,
-    SoundOutlined,
-    UnorderedListOutlined,
-    TranslationOutlined,
-    AuditOutlined,
-    SettingOutlined,
     HeartOutlined,
-    UsergroupAddOutlined,
+    ReadOutlined,
     RobotOutlined,
-    ClockCircleOutlined
+    SettingOutlined,
+    SoundOutlined,
+    TranslationOutlined,
+    UnorderedListOutlined,
+    UsergroupAddOutlined
 } from '@ant-design/icons';
 
-// Генерация элементов уровня (A1-C2) для Reading, Grammar и Listening
 const generateLevelItems = (type) => {
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
     return levels.map((level) => ({
         key: `${type.toLowerCase()}-${level}`,
         label: `${level}: ${getLevelDescription(level)}`,
-        path: `/${type.toLowerCase()}/${level}`, // Добавляем путь для каждого уровня
+        path: `/${type.toLowerCase()}/${level}`,
     }));
 };
 
@@ -43,67 +41,67 @@ const getLevelDescription = (level) => {
 const menuItems = [
     {
         key: '1',
-        icon: <BarChartOutlined />,
+        icon: <BarChartOutlined/>,
         label: 'Statistics',
         path: '/statistics', // Добавляем путь для Statistics
     },
     {
         key: '2',
-        icon: <UsergroupAddOutlined />, // Изменяем иконку на друзей
+        icon: <UsergroupAddOutlined/>, // Изменяем иконку на друзей
         label: 'Friends',
         path: '/friends', // Добавляем путь для Friends
     },
     {
         key: '3',
-        icon: <HeartOutlined />, // Изменяем иконку на сердечко
+        icon: <HeartOutlined/>, // Изменяем иконку на сердечко
         label: 'Favourites',
         path: '/favourites', // Добавляем путь для Favourites
     },
     {
         key: 'sub1',
         label: 'Reading',
-        icon: <ReadOutlined />,
+        icon: <ReadOutlined/>,
         children: generateLevelItems('Reading'),
     },
     {
         key: 'sub2',
         label: 'Grammar',
-        icon: <FileWordOutlined />,
+        icon: <FileWordOutlined/>,
         children: generateLevelItems('Grammar'),
     },
     {
         key: 'sub3',
         label: 'Listening',
-        icon: <SoundOutlined />,
+        icon: <SoundOutlined/>,
         children: generateLevelItems('Listening'),
     },
     {
         key: '4',
-        icon: <UnorderedListOutlined />,
+        icon: <UnorderedListOutlined/>,
         label: 'Dictionary',
         path: '/dictionary', // Добавляем путь для Dictionary
     },
     {
         key: '5',
-        icon: <TranslationOutlined />,
+        icon: <TranslationOutlined/>,
         label: 'Translator',
         path: '/translator', // Добавляем путь для Translator
     },
     {
         key: '6',
-        icon: <ClockCircleOutlined />,
+        icon: <ClockCircleOutlined/>,
         label: 'Tracker',
         path: '/tracker', // Добавляем путь для Tracker
     },
     {
         key: '7',
-        icon: <RobotOutlined />, // Изменяем иконку на робота
+        icon: <RobotOutlined/>, // Изменяем иконку на робота
         label: 'AI Helper',
         path: '/helper', // Добавляем путь для AI Helper
     },
     {
         key: '8',
-        icon: <SettingOutlined />,
+        icon: <SettingOutlined/>,
         label: 'Settings',
         path: '/settings', // Добавляем путь для Settings
     },
@@ -123,36 +121,64 @@ const StyledMenu = styled(Menu)`
     }
 `;
 
+const findMenuItemByKey = (key) => {
+    for (const item of menuItems) {
+        if (item.key === key) return item;
+        if (item.children) {
+            const child = item.children.find(child => child.key === key);
+            if (child) return child;
+        }
+    }
+    return null;
+};
+
+const getSelectedKey = (pathname) => {
+    for (const item of menuItems) {
+        if (item.path && item.path === pathname) return item.key;
+        if (item.children) {
+            const child = item.children.find(child => child.path === pathname);
+            if (child) return child.key;
+        }
+    }
+    return '1';
+};
+
 const MenuItems = () => {
-    const handleClick = (e) => {
-        const itemKey = e.key;
+    const location = useLocation();
 
-        const findItemPath = (key) => {
-            for (const item of menuItems) {
-                if (item.key === key && item.path) return item.path;
-                if (item.children) {
-                    const childItem = item.children.find(child => child.key === key);
-                    if (childItem) return childItem.path;
-                }
-            }
-            return null;
-        };
+    // Получаем сохраненный ключ из localStorage или по умолчанию '1'
+    const savedKey = localStorage.getItem('selectedMenuKey');
+    const selectedKey = savedKey || getSelectedKey(location.pathname);
 
-        const path = findItemPath(itemKey);
-
-        if (path) {
-            window.location.href = path;
+    const handleMenuItemClick = (e) => {
+        const item = findMenuItemByKey(e.key);
+        if (item && item.path) {
+            // Сохраняем выбранный ключ в localStorage
+            localStorage.setItem('selectedMenuKey', e.key);
+            // Перезагрузка страницы
+            window.location.href = item.path;
         }
     };
 
+    // Очистка сохраненного ключа при изменении пути
+    useEffect(() => {
+        const handleLocationChange = () => {
+            const newSelectedKey = getSelectedKey(location.pathname);
+            localStorage.setItem('selectedMenuKey', newSelectedKey);
+        };
+
+        handleLocationChange();
+    }, [location.pathname]);
+
     return (
-        <div style={{ width: 256, maxHeight: '80vh', overflowY: 'auto', marginTop: '33px' }}>
+        <div style={{width: 256, maxHeight: '80vh', overflowY: 'auto', marginTop: '33px'}}>
             <StyledMenu
-                defaultSelectedKeys={['1']}
+                defaultSelectedKeys={[selectedKey]}
+                selectedKeys={[selectedKey]}
                 mode="inline"
                 theme="light"
                 items={menuItems}
-                onClick={handleClick}
+                onClick={handleMenuItemClick}
             />
         </div>
     );
