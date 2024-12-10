@@ -15,6 +15,7 @@ const FriendProfile = () => {
     const [learnData, setLearnData] = useState(null);
     const [totalTime, setTotalTime] = useState(null);
     const [friendData, setFriendData] = useState(null); // Данные о друге
+    const [hasNextWeekData, setHasNextWeekData] = useState(true);
 
     const handleDeleteFriend = () => {
         console.log("handleDelete Friend");
@@ -25,7 +26,9 @@ const FriendProfile = () => {
     };
 
     const handleNextWeek = () => {
-        setActiveWeek(prevWeek => prevWeek + 1);
+        if(hasNextWeekData) {
+            setActiveWeek(prevWeek => prevWeek + 1);
+        }
     };
 
     useEffect(() => {
@@ -49,23 +52,44 @@ const FriendProfile = () => {
 
     useEffect(() => {
         const fetchWeekData = async () => {
-            const mockData = {
-                reading: [2, 4, 3, 1, 5, 2, 1],
-                listening: [1, 3, 2, 4, 1, 3, 2],
-                practice: [3, 1, 4, 2, 2, 1, 3],
-                totalTime: 15,
-                newWords: 20,
-                learnedWords: 35,
-                removedWords: 5
-            };
+            const mockDataSets = [
+                {
+                    reading: [2, 4, 3, 1, 5, 2, 1],
+                    listening: [1, 3, 2, 4, 1, 3, 2],
+                    practice: [3, 1, 4, 2, 2, 1, 3],
+                    totalTime: 15,
+                    newWords: 20,
+                    learnedWords: 35,
+                    removedWords: 5
+                },
+                {
+                    reading: [3, 2, 1, 4, 0, 2, 3],
+                    listening: [0, 1, 1, 0, 1, 0, 0],
+                    practice: [2, 2, 2, 2, 2, 2, 2],
+                    totalTime: 10,
+                    newWords: 10,
+                    learnedWords: 20,
+                    removedWords: 2
+                },
+            ];
 
-            const totalTime = mockData.reading.reduce((sum, value) => sum + value, 0) +
-                mockData.listening.reduce((sum, value) => sum + value, 0) +
-                mockData.practice.reduce((sum, value) => sum + value, 0);
+            const selectedData = mockDataSets[activeWeek];
+            if (selectedData) {
+                const totalTime = selectedData.reading.reduce((sum, value) => sum + value, 0) +
+                    selectedData.listening.reduce((sum, value) => sum + value, 0) +
+                    selectedData.practice.reduce((sum, value) => sum + value, 0);
 
-            setWeekData(mockData);
-            setTotalTime(totalTime);
-            setLearnData(mockData);
+                setWeekData(selectedData);
+                setTotalTime(totalTime);
+                setLearnData(selectedData);
+                setHasNextWeekData(mockDataSets[activeWeek + 1] !== undefined); // Проверяем, есть ли данные для следующей недели
+            } else {
+                // Если данных нет, обнуляем все состояния
+                setWeekData(null);
+                setTotalTime(null);
+                setLearnData(null);
+                setHasNextWeekData(false); // Нет данных для следующей недели
+            }
         };
 
         fetchWeekData();
@@ -76,7 +100,7 @@ const FriendProfile = () => {
         datasets: [
             {
                 label: 'Reading',
-                data: weekData ? weekData.reading : [],
+                data: weekData ? weekData.reading : [], // Используем данные из weekData
                 backgroundColor: '#0CC3E7',
                 stack: 'Stack 0',
             },
@@ -195,14 +219,14 @@ const FriendProfile = () => {
                         <div className="friend-profile-right">
                             <div className="week-nav">
                                 <button className={`prev-week ${activeWeek === 0 ? 'disabled' : ''}`}
-                                        onClick={handlePrevWeek}
-                                        disabled={activeWeek === 0}>
+                                        onClick={handlePrevWeek} disabled={activeWeek === 0}>
                                     <FontAwesomeIcon icon={faChevronLeft}/>
                                 </button>
                                 <div className="chart-container">
                                     <Bar data={data} options={options}/>
                                 </div>
-                                <button className="next-week" onClick={handleNextWeek}>
+                                <button className={`next-week ${!hasNextWeekData ? 'disabled' : ''}`}
+                                        onClick={handleNextWeek} disabled={!hasNextWeekData}>
                                     <FontAwesomeIcon icon={faChevronRight}/>
                                 </button>
                             </div>
