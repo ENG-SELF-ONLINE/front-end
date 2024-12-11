@@ -1,7 +1,7 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {Menu} from 'antd';
 import styled from 'styled-components';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {
     BarChartOutlined,
     ClockCircleOutlined,
@@ -140,41 +140,42 @@ const getSelectedKey = (pathname) => {
             if (child) return child.key;
         }
     }
-    return '1';
+    return null; // Возвращаем null, если путь не найден
 };
 
 const MenuItems = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const [selectedKey, setSelectedKey] = useState(localStorage.getItem('selectedMenuKey') || '1');
 
-    // Получаем сохраненный ключ из localStorage или по умолчанию '1'
-    const savedKey = localStorage.getItem('selectedMenuKey');
-    const selectedKey = savedKey || getSelectedKey(location.pathname);
+    useEffect(() => {
+        const handleLocationChange = () => {
+            const newSelectedKey = getSelectedKey(location.pathname);
+            // Если найден соответствующий ключ, обновляем состояние и localStorage
+            if (newSelectedKey) {
+                setSelectedKey(newSelectedKey);
+                localStorage.setItem('selectedMenuKey', newSelectedKey);
+            }
+        };
+
+        handleLocationChange(); // Вызываем при первом рендере и при изменении location.pathname
+    }, [location.pathname, setSelectedKey]);
+
 
     const handleMenuItemClick = (e) => {
         const item = findMenuItemByKey(e.key);
         if (item && item.path) {
-            // Сохраняем выбранный ключ в localStorage
+            setSelectedKey(e.key); // Обновляем состояние перед переходом
             localStorage.setItem('selectedMenuKey', e.key);
-            // Перезагрузка страницы
-            window.location.href = item.path;
+            navigate(item.path);
         }
     };
-
-    // Очистка сохраненного ключа при изменении пути
-    useEffect(() => {
-        const handleLocationChange = () => {
-            const newSelectedKey = getSelectedKey(location.pathname);
-            localStorage.setItem('selectedMenuKey', newSelectedKey);
-        };
-
-        handleLocationChange();
-    }, [location.pathname]);
 
     return (
         <div style={{width: 256, maxHeight: '80vh', overflowY: 'auto', marginTop: '33px'}}>
             <StyledMenu
-                defaultSelectedKeys={[selectedKey]}
-                selectedKeys={[selectedKey]}
+                defaultSelectedKeys={[selectedKey || '1']} // Используем selectedKey или '1' по умолчанию
+                selectedKeys={[selectedKey || '1']} // Используем selectedKey или '1' по умолчанию
                 mode="inline"
                 theme="light"
                 items={menuItems}

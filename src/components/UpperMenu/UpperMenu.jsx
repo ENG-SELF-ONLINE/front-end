@@ -12,18 +12,18 @@ const icons = {
 };
 
 const UpperMenu = () => {
-    const [hasNotifications, setHasNotifications] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
-    const notifications = [
+    const [notifications, setNotifications] = useState([
         { id: 1, name: "Иван", surname: "Иванов", avatar: avatar },
         { id: 2, name: "Петр", surname: "Петров", avatar: avatar },
         { id: 3, name: "Сергей", surname: "Сергеев", avatar: avatar },
         // Добавьте больше уведомлений здесь
-    ];
+    ]);
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setHasNotifications(prev => !prev);
+            // Здесь вы можете добавить логику для получения новых уведомлений
+            // Например, обновление состояния `notifications`
         }, 5000);
 
         return () => clearInterval(timer);
@@ -39,12 +39,16 @@ const UpperMenu = () => {
 
     const handleAccept = (id) => {
         console.log(`Принято уведомление ${id}`);
-        // Здесь добавьте логику для принятия уведомления
+        setNotifications(prevNotifications =>
+            prevNotifications.filter(notification => notification.id !== id)
+        );
     };
 
     const handleDecline = (id) => {
         console.log(`Отклонено уведомление ${id}`);
-        // Здесь добавьте логику для отклонения уведомления
+        setNotifications(prevNotifications =>
+            prevNotifications.filter(notification => notification.id !== id)
+        );
     };
 
     return (
@@ -59,7 +63,7 @@ const UpperMenu = () => {
                 </div>
                 <div className="header-icon ring-icon" onClick={handleOpenDrawer}>
                     <BellOutlined style={{ fontSize: '25px', cursor: 'pointer' }} />
-                    {hasNotifications && <span className="notification-indicator"></span>}
+                    {notifications.length > 0 && <span className="notification-indicator"></span>}
                 </div>
                 {Object.entries(icons).slice(0, 2).map(([key, src]) => (
                     <div key={key} className={`header-icon ${key}-icon`} onClick={() => {
@@ -82,7 +86,7 @@ const UpperMenu = () => {
                 bodyStyle={{ padding: 0 }}
             >
                 <div className="notification-list" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                    {notifications.map((notification) => (
+                    {notifications.length > 0 ? notifications.map((notification) => (
                         <div className="notification-item" key={notification.id}>
                             <img src={notification.avatar} alt="Аватар" className="notification-avatar" />
                             <div className="notification-text">
@@ -99,7 +103,9 @@ const UpperMenu = () => {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    )) : (
+                        <div className="no-notifications"></div>
+                    )}
                 </div>
             </Drawer>
         </div>

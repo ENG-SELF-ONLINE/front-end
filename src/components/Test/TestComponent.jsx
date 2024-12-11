@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import './styles.css';
 import { Button } from "antd";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const TestComponent = ({ currentLevel }) => {
     const [showAnswers, setShowAnswers] = useState(false);
     const [testPassed, setTestPassed] = useState(false);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
+    const [selectedAnswers, setSelectedAnswers] = useState(Array(5).fill(null)); // Состояние для хранения выбранных ответов
     const navigate = useNavigate(); // Инициализация navigate
 
     const questions = [
@@ -73,12 +74,13 @@ const TestComponent = ({ currentLevel }) => {
 
     useEffect(() => {
         setSelectedQuestions(getRandomQuestions(questions, numQuestions));
+        setSelectedAnswers(Array(numQuestions).fill(null)); // Сброс выбранных ответов
     }, []);
 
     const checkAnswers = () => {
         let correctAnswers = 0;
         selectedQuestions.forEach((question, index) => {
-            if (question.answer === document.querySelector(`input[name="question-${index}"]:checked`)?.value) {
+            if (question.answer === selectedAnswers[index]) {
                 correctAnswers++;
             }
         });
@@ -91,10 +93,17 @@ const TestComponent = ({ currentLevel }) => {
         setShowAnswers(false);
         setTestPassed(false);
         setSelectedQuestions(getRandomQuestions(questions, numQuestions));
+        setSelectedAnswers(Array(numQuestions).fill(null)); // Сброс выбранных ответов
     };
 
     const handleNext = () => {
         navigate(`/grammar/${currentLevel}`); // Переход на страницу /grammar/A1
+    };
+
+    const handleAnswerChange = (index, value) => {
+        const newAnswers = [...selectedAnswers];
+        newAnswers[index] = value;
+        setSelectedAnswers(newAnswers);
     };
 
     return (
@@ -111,6 +120,8 @@ const TestComponent = ({ currentLevel }) => {
                                         name={`question-${index}`}
                                         id={`answer-${index}-${optionIndex}`}
                                         value={option}
+                                        checked={selectedAnswers[index] === option} // Установка состояния checked
+                                        onChange={() => handleAnswerChange(index, option)} // Обработка изменения
                                         disabled={showAnswers}
                                     />
                                     {option}

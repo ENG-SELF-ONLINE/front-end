@@ -59,6 +59,8 @@
     height: 7px; /* Размер кружка */
     background-color: red; /* Цвет кружка */
     border-radius: 50%; /* Круглая форма */
+    visibility: visible; /* Индикатор видим только при наличии уведомлений */
+    animation: blink 1s infinite;
 }
 
 .notification-list {
@@ -102,5 +104,14 @@
     }
     .level-container {
         margin-bottom: 10px; /* Отступ между уровнями и иконками */
+    }
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
     }
 }

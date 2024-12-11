@@ -10,6 +10,7 @@ const ListeningTestComponent = ({ currentLevel }) => {
     const [testPassed, setTestPassed] = useState(false);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const navigate = useNavigate(); // Инициализация navigate
+    const [selectedAnswers, setSelectedAnswers] = useState(Array(5).fill(null)); // Состояние для хранения выбранных ответов
 
     const audioSrc = "path/to/your/audio/file.mp3"; // Замените на ваш путь к аудиофайлу
 
@@ -50,12 +51,13 @@ const ListeningTestComponent = ({ currentLevel }) => {
 
     useEffect(() => {
         setSelectedQuestions(getRandomQuestions(questions, numQuestions));
+        setSelectedAnswers(Array(numQuestions).fill(null)); // Сброс выбранных ответов
     }, []);
 
     const checkAnswers = () => {
         let correctAnswers = 0;
         selectedQuestions.forEach((question, index) => {
-            if (question.answer === document.querySelector(`input[name="question-${index}"]:checked`)?.value) {
+            if (question.answer === selectedAnswers[index]) {
                 correctAnswers++;
             }
         });
@@ -68,10 +70,17 @@ const ListeningTestComponent = ({ currentLevel }) => {
         setShowAnswers(false);
         setTestPassed(false);
         setSelectedQuestions(getRandomQuestions(questions, numQuestions));
+        setSelectedAnswers(Array(numQuestions).fill(null)); // Сброс выбранных ответов
     };
 
     const handleNext = () => {
         navigate(`/listening/${currentLevel}`); // Переход на страницу с текущим уровнем
+    };
+
+    const handleAnswerChange = (index, value) => {
+        const newAnswers = [...selectedAnswers];
+        newAnswers[index] = value;
+        setSelectedAnswers(newAnswers);
     };
 
     return (
@@ -92,6 +101,8 @@ const ListeningTestComponent = ({ currentLevel }) => {
                                         name={`question-${index}`}
                                         id={`answer-${index}-${optionIndex}`}
                                         value={option}
+                                        checked={selectedAnswers[index] === option} // Установка состояния checked
+                                        onChange={() => handleAnswerChange(index, option)} // Обработка изменения
                                         disabled={showAnswers}
                                     />
                                     {option}
