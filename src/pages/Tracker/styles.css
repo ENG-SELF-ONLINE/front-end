@@ -32,6 +32,7 @@
     flex-direction: column;
     gap: 37px;
     margin: 0 auto;
+    width: 820px;
 }
 
 .project-timer-container {
@@ -40,7 +41,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    width: 70%;
 }
 .project-info-container1 {
     flex: 1 0 auto;
@@ -62,8 +62,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    margin-left: 26px;
-    gap: 16px;
+    gap: 28px;
 }
 .project-thumbnail {
     box-sizing: border-box;
@@ -113,16 +112,18 @@
     border-radius: 10px;
 }
 
-.weekly-activity {
-    display: flex;
-    justify-content: space-between;
-    padding-left: 40px;
-    padding-right: 40px;
-}
-
 .weekly-activity-content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 900px;
+}
+
+.activity-middle-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.weekly-activity {
+    display: flex;
+    gap: 300px
 }
