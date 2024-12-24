@@ -78,3 +78,15 @@
 .grammar-topics li{border-color: #583D3D;}
 .grammar-topics li:hover {border-left: 10px solid transparent;}
 .grammar-topics li:nth-child(1):hover {border-right: 10px solid #583D3D;}
+
+@media (max-width: 1540px) {
+    .grammar-content {
+        width: 900px;
+    }
+}
+
+@media (max-width: 1240px) {
+    .grammar-content {
+        width: 700px;
+    }
+}

@@ -45,3 +45,18 @@
     display: flex;
     flex-direction: column; /* Добавляем flex-direction: column */
 }
+
+@media (max-width: 1540px) {
+    .topic-content {
+        width: 900px;
+    }
+}
+
+@media (max-width: 1240px) {
+    .topic-content {
+        width: 700px;
+    }
+    .article-image {
+        width: 100%;
+    }
+}

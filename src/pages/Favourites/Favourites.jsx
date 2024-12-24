@@ -124,15 +124,13 @@ const Favourites = () => {
                 <div className="upper-container">
                     <Search
                         placeholder="Поиск"
-                        style={{
-                            width: 472
-                        }}
+                        className="search-input"
                         size="large"
                         onSearch={handleSearch}
                     />
                     <UpperMenu/>
                 </div>
-                <div className="content">
+                <div className="favourites-content">
                     <h2 className="level-title">
                         Список избранных книг:
                     </h2>

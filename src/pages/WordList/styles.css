@@ -188,11 +188,11 @@
     width: 100%;
 }
 
-.right-continer {
+.right-container {
     display: flex;
     flex-direction: column;
     width: 50%;
-    justify-content: space-between;
+    align-items: end;
     height: 100%;
 }
 
@@ -215,4 +215,11 @@
 .word-card-menu {
     font-size: 16px;
     margin-top: 8px;
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1160px) {
+    .word-list-container-with-stats {
+        min-width: 700px;
+    }
 }

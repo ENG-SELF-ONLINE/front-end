@@ -75,3 +75,15 @@
 .listening-topics li{border-color: #583D3D;}
 .listening-topics li:hover {border-left: 10px solid transparent;}
 .listening-topics li:nth-child(1):hover {border-right: 10px solid #583D3D;}
+
+@media (max-width: 1540px) {
+    .listening-content {
+        width: 900px;
+    }
+}
+
+@media (max-width: 1240px) {
+    .listening-content {
+        width: 700px;
+    }
+}

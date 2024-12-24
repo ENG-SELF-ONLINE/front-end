@@ -169,13 +169,13 @@ const Dictionary = () => {
                 <div className="upper-container">
                     <Search
                         placeholder="Поиск"
-                        style={{ width: 472 }}
+                        className="dictionary-search"
                         size="large"
                         onSearch={handleSearch}
                     />
                     <UpperMenu />
                 </div>
-                <div className="content">
+                <div className="dictionary-content">
                     <h2 className="level-title">Ваши колоды:</h2>
                     <div className="decks-grid">
                         {currentDecks.map((deck) => (

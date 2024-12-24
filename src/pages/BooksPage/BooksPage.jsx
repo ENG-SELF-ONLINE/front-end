@@ -166,15 +166,13 @@ const BooksPage = () => {
                 <div className="upper-container">
                     <Search
                         placeholder="Поиск"
-                        style={{
-                            width: 472
-                        }}
+                        className="search-input"
                         size="large"
                         onSearch={handleSearch}
                     />
                     <UpperMenu/>
                 </div>
-                <div className="content">
+                <div className="books-page-content">
                     <h2 className="level-title">
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>

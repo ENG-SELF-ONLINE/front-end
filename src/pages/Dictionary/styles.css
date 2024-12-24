@@ -17,7 +17,7 @@
     width: 100%;
 }
 
-.content {
+.dictionary-content {
     width: 1250px;
     margin: auto;
     display: flex;
@@ -88,11 +88,11 @@
     width: 100%;
 }
 
-.right-continer {
+.right-container {
     display: flex;
     flex-direction: column;
     width: 50%;
-    justify-content: space-between;
+    align-items: end;
     height: 100%;
 }
 
@@ -110,4 +110,45 @@
     background: #95AAD3;
     border: none;
     border-radius: 10px;
+}
+
+.dictionary-search {
+    width: 472px; /* Default width */
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1540px) {
+    .decks-grid {
+        grid-template-columns: repeat(4, 0fr); /* Меняем на 3 колонки */
+        gap: 40px;
+    }
+    .dictionary-content {
+        width: 1050px;
+    }
+    .pagination-container {
+        margin-top: 30px;
+    }
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1370px) {
+    .decks-grid {
+        grid-template-columns: repeat(3, 0fr); /* Меняем на 3 колонки */
+    }
+    .dictionary-content {
+        width: 750px;
+    }
+    .dictionary-search {
+        width: 300px; /* Adjusted width for smaller screens */
+    }
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1070px) {
+    .decks-grid {
+        grid-template-columns: repeat(2, 0fr); /* Меняем на 3 колонки */
+    }
+    .dictionary-content {
+        width: 450px;
+    }
 }

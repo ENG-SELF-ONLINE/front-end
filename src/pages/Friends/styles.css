@@ -109,3 +109,12 @@
     border: none;
     border-radius: 10px;
 }
+
+@media (max-width: 1100px) {
+    .friends-main-content {
+        width: 700px;
+    }
+    .friends-info {
+        width: 700px;
+    }
+}

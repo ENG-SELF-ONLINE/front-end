@@ -107,6 +107,18 @@
     }
 }
 
+@media (max-width: 1070px) {
+    .level-container {
+        display: none; /* Скрыть progress bar на экранах меньше 1070px */
+    }
+    .header {
+        width: 184px;
+    }
+    .ring-icon {
+        padding-left: 23px;
+    }
+}
+
 @keyframes blink {
     0%, 100% {
         opacity: 1;

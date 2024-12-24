@@ -61,11 +61,11 @@
     width: 100%;
 }
 
-.right-continer {
+.right-container {
     display: flex;
     flex-direction: column;
     width: 50%;
-    justify-content: space-between;
+    align-items: end;
     height: 100%;
 }
 

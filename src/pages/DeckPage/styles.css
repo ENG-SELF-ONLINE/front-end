@@ -205,3 +205,10 @@
     border: none;
     border-radius: 10px;
 }
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1160px) {
+    .card-container-with-stats {
+        min-width: 700px;
+    }
+}

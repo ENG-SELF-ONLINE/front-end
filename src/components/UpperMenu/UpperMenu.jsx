@@ -57,12 +57,14 @@ const UpperMenu = () => {
                 <div className="level-container">
                     <span className="level">A1</span>
                     <div className="progress-bar">
-                        <Progress percent={50} showInfo={false} />
+                        {window.innerWidth > 1070 && (
+                            <Progress percent={50} showInfo={false}/>
+                        )}
                     </div>
                     <span className="level">A2</span>
                 </div>
                 <div className="header-icon ring-icon" onClick={handleOpenDrawer}>
-                    <BellOutlined style={{ fontSize: '25px', cursor: 'pointer' }} />
+                    <BellOutlined style={{fontSize: '25px', cursor: 'pointer'}}/>
                     {notifications.length > 0 && <span className="notification-indicator"></span>}
                 </div>
                 {Object.entries(icons).slice(0, 2).map(([key, src]) => (
