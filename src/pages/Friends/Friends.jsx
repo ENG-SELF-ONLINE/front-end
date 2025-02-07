@@ -88,8 +88,12 @@ const Friends = () => {
         }
     };
 
-    const handleVisitFriendProfile = (friendId) => {
-        navigate(`/friends/${friendId}`);
+    const handleVisitFriendProfile = async (friendId, friendUser) => {
+        try {
+            navigate(`/friends/${friendId}`, { state: { user: friendUser } });
+        } catch (error) {
+            console.error("Could not navigate to friends profile", error);
+        }
     };
 
     const handleSearchUser = async () => {
@@ -140,7 +144,7 @@ const Friends = () => {
                             const friendUser = friend.sender.userId === currentUser ? friend.receiver : friend.sender;
                             return (
                                 <li key={friend.friendshipId} className="friends-item"
-                                    onClick={() => handleVisitFriendProfile(friend.friendshipId)}>
+                                    onClick={() => handleVisitFriendProfile(friend.friendshipId, friendUser)}>
                                     <img src={friendUser.photo ? getAvatarUrl(friendUser.photo) : null}
                                          alt={friendUser.firstName} className="friends-avatar"/>
                                     <div className="friends-name">

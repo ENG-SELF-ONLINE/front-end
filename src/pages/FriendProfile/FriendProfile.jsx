@@ -1,24 +1,42 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import './styles.css';
-import avatar from "./images/avatar.png";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import { Button, Progress } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { Bar, Doughnut } from "react-chartjs-2";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import axios from "axios";
 
 const FriendProfile = () => {
     const [activeWeek, setActiveWeek] = useState(0);
     const [weekData, setWeekData] = useState(null);
     const [learnData, setLearnData] = useState(null);
     const [totalTime, setTotalTime] = useState(null);
-    const [friendData, setFriendData] = useState(null); // Данные о друге
+    const [friendData, setFriendData] = useState(null);
     const [hasNextWeekData, setHasNextWeekData] = useState(true);
+    const location = useLocation();
+    const {friendId} = useParams();
+    const navigate = useNavigate();
 
-    const handleDeleteFriend = () => {
-        console.log("handleDelete Friend");
+    const getAccessToken = () => {
+        return localStorage.getItem('accessToken');
+    };
+
+    const handleDeleteFriend = async () => {
+        const token = getAccessToken();
+        try {
+            await axios.delete(`http://localhost:8084/friendships/${friendId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            navigate(`/friends`);
+        } catch (error) {
+            console.error("Error deleting friend", error);
+        }
     };
 
     const handlePrevWeek = () => {
@@ -32,23 +50,13 @@ const FriendProfile = () => {
     };
 
     useEffect(() => {
-        // Функция для получения данных о друге
-        const fetchFriendData = async () => {
-            // Здесь будет запрос к бэкэнду, который должен вернуть данные о друге
-            // Например, fetch('/api/friend/1')
+        if (location.state && location.state.user) {
+            setFriendData(location.state.user);
+        } else {
+            // Handle the case where friend data wasn't passed correctly
+        }
+    }, [location.state]);
 
-            // Заглушка:
-            const mockFriendData = {
-                name: "Дмитрий Кишко",
-                level: "A1",
-                avatar: avatar, // Путь к аватару
-            };
-
-            setFriendData(mockFriendData);
-        };
-
-        fetchFriendData();
-    }, []);
 
     useEffect(() => {
         const fetchWeekData = async () => {
@@ -181,6 +189,10 @@ const FriendProfile = () => {
         },
     };
 
+    const getAvatarUrl = (photo) => {
+        return `http://localhost:9999/files/images/show?bucket=PROFILE&file=${photo}`;
+    };
+
     return (
         <div className="friend-profile-page">
             <Sidebar/>
@@ -199,7 +211,7 @@ const FriendProfile = () => {
                             fontSize: '20px',
                             alignItems: 'center'
                         }}>
-                            {friendData.name}
+                            {friendData.firstName + " " + friendData.lastName}
                             <Button type="link" onClick={handleDeleteFriend}>
                                 Удалить
                             </Button>
@@ -207,13 +219,15 @@ const FriendProfile = () => {
                     )}
                     <div className="friend-profile-content">
                         <div className="friend-profile-left">
-                            <img style={{height: '235px', width: '200px', borderRadius: '30px'}} src={friendData?.avatar} alt="Аватар"/>
+                            <img style={{height: '235px', width: '200px', borderRadius: '30px'}}
+                                 src={friendData && friendData.photo ? getAvatarUrl(friendData.photo) : null}
+                                 alt="Аватар"/>
                             <div className="level-container" style={{paddingLeft: '0px'}}>
                                 <span className="level">{friendData?.level}</span>
                                 <div className="progress-bar">
                                     <Progress percent={50} showInfo={false}/>
                                 </div>
-                                <span className="level">A2</span>
+                                {friendData && <span className="level">{friendData.nextLevel}</span>}
                             </div>
                         </div>
                         <div className="friend-profile-right">
