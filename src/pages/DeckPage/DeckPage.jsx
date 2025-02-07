@@ -13,10 +13,10 @@ const mockDecks = [
 ];
 
 const DeckPage = () => {
-    // Устанавливаем начальное состояние с использованием данных из mockDecks
-    const [selectedDeck] = useState(mockDecks[0]); // Выбираем первую колоду по умолчанию
+
+    const [selectedDeck] = useState(mockDecks[0]);
     const { title: deckTitle, newItems, learning, repeatable } = selectedDeck;
-    const navigate = useNavigate(); // Инициализация navigate
+    const navigate = useNavigate();
 
     // useEffect(() => {
     //     const fetchDeckData = async () => {

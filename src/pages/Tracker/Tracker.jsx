@@ -21,7 +21,7 @@ const Tracker = () => {
     const [dateActivity, setDateActivity] = useState(new Date());
     const [activityLogs, setActivityLogs] = useState({});
     const [activeWeek, setActiveWeek] = useState(0);
-    const [hasNextWeekData] = useState(true); // Состояние для отслеживания наличия данных
+    const [hasNextWeekData] = useState(true);
 
 
     const handleStartTimeChange = (date) => {
@@ -71,7 +71,7 @@ const Tracker = () => {
     const handleAddActivity = () => {
         if (activityType && startTime && endTime && endTime.isAfter(startTime)) {
             const {durationInSeconds} = calculateDuration(dateActivity, startTime, endTime)
-            // Проверка на превышение продолжительности 24 часа
+
             if (durationInSeconds > 86400) {
                 alert('Активность не может превышать 24 часа.');
                 return;
@@ -101,7 +101,6 @@ const Tracker = () => {
                 }
             });
 
-            // Сброс полей
             setActivityType('');
             setStartTime(null);
             setEndTime(null);

@@ -10,7 +10,7 @@ import download from './images/download.png';
 const BookInfoPage = () => {
     const [bookData, setBookData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [isFavorite, setIsFavorite] = useState(false); // State to track if the book is a favorite
+    const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
         const mockBookData = {

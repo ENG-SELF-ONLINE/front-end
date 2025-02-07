@@ -12,7 +12,7 @@ const ITEMS_PER_PAGE = 10;
 
 const BooksPage = () => {
     const {level} = useParams();
-    const navigate = useNavigate(); // Инициализация navigate
+    const navigate = useNavigate();
     const [activeLevel, setActiveLevel] = useState(level || "A1");
     const [books] = useState([
         {

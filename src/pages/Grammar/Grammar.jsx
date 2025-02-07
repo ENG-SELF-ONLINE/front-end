@@ -28,7 +28,6 @@ const Grammar = () => {
         }
     };
 
-    // Mock data for topics relevant to the A1 level
     const topics = [
         { id: 1, title: "Introduction to English" },
         { id: 2, title: "Simple Present Tense" },

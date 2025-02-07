@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles.css';
 import MainRight from "../../components/MainRight/MainRight.jsx";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
@@ -15,9 +15,10 @@ import {
     Title,
     Tooltip
 } from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import {Bar, Doughnut} from 'react-chartjs-2';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
+import axios from "axios";
 
 ChartJS.register(
     CategoryScale,
@@ -32,83 +33,180 @@ ChartJS.register(
 );
 
 const MainPage = () => {
-    const [activeWeek, setActiveWeek] = useState(0);
     const [weekData, setWeekData] = useState(null);
-    const [totalTime, setTotalTime] = useState(null);
+    const [totalTime, setTotalTime] = useState(0);
     const [wordData, setWordData] = useState(null);
     const [learnData, setLearnData] = useState(null);
-    const [hasNextWeekData, setHasNextWeekData] = useState(true); // Состояние для отслеживания наличия данных
+    const [hasNextWeekData, setHasNextWeekData] = useState(false);
+    const [activeWeek, setActiveWeek] = useState(0);
 
     useEffect(() => {
         const fetchWeekData = async () => {
-            // Здесь будет ваш реальный запрос к API
-            // const response = await fetch(`/api/week-data?week=${activeWeek}`);
-            // const mockData = await response.json();
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                };
 
-            // Пример использования заглушки данных для 3 недель
-            const mockDataSets = [
-                {
-                    reading: [2, 4, 3, 1, 5, 2, 1],
-                    listening: [1, 3, 2, 4, 1, 3, 2],
-                    practice: [3, 1, 4, 2, 2, 1, 3],
-                    totalTime: 15,
-                    newWords: 20,
-                    learnedWords: 35,
-                    removedWords: 5
-                },
-                {
-                    reading: [3, 2, 1, 4, 0, 2, 3],
-                    listening: [0, 1, 1, 0, 1, 0, 0],
-                    practice: [2, 2, 2, 2, 2, 2, 2],
-                    totalTime: 10,
-                    newWords: 10,
-                    learnedWords: 20,
-                    removedWords: 2
-                },
-            ];
+                const startDate = getStartDateForWeek(activeWeek);
+                const endDate = getEndDateForWeek(activeWeek);
 
-            const selectedData = mockDataSets[activeWeek];
-            if (selectedData) {
-                const totalTime = selectedData.reading.reduce((sum, value) => sum + value, 0) +
-                    selectedData.listening.reduce((sum, value) => sum + value, 0) +
-                    selectedData.practice.reduce((sum, value) => sum + value, 0);
+                const formattedStartDate = startDate.toISOString();
+                const formattedEndDate = endDate.toISOString();
 
-                setWeekData(selectedData);
-                setTotalTime(totalTime);
-                setWordData(selectedData);
-                setLearnData(selectedData);
-                setHasNextWeekData(mockDataSets[activeWeek + 1] !== undefined); // Проверяем, есть ли данные для следующей недели
-            } else {
-                // Если данных нет, обнуляем все состояния
-                setWeekData(null);
-                setTotalTime(null);
-                setWordData(null);
-                setLearnData(null);
-                setHasNextWeekData(false); // Нет данных для следующей недели
+                console.log('API Data:', startDate, endDate);
+
+                const response = await axios.get(
+                    `http://localhost:8086/statistics/activity?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+                    config
+                );
+
+                const apiData = response.data;
+
+                console.log('API Data:', apiData);
+
+                if (apiData) {
+                    const transformedWeekData = transformActivitiesData(apiData.activities);
+
+                    setWeekData(transformedWeekData);
+                    setTotalTime(apiData.totalTime);
+
+                    setWordData({
+                        newWords: apiData.deckStatisticsDTO.newWords,
+                        learnedWords: apiData.deckStatisticsDTO.learningWords,
+                        removedWords: apiData.deckStatisticsDTO.repeatingWords
+                    });
+
+                    setLearnData({
+                        reading: transformedWeekData.reading,
+                        listening: transformedWeekData.listening,
+                        grammar: transformedWeekData.grammar,
+                        totalWords: apiData.deckStatisticsDTO.totalWords,
+                        newWords: apiData.deckStatisticsDTO.newWords,
+                        learningWords: apiData.deckStatisticsDTO.learningWords,
+                        repeatingWords: apiData.deckStatisticsDTO.repeatingWords
+                    });
+
+                    const nextWeekStartDate = getStartDateForWeek(activeWeek + 1).toISOString();
+                    const nextWeekEndDate = getEndDateForWeek(activeWeek + 1).toISOString();
+
+                    const nextWeekResponse = await axios.get(
+                        `http://localhost:8086/statistics/activity?startDate=${nextWeekStartDate}&endDate=${nextWeekEndDate}`,
+                        config
+                    );
+
+                    const nextWeekApiData = nextWeekResponse.data;
+
+                    setHasNextWeekData(
+                        nextWeekApiData !== null &&
+                        (nextWeekApiData.activities !== null && Object.keys(nextWeekApiData.activities).length > 0)
+                    );
+
+                } else {
+                    resetData();
+                }
+
+            } catch (error) {
+                console.error('Ошибка при получении данных:', error);
+                resetData();
             }
         };
 
         fetchWeekData();
     }, [activeWeek]);
 
+    const resetData = () => {
+        setWeekData(null);
+        setTotalTime(0);
+        setWordData(null);
+        setLearnData(null);
+        setHasNextWeekData(false);
+    };
+
+    const getStartDateForWeek = (weekNumber) => {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        return new Date(now.setDate(diff + (weekNumber * 7)));
+    };
+
+    const getEndDateForWeek = (weekNumber) => {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        return new Date(now.setDate(diff + 6 + (weekNumber * 7)));
+    };
+
+    const transformActivitiesData = (activitiesMap) => {
+        const transformedData = {
+            reading: new Array(7).fill(0),
+            listening: new Array(7).fill(0),
+            grammar: new Array(7).fill(0)
+        };
+
+        // Helper function to get the day of the week from a date
+        const getDayOfWeek = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {weekday: 'short'});
+        };
+
+        // Helper function to convert activity to a particular day
+        const daysOfWeek = {
+            'Mon': 0,
+            'Tue': 1,
+            'Wed': 2,
+            'Thu': 3,
+            'Fri': 4,
+            'Sat': 5,
+            'Sun': 6
+        };
+
+        for (const activityType in activitiesMap) {
+            activitiesMap[activityType].forEach(activity => {
+                const dayOfWeek = getDayOfWeek(activity.date);
+                const dayIndex = daysOfWeek[dayOfWeek];
+
+                if (dayIndex !== undefined) {
+                    transformedData[activityType][dayIndex] = (transformedData[activityType][dayIndex] || 0) + (activity.value / 60);
+                }
+            });
+        }
+
+        return transformedData;
+    };
+
+    const handlePrevWeek = () => {
+        setActiveWeek(prevWeek => (prevWeek > 0 ? prevWeek - 1 : 0));
+    };
+
+    const handleNextWeek = () => {
+        if (hasNextWeekData) {
+            setActiveWeek(prevWeek => prevWeek + 1);
+        }
+    };
+
+    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
     const data = {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: labels,
         datasets: [
             {
                 label: 'Reading',
-                data: weekData ? weekData.reading : [], // Используем данные из weekData
+                data: weekData ? weekData.reading : new Array(7).fill(0),
                 backgroundColor: '#0CC3E7',
                 stack: 'Stack 0',
             },
             {
                 label: 'Listening',
-                data: weekData ? weekData.listening : [],
+                data: weekData ? weekData.listening : new Array(7).fill(0),
                 backgroundColor: '#FFAE33',
                 stack: 'Stack 0',
             },
             {
-                label: 'Practice',
-                data: weekData ? weekData.practice : [],
+                label: 'Grammar',
+                data: weekData ? weekData.grammar : new Array(7).fill(0),
                 backgroundColor: '#5E81F4',
                 stack: 'Stack 0',
             },
@@ -166,9 +264,11 @@ const MainPage = () => {
         labels: ['Reading', 'Listening', 'Grammar'],
         datasets: [
             {
-                data: weekData ? [weekData.reading.reduce((sum, value) => sum + value, 0),
-                    weekData.listening.reduce((sum, value) => sum + value, 0),
-                    weekData.practice.reduce((sum, value) => sum + value, 0)] : [0, 0, 0],
+                data: weekData ? [
+                    (weekData.reading.reduce((sum, value) => sum + value, 0)) || 0,
+                    (weekData.listening.reduce((sum, value) => sum + value, 0)) || 0,
+                    (weekData.grammar.reduce((sum, value) => sum + value, 0)) || 0
+                ] : [0, 0, 0],
                 backgroundColor: [
                     '#0CC3E7',
                     '#FFAE33',
@@ -184,19 +284,6 @@ const MainPage = () => {
         ],
     };
 
-    const doughnutOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Words Statistics',
-            },
-        },
-    };
-
     const mainOptions = {
         responsive: true,
         plugins: {
@@ -210,14 +297,17 @@ const MainPage = () => {
         },
     };
 
-    const handlePrevWeek = () => {
-        setActiveWeek(prevWeek => (prevWeek > 0 ? prevWeek - 1 : 0));
-    };
-
-    const handleNextWeek = () => {
-        if(hasNextWeekData) {
-            setActiveWeek(prevWeek => prevWeek + 1);
-        }
+    const doughnutOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Words Statistics',
+            },
+        },
     };
 
     return (
@@ -240,15 +330,15 @@ const MainPage = () => {
                         <div className="main-list">
                             <div className="main-item">
                                 <span>Reading:</span>
-                                <span>{learnData ? learnData.reading.reduce((sum, value) => sum + value, 0) : 0}</span>
+                                <span>{learnData ? (learnData.reading.reduce((sum, value) => sum + value, 0)) || 0 : 0}</span>
                             </div>
                             <div className="main-item">
                                 <span>Listening:</span>
-                                <span>{learnData ? learnData.listening.reduce((sum, value) => sum + value, 0) : 0}</span>
+                                <span>{learnData ? (learnData.listening.reduce((sum, value) => sum + value, 0)) || 0 : 0}</span>
                             </div>
                             <div className="main-item">
                                 <span>Grammar:</span>
-                                <span>{learnData ? learnData.practice.reduce((sum, value) => sum + value, 0) : 0}</span>
+                                <span>{learnData ? (learnData.grammar.reduce((sum, value) => sum + value, 0)) || 0 : 0}</span>
                             </div>
                         </div>
                         <div className="main-chart">

@@ -5,6 +5,7 @@ import { BellOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import './styles.css';
 import avatar from './images/avatar.png';
 import exit from './images/exit.png';
+import axios from "axios";
 
 const icons = {
     avatar: avatar,
@@ -13,18 +14,44 @@ const icons = {
 
 const UpperMenu = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
-    const [notifications, setNotifications] = useState([
-        { id: 1, name: "Иван", surname: "Иванов", avatar: avatar },
-        { id: 2, name: "Петр", surname: "Петров", avatar: avatar },
-        { id: 3, name: "Сергей", surname: "Сергеев", avatar: avatar },
-        // Добавьте больше уведомлений здесь
-    ]);
+    const [notifications, setNotifications] = useState([]);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            // Здесь вы можете добавить логику для получения новых уведомлений
-            // Например, обновление состояния `notifications`
-        }, 5000);
+        const fetchNotifications = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                };
+                const response = await axios.get('http://localhost:8084/notifications', config);
+                setNotifications(response.data);
+            } catch (error) {
+                console.error('Ошибка при получении уведомлений:', error);
+            }
+        };
+
+        const fetchUserData = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                };
+                const response = await axios.get('http://localhost:8084/users/api', config);
+                setUser(response.data);
+            } catch (error) {
+                console.error('Ошибка при получении данных пользователя:', error);
+            }
+        };
+
+        fetchNotifications();
+        fetchUserData();
+
+        const timer = setInterval(fetchNotifications, 5000);
 
         return () => clearInterval(timer);
     }, []);
@@ -37,47 +64,85 @@ const UpperMenu = () => {
         setDrawerVisible(false);
     };
 
-    const handleAccept = (id) => {
-        console.log(`Принято уведомление ${id}`);
-        setNotifications(prevNotifications =>
-            prevNotifications.filter(notification => notification.id !== id)
-        );
+    const updateFriendRequest = async (friendshipId, status) => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            };
+
+            // Замените /friendships/ на правильный endpoint
+            const response = await axios.put(
+                `http://localhost:8084/friendships/${friendshipId}?status=${status}`,
+                {}, // Пустое тело запроса, т.к. status передается как query parameter
+                config
+            );
+
+            if (response.status === 200) {
+                // Успешно обновлено - обновляем список уведомлений, удаляя обработанное
+                setNotifications(prevNotifications =>
+                    prevNotifications.filter(notification => notification.contextId !== friendshipId)
+                );
+                console.log(`Успешно обновлен статус заявки ${friendshipId} на ${status}`);
+            } else {
+                console.error(`Ошибка при обновлении статуса заявки ${friendshipId}:`, response);
+            }
+        } catch (error) {
+            console.error(`Ошибка при отправке запроса на обновление статуса ${friendshipId}:`, error);
+        }
     };
 
-    const handleDecline = (id) => {
-        console.log(`Отклонено уведомление ${id}`);
-        setNotifications(prevNotifications =>
-            prevNotifications.filter(notification => notification.id !== id)
-        );
+    const handleAccept = (friendshipId) => {
+        updateFriendRequest(friendshipId, 'ACCEPTED');
+    };
+
+    const handleDecline = (friendshipId) => {
+        updateFriendRequest(friendshipId, 'REJECTED');
+    };
+
+    const getAvatarUrl = (photo) => {
+        return `http://localhost:9999/files/images/show?bucket=PROFILE&file=${photo}`;
     };
 
     return (
         <div className="upper-menu-container">
             <div className="header">
                 <div className="level-container">
-                    <span className="level">A1</span>
+                    {user && <span className="level">{user.level}</span>}
                     <div className="progress-bar">
                         {window.innerWidth > 1070 && (
                             <Progress percent={50} showInfo={false}/>
                         )}
                     </div>
-                    <span className="level">A2</span>
+                    {user && <span className="level">{user.nextLevel}</span>}
                 </div>
                 <div className="header-icon ring-icon" onClick={handleOpenDrawer}>
                     <BellOutlined style={{fontSize: '25px', cursor: 'pointer'}}/>
                     {notifications.length > 0 && <span className="notification-indicator"></span>}
                 </div>
-                {Object.entries(icons).slice(0, 2).map(([key, src]) => (
-                    <div key={key} className={`header-icon ${key}-icon`} onClick={() => {
-                        if (key === 'avatar') {
-                            window.location.href = '/settings';
-                        } else if (key === 'exit') {
-                            window.location.href = '/exit';
-                        }
+                {user && (
+                    <div className={`header-icon avatar-icon`} onClick={() => {
+                        window.location.href = '/settings';
                     }}>
-                        <img src={src} alt={key === 'avatar' ? 'Аватар' : 'Выход'} />
+                        <img
+                            src={user.photo ? getAvatarUrl(user.photo) : icons.avatar}
+                            alt="Аватар"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: '50%',
+                                objectFit: 'cover'
+                            }}
+                        />
                     </div>
-                ))}
+                )}
+                <div className={`header-icon exit-icon`} onClick={() => {
+                    window.location.href = '/exit';
+                }}>
+                    <img src={icons.exit} alt="Выход" />
+                </div>
             </div>
 
             <Drawer
@@ -85,33 +150,37 @@ const UpperMenu = () => {
                 visible={drawerVisible}
                 onClose={handleCloseDrawer}
                 width={400}
-                bodyStyle={{ padding: 0 }}
+                bodyStyle={{padding: 0}}
             >
-                <div className="notification-list" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <div className="notification-list" style={{maxHeight: '400px', overflowY: 'auto'}}>
                     {notifications.length > 0 ? notifications.map((notification) => (
-                        <div className="notification-item" key={notification.id}>
-                            <img src={notification.avatar} alt="Аватар" className="notification-avatar" />
+                        <div className="notification-item" key={notification.notificationId}>
+                            <img
+                                src={notification.sender.photo ? getAvatarUrl(notification.sender.photo) : avatar}
+                                alt="Аватар"
+                                className="notification-avatar"
+                            />
                             <div className="notification-text">
-                                <span>{notification.name} {notification.surname}</span>
-                                <div className="notification-buttons" style={{ display: 'flex', gap: '10px' }}>
+                                <span>{notification.sender.firstName} {notification.sender.lastName}</span>
+                                <div className="notification-buttons" style={{display: 'flex', gap: '10px'}}>
                                     <CheckOutlined
-                                        style={{ cursor: 'pointer', fontSize: '20px', color: 'green' }}
-                                        onClick={() => handleAccept(notification.id)}
+                                        style={{cursor: 'pointer', fontSize: '20px', color: 'green'}}
+                                        onClick={() => handleAccept(notification.contextId)}
                                     />
                                     <CloseOutlined
-                                        style={{ cursor: 'pointer', fontSize: '20px', color: 'red' }}
-                                        onClick={() => handleDecline(notification.id)}
+                                        style={{cursor: 'pointer', fontSize: '20px', color: 'red'}}
+                                        onClick={() => handleDecline(notification.contextId)}
                                     />
                                 </div>
                             </div>
                         </div>
                     )) : (
-                        <div className="no-notifications"></div>
+                        <div/>
                     )}
                 </div>
             </Drawer>
         </div>
     );
-}
+};
 
 export default UpperMenu;

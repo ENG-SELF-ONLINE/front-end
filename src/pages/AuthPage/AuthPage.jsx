@@ -8,7 +8,7 @@ import axios from 'axios';
 const AuthPage = () => {
     const [isRegistration, setIsRegistration] = useState(false);
     const [email, setEmail] = useState('');
-    const [username, setUsername] = useState(''); // Для авторизации
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');

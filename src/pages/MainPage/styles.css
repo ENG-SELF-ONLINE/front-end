@@ -41,7 +41,8 @@
     cursor: pointer;
 }
 
-.prev-week.disabled {
+.prev-week.disabled,
+.next-week.disabled {
     opacity: 0.5; /* Делаем кнопку неактивной */
     cursor: default; /* Убираем курсор указателя */
 }
