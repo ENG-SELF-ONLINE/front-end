@@ -1,64 +1,111 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import { Button, Input, Modal } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
 
 const Friends = () => {
-    const [friends, setFriends] = useState([
-        { id: 1, name: 'John', surname: 'Doe', avatar: 'https://via.placeholder.com/150' },
-        { id: 2, name: 'Jane', surname: 'Doe', avatar: 'https://via.placeholder.com/150' },
-    ]);
-
+    const [friends, setFriends] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [foundUser, setFoundUser] = useState(null);
-    const [errorMessage, setErrorMessage] = useState(''); // Добавляем состояние для сообщения об ошибке
-    const navigate = useNavigate(); // Инициализация navigate
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
-    const handleAddFriend = () => {
+    const getAccessToken = () => {
+        return localStorage.getItem('accessToken');
+    };
+
+    const getUserIdFromToken = () => {
+        const token = getAccessToken();
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                return decodedToken.sub;
+            } catch (error) {
+                console.error("Ошибка декодирования токена:", error);
+                return null;
+            }
+        }
+        return null;
+    };
+
+    const currentUser = getUserIdFromToken();
+
+    useEffect(() => {
+        const fetchFriends = async () => {
+
+            const token = getAccessToken();
+            try {
+                const response = await axios.get('http://localhost:8084/friendships', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setFriends(response.data);
+            } catch (error) {
+                console.error("Error fetching friends", error);
+            }
+        };
+        fetchFriends();
+    }, []);
+
+    const handleAddFriend = async () => {
         if (foundUser) {
-            setFriends([...friends, foundUser]);
-            resetModal();
+            const token = getAccessToken();
+            try {
+                // Отправка запроса на добавление друга
+                await axios.post(`http://localhost:8084/friendships/${foundUser.userId}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                resetModal(); // Сбрасываем модальное окно
+            } catch (error) {
+                console.error("Error adding friend", error);
+                setErrorMessage('Произошла ошибка при добавлении друга');
+            }
         }
     };
 
-    const handleDeleteFriend = (friendId) => {
-        setFriends(friends.filter((friend) => friend.id !== friendId));
+    const handleDeleteFriend = async (friendId) => {
+        const token = getAccessToken();
+        try {
+            await axios.delete(`http://localhost:8084/friendships/${friendId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setFriends(friends.filter((friend) => friend.friendshipId !== friendId));
+        } catch (error) {
+            console.error("Error deleting friend", error);
+        }
     };
 
     const handleVisitFriendProfile = (friendId) => {
         navigate(`/friends/${friendId}`);
-    }
+    };
 
-    const handleSearchUser = () => {
-        const users = [
-            {
-                id: 3,
-                name: 'Alice',
-                surname: 'Smith',
-                avatar: 'https://via.placeholder.com/150',
-                email: 'alice@example.com'
-            },
-            {
-                id: 4,
-                name: 'Bob',
-                surname: 'Johnson',
-                avatar: 'https://via.placeholder.com/150',
-                email: 'bob@example.com'
-            },
-        ];
-
-        const user = users.find(user => user.email === email);
-        if (user) {
-            setFoundUser(user);
-            setErrorMessage(''); // Очищаем сообщение об ошибке
-        } else {
+    const handleSearchUser = async () => {
+        const token = getAccessToken();
+        try {
+            const response = await axios.get(`http://localhost:8084/users/api/email?email=${email}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setFoundUser(response.data);
+            setErrorMessage('');
+            // eslint-disable-next-line no-unused-vars
+        } catch (error) {
             setFoundUser(null);
-            setErrorMessage('Пользователь с таким email не найден'); // Устанавливаем сообщение об ошибке
+            setErrorMessage('Пользователь с таким email не найден');
         }
     };
 
@@ -67,6 +114,10 @@ const Friends = () => {
         setFoundUser(null);
         setErrorMessage('');
         setIsModalVisible(false);
+    };
+
+    const getAvatarUrl = (photo) => {
+        return `http://localhost:9999/files/images/show?bucket=PROFILE&file=${photo}`;
     };
 
     return (
@@ -85,23 +136,27 @@ const Friends = () => {
                         </Button>
                     </div>
                     <ul className="friends-list">
-                        {friends.map((friend) => (
-                            <li key={friend.id} className="friends-item"
-                                onClick={() => handleVisitFriendProfile(friend.id)}>
-                                <img src={friend.avatar} alt={friend.name} className="friends-avatar"/>
-                                <div className="friends-name">
-                                    <span>{friend.name} {friend.surname}</span>
-                                </div>
-                                <div className="friends-actions">
-                                    <Button type="link" onClick={(e) => {
-                                        e.stopPropagation(); // Останавливаем всплытие события, чтобы не вызывался onClick у li
-                                        handleDeleteFriend(friend.id);
-                                    }}>
-                                        Удалить
-                                    </Button>
-                                </div>
-                            </li>
-                        ))}
+                        {friends.map((friend) => {
+                            const friendUser = friend.sender.userId === currentUser ? friend.receiver : friend.sender;
+                            return (
+                                <li key={friend.friendshipId} className="friends-item"
+                                    onClick={() => handleVisitFriendProfile(friend.friendshipId)}>
+                                    <img src={friendUser.photo ? getAvatarUrl(friendUser.photo) : null}
+                                         alt={friendUser.firstName} className="friends-avatar"/>
+                                    <div className="friends-name">
+                                        <span>{friendUser.firstName} {friendUser.lastName}</span>
+                                    </div>
+                                    <div className="friends-actions">
+                                        <Button type="link" onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteFriend(friend.friendshipId);
+                                        }}>
+                                            Удалить
+                                        </Button>
+                                    </div>
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             </div>
@@ -120,23 +175,24 @@ const Friends = () => {
                                 placeholder="E-mail"
                                 onChange={(e) => setEmail(e.target.value)}
                                 size="large"
-                                style={{ marginRight: '10px' }}
+                                style={{marginRight: '10px'}}
                             />
-                            <Button onClick={handleSearchUser} icon={<SearchOutlined />} />
+                            <Button onClick={handleSearchUser} icon={<SearchOutlined/>}/>
                         </div>
-                        {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>} {/* Отображаем сообщение об ошибке */}
+                        {errorMessage && <div style={{color: 'red', marginTop: '10px'}}>{errorMessage}</div>}
                         {foundUser && (
                             <>
-                                <div className="found-user" style={{ marginTop: '20px', display: 'flex', alignItems: 'center' }}>
-                                    <img src={foundUser.avatar} alt={foundUser.name} className="friends-avatar" />
+                                <div className="found-user"
+                                     style={{marginTop: '20px', display: 'flex', alignItems: 'center' }}>
+                                    <img src={foundUser.photo ? getAvatarUrl(foundUser.photo) : null} alt={foundUser.firstName} className="friends-avatar" />
                                     <div>
-                                        <span>{foundUser.name} {foundUser.surname}</span>
+                                        <span>{foundUser.firstName} {foundUser.lastName}</span>
                                     </div>
                                 </div>
                                 <Button
                                     style={{ marginTop: '20px' }}
                                     onClick={handleAddFriend}
-                                    disabled={!foundUser} // Деактивируем кнопку, если пользователь не выбран
+                                    disabled={!foundUser}
                                 >
                                     Добавить
                                 </Button>
