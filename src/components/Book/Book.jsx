@@ -4,7 +4,10 @@ import "./styles.css";
 import PropTypes from "prop-types";
 
 const Book = ({ bookData, onClick }) => {
-    // bookData - это объект, который передается из BooksPage
+
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=COVERS&file=${coverImage}`;
+    };
 
     return (
         <div className="book-card" onClick={onClick}>
@@ -13,7 +16,7 @@ const Book = ({ bookData, onClick }) => {
                     <div
                         className="cover"
                         style={{
-                            backgroundImage: `url(${bookData.coverImage})`,
+                            backgroundImage: `url(${bookData.coverImage ? getCoverImageUrl(bookData.coverImage) : ''})`,
                             borderRadius: "18px"
                         }}
                     />

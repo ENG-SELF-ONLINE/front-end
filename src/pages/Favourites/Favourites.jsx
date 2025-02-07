@@ -1,88 +1,45 @@
 // eslint-disable-next-line no-unused-vars
-import React, {useState} from "react";
-import './styles.css'
+import React, { useEffect, useState } from "react";
+import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import Book from "../../components/Book/Book.jsx";
-import {Pagination} from "antd";
+import { Pagination } from "antd";
 import Search from "antd/es/input/Search.js";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 10;
 
 const Favourites = () => {
     const navigate = useNavigate();
-    const [books] = useState([
-        {
-            id: 1,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 1",
-            author: "Автор книги 1"
-        },
-        {
-            id: 2,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 2",
-            author: "Автор книги 2"
-        },
-        {
-            id: 3,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 3",
-            author: "Автор книги 3"
-        },
-        {
-            id: 4,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 4",
-            author: "Автор книги 4"
-        },
-        {
-            id: 5,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 5",
-            author: "Автор книги 5"
-        },
-        {
-            id: 6,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 6",
-            author: "Автор книги 6"
-        },
-        {
-            id: 7,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 7",
-            author: "Автор книги 7"
-        },
-        {
-            id: 8,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 8",
-            author: "Автор книги 8"
-        },
-        {
-            id: 9,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 9",
-            author: "Автор книги 9"
-        },
-        {
-            id: 10,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 10",
-            author: "Автор книги 10"
-        },
-        {
-            id: 11,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Название книги 11",
-            author: "Автор книги 11"
-        },
-    ]);
-
+    const [books, setBooks] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+
+    const accessToken = localStorage.getItem("accessToken");
+
+    useEffect(() => {
+        const fetchFavourites = async () => {
+            try {
+                const response = await fetch(`http://localhost:8082/favourites`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setBooks(data.content);
+
+            } catch (error) {
+                console.error('Error fetching book data:', error);
+            }
+        };
+
+        fetchFavourites();
+    }, [accessToken]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -92,34 +49,22 @@ const Favourites = () => {
         navigate(`/books/${bookId}`);
     };
 
-    // const searchBooks = async (query) => {
-    //     const response = await fetch(`/api/books/search?query=${query}`);
-    //     const data = await response.json();
-    //     return data; // предполагается, что данные - это массив книг
-    // };
-
     const handleSearch = (value) => {
         setSearchTerm(value);
-        setCurrentPage(1); // Сброс текущей страницы при новом поиске
+        setCurrentPage(1);
     };
 
-    // Фильтрация книг по поисковому запросу
     const filteredBooks = books.filter(book =>
-        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchTerm.toLowerCase())
+        book.book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.book.author.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Вычисляем индексы для текущей страницы
     const totalBooks = filteredBooks.length;
-
-    // Вычисляем книги, которые нужно отображать на текущей странице
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentBooks = filteredBooks.slice(startIndex, endIndex);
+    const currentBooks = filteredBooks.slice(0, ITEMS_PER_PAGE);
 
     return (
         <div className="container">
-            <Sidebar/>
+            <Sidebar />
             <div className="main-container-book">
                 <div className="upper-container">
                     <Search
@@ -128,7 +73,7 @@ const Favourites = () => {
                         size="large"
                         onSearch={handleSearch}
                     />
-                    <UpperMenu/>
+                    <UpperMenu />
                 </div>
                 <div className="favourites-content">
                     <h2 className="level-title">
@@ -136,7 +81,7 @@ const Favourites = () => {
                     </h2>
                     <div className="books-grid-favourites">
                         {currentBooks.map((book) => (
-                            <Book key={book.id} bookData={book} onClick={() => handleBookClick(book.id)}/>
+                            <Book key={book.id} bookData={book.book} onClick={() => handleBookClick(book.book.bookId)} />
                         ))}
                     </div>
                     <div className="pagination-container">

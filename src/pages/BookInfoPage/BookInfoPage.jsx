@@ -1,63 +1,126 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import './styles.css'
-import { Button } from "antd";
+import './styles.css';
+import { Button, message } from "antd";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import download from './images/download.png';
+import axios from 'axios';
+import {useParams} from "react-router-dom";
 
 const BookInfoPage = () => {
     const [bookData, setBookData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
+    const { bookId } = useParams();
+    const accessToken = localStorage.getItem('accessToken');
 
     useEffect(() => {
-        const mockBookData = {
-            title: "Brothers in Arms",
-            author: "Julie Reeves",
-            genre: "fantasy",
-            description: "The life of teenagers in high school is a difficult period. This is that age when you make lots of observations. Ordinary things look suspicious. One can think that this is only rich imagination and a difficult transitional age. But if it is not so? If there are really odities? Why aren&apos;t students at Mangrove High School allowed to use computers? Why is it forbidden to study maths? Why are there guards in the school who watch children all the time? Everything is very strange. Even thoughts can be overheard by someone. Finn and Ellie want to understand what&apos;s wrong and ask questions. And their lives are turned upside down. Suddenly even their families are no longer what they seemed. Who can they trust now?",
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            downloads: 123,
-            likes: 45,
-            hardWords: "sleepyhead, sounded, pushed, judged, wondering, attacked, avoided, parents, gasping, maths, smelling, liked, grey, moved, passed, hurting, staying, carried, discovered, brushed, worked, rested, terminated, parted, staring, rushed, joking, unkindly, lit, kept."
+        const fetchBookData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8082/books/${bookId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                }); // Adjust the URL based on your API
+                setBookData(response.data);
+
+                const favoritesResponse = await axios.get(`http://localhost:8082/favourites`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const isBookInFavorites = favoritesResponse.data.content.some(
+                    (favorite) => favorite.book.bookId === bookId
+                );
+                setIsFavorite(isBookInFavorites);
+
+            } catch (error) {
+                console.error('Error fetching book data:', error);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        setTimeout(() => {
-            setBookData(mockBookData);
-            setLoading(false);
-        }, 1000);
-    }, []);
+        fetchBookData();
+    }, [bookId]);
 
-    const handleDownloadComplete = () => {
-        console.log('Download completed');
-    };
-
-    const handleCompleted = () => {
-        console.log('Completed');
-    };
-
-    const handleCancel = () => {
-        console.log('Download canceled');
+    const handleDownload = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8082/books/${bookId}/download`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', bookData.bookFile);
+            document.body.appendChild(link);
+            link.click();
+            message.success('Download started');
+        } catch (error) {
+            console.error('Error downloading book:', error);
+            message.error('Download failed');
+        }
     };
 
     const toggleFavorite = async () => {
         try {
-            // Simulate API call to add/remove favorite
-            // Replace this with your actual API call
-            if (!isFavorite) {
-                // Assuming an API call to add to favorites
-                console.log(`Adding ${bookData.title} to favorites...`);
-                setIsFavorite(true);
+            if (isFavorite) {
+                // Remove from favorites
+                await axios.delete(`http://localhost:8082/favourites/books/${bookId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+                message.success('Removed from favorites');
             } else {
-                // Assuming an API call to remove from favorites
-                console.log(`Removing ${bookData.title} from favorites...`);
-                setIsFavorite(false);
+                // Add to favorites
+                await axios.post(`http://localhost:8082/favourites/books/${bookId}`, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+                message.success('Added to favorites');
             }
-            // Here you would normally handle the response from your API
+            setIsFavorite(!isFavorite); // Toggle favorite state
         } catch (error) {
-            console.error('Error updating favorites:', error);
+            console.error('Error toggling favorite:', error);
+            message.error('Failed to update favorites');
+        }
+    };
+
+    const handleCompleted = async () => {
+
+        try {
+            await axios.post(`http://localhost:8082/book-progress/${bookId}/mark-completed`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+            message.success('Book marked as completed');
+        } catch (error) {
+            console.error('Error marking book as completed:', error);
+            message.error('Failed to mark book as completed');
+        }
+    };
+
+    const handleCancel = async () => {
+
+        try {
+            await axios.post(`http://localhost:8082/book-progress/${bookId}/unmark-completed`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+            message.success('Book marked as not completed');
+        } catch (error) {
+            console.error('Error unmarking book:', error);
+            message.error('Failed to unmark book as completed');
         }
     };
 
@@ -69,6 +132,10 @@ const BookInfoPage = () => {
         );
     }
 
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=COVERS&file=${coverImage}`;
+    };
+
     return (
         <div className={'book-info-page'}>
             <Sidebar />
@@ -79,7 +146,7 @@ const BookInfoPage = () => {
                 <div className="story-container1">
                     <div className="story-container">
                         <div className="card-container1">
-                            <img src={bookData.coverImage} alt="Book Cover" className="image-container-with-text" />
+                            <img src={bookData.coverImage ? getCoverImageUrl(bookData.coverImage) : null} alt="Book Cover" className="image-container-with-text" />
                             <div className="numeric-info-container">
                                 <div className="flex-row-container">
                                     <img src={download} className="image-with-text-overlay2" alt="Downloads" />
@@ -115,7 +182,7 @@ const BookInfoPage = () => {
                     </p>
                     <div className="download-section2">
                         <div className="flex-row-container">
-                            <Button className="download-button-style" onClick={handleDownloadComplete}>Download</Button>
+                            <Button className="download-button-style" onClick={handleDownload}>Download</Button>
                         </div>
                         <div className="download-section">
                             <Button className="completed-button-style" onClick={handleCompleted}>Completed</Button>
