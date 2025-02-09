@@ -3,78 +3,127 @@ import React, { useState, useEffect } from 'react';
 import './styles.css';
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // eslint-disable-next-line react/prop-types
-const ListeningTestComponent = ({ currentLevel }) => {
+const ListeningTestComponent = ({ currentLevel, topicId }) => {
     const [showAnswers, setShowAnswers] = useState(false);
     const [testPassed, setTestPassed] = useState(false);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
-    const navigate = useNavigate(); // Инициализация navigate
-    const [selectedAnswers, setSelectedAnswers] = useState(Array(5).fill(null)); // Состояние для хранения выбранных ответов
+    const [audioSrc, setAudioSrc] = useState('');
+    const navigate = useNavigate();
+    const [selectedAnswers, setSelectedAnswers] = useState([]);
+    const accessToken = localStorage.getItem('accessToken');
+    const [isLoading, setIsLoading] = useState(true);
 
-    const audioSrc = "path/to/your/audio/file.mp3"; // Замените на ваш путь к аудиофайлу
+    useEffect(() => {
+        const fetchTestAndQuestions = async () => {
+            try {
+                setIsLoading(true);
+                const testResponse = await axios.get(`http://localhost:8083/tests/lessons/${topicId}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
 
-    const questions = [
-        {
-            question: "What did the speaker mention about their day?",
-            options: ["It was boring.", "It was exciting.", "It was long."],
-            answer: "It was exciting."
-        },
-        {
-            question: "Which activity did the speaker do?",
-            options: ["Went shopping", "Visited a friend", "Watched a movie"],
-            answer: "Visited a friend"
-        },
-        {
-            question: "What time did they finish their activity?",
-            options: ["In the morning", "In the afternoon", "In the evening"],
-            answer: "In the evening"
-        },
-        {
-            question: "How did they feel at the end of the day?",
-            options: ["Tired", "Happy", "Sad"],
-            answer: "Happy"
-        },
-        {
-            question: "What was the weather like?",
-            options: ["Sunny", "Rainy", "Cloudy"],
-            answer: "Sunny"
-        }
-    ];
+                const testId = testResponse.data.testId;
 
-    const numQuestions = 5;
+                const questionsResponse = await axios.get(`http://localhost:8083/questions/tests/${testId}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+
+                const questionsWithAnswers = await Promise.all(
+                    questionsResponse.data.map(async (question) => {
+                        const answersResponse = await axios.get(`http://localhost:8083/answer-options/questions/${question.questionId}`, {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        });
+                        return { ...question, answers: answersResponse.data };
+                    })
+                );
+
+                const numQuestions = Math.min(questionsWithAnswers.length, 5);
+                setSelectedQuestions(getRandomQuestions(questionsWithAnswers, numQuestions));
+                setSelectedAnswers(Array(numQuestions).fill(null));
+
+                const lessonMaterialsResponse = await axios.get(`http://localhost:8083/lesson-materials/lessons/${topicId}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+
+                const content = JSON.parse(lessonMaterialsResponse.data.content);
+                const audioContent = content.content.find(item => item.type === "audio");
+                if (audioContent && audioContent.audioSrc) {
+                    const generatedAudioSrc = `http://localhost:9999/files/audios/show?file=${encodeURIComponent(audioContent.audioSrc)}&bucket=AUDIOS`;
+                    setAudioSrc(generatedAudioSrc);
+                }
+
+            } catch (error) {
+                console.error("Error fetching test or questions", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTestAndQuestions();
+    }, [topicId, accessToken]);
 
     const getRandomQuestions = (arr, n) => {
         const shuffled = [...arr].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, n);
     };
 
-    useEffect(() => {
-        setSelectedQuestions(getRandomQuestions(questions, numQuestions));
-        setSelectedAnswers(Array(numQuestions).fill(null)); // Сброс выбранных ответов
-    }, []);
-
-    const checkAnswers = () => {
+    const checkAnswers = async () => {
         let correctAnswers = 0;
         selectedQuestions.forEach((question, index) => {
-            if (question.answer === selectedAnswers[index]) {
+            const selectedAnswerIndex = question.answers.findIndex(option => option.text === selectedAnswers[index]);
+            if (selectedAnswerIndex !== -1 && question.answers[selectedAnswerIndex].isCorrect) {
                 correctAnswers++;
             }
         });
-        const percentage = (correctAnswers / numQuestions) * 100;
+        const percentage = (correctAnswers / selectedQuestions.length) * 100;
         setTestPassed(percentage >= 60);
         setShowAnswers(true);
+
+        // // Создание результата теста
+        // const userTestResultDTO = {
+        //     score: percentage,
+        //     passed: false
+        // };
+        //
+        // try {
+        //     await axios.post(`http://localhost:8083/user-test-results/lessons/${topicId}`, userTestResultDTO, {
+        //         headers: {
+        //             Authorization: `Bearer ${accessToken}`
+        //         }
+        //     });
+        // } catch (error) {
+        //     console.error("Error creating user test result", error);
+        // }
+    };
+
+    const handleNext = async () => {
+        try {
+            await axios.post(`http://localhost:8083/user-test-results/lessons/${topicId}/mark-passed`, {}, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            navigate(`/listening/${currentLevel}`);
+        } catch (error) {
+            console.error("Error marking test as passed", error);
+        }
     };
 
     const resetTest = () => {
         setShowAnswers(false);
         setTestPassed(false);
-        setSelectedQuestions(getRandomQuestions(questions, numQuestions));
-        setSelectedAnswers(Array(numQuestions).fill(null)); // Сброс выбранных ответов
-    };
-
-    const handleNext = () => {
-        navigate(`/listening/${currentLevel}`); // Переход на страницу с текущим уровнем
+        setSelectedQuestions(getRandomQuestions(selectedQuestions, selectedQuestions.length));
+        setSelectedAnswers(Array(selectedQuestions.length).fill(null));
     };
 
     const handleAnswerChange = (index, value) => {
@@ -85,40 +134,53 @@ const ListeningTestComponent = ({ currentLevel }) => {
 
     return (
         <div className="article-container">
-            <audio controls style={{ marginBottom: '20px' }}>
-                <source src={audioSrc} type="audio/mpeg" />
-                Ваш браузер не поддерживает аудиоплеер.
-            </audio>
-            {selectedQuestions.map((question, index) => (
-                <div key={index}>
-                    <h3>{question.question}</h3>
-                    <ul>
-                        {question.options.map((option, optionIndex) => (
-                            <li key={optionIndex}>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name={`question-${index}`}
-                                        id={`answer-${index}-${optionIndex}`}
-                                        value={option}
-                                        checked={selectedAnswers[index] === option} // Установка состояния checked
-                                        onChange={() => handleAnswerChange(index, option)} // Обработка изменения
-                                        disabled={showAnswers}
-                                    />
-                                    {option}
-                                </label>
-                            </li>
-                        ))}
-                    </ul>
-                    {showAnswers && (
-                        <p style={{marginBottom: '20px'}}>
-                            Правильный ответ: {question.answer}
-                        </p>
-                    )}
-                </div>
-            ))}
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                audioSrc && (
+                    <audio controls style={{ marginBottom: '20px' }}>
+                        <source src={audioSrc} type="audio/mpeg" />
+                        Ваш браузер не поддерживает аудиоплеер.
+                    </audio>
+                )
+            )}
+            {selectedQuestions.length > 0 ? (
+                selectedQuestions.map((question, index) => (
+                    <div key={index}>
+                        <h3>{question.text}</h3> {/* Display the question text */}
+                        <ul>
+                            {question.answers.map((option, optionIndex) => (
+                                <li key={optionIndex}>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name={`question-${index}`}
+                                            id={`answer-${index}-${optionIndex}`}
+                                            value={option.text}
+                                            checked={selectedAnswers[index] === option.text}
+                                            onChange={() => handleAnswerChange(index, option.text)}
+                                            disabled={showAnswers}
+                                        />
+                                        {option.text}
+                                    </label>
+                                </li>
+                            ))}
+                        </ul>
+                        {showAnswers && (
+                            <p style={{ marginBottom: '20px' }}>
+                                Правильный ответ: {question.answers.find(a => a.isCorrect)?.text}
+                            </p>
+                        )}
+                    </div>
+                ))
+            ) : null}
             <div className="test-button-container">
-                <Button type="primary" size="large" onClick={showAnswers ? (testPassed ? handleNext : resetTest) : checkAnswers} style={{ margin: '20px auto' }}>
+                <Button
+                    type="primary"
+                    size="large"
+                    onClick={showAnswers ? (testPassed ? handleNext : resetTest) : checkAnswers}
+                    style={{ margin: '20px auto' }}
+                >
                     {showAnswers && testPassed ? 'Next' : showAnswers ? 'Пройти еще раз' : 'Проверить'}
                 </Button>
             </div>

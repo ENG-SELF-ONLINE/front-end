@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import MainPage from "./pages/MainPage/MainPage.jsx";
 import AuthPage from "./pages/AuthPage/AuthPage.jsx";
@@ -21,8 +21,14 @@ import ListeningTest from "./pages/ListeningTest/ListeningTest.jsx";
 import Friends from "./pages/Friends/Friends.jsx";
 import FriendProfile from "./pages/FriendProfile/FriendProfile.jsx";
 import AIHelper from "./pages/AIHelper/AIHelper.jsx";
+// import setupAxiosInterceptors from "./setupAxiosInterceptors.jsx";
 
 function App() {
+
+    // useEffect(() => {
+    //     setupAxiosInterceptors();
+    // }, []);
+
     return (
         <BrowserRouter>
             <Routes>
@@ -46,7 +52,6 @@ function App() {
                 <Route path="/friends" element={<Friends />} />
                 <Route path="/friends/:friendId" element={<FriendProfile />} />
                 <Route path="/helper" element={<AIHelper />} />
-                {/* Добавьте другие маршруты, если нужно */}
             </Routes>
         </BrowserRouter>
     );

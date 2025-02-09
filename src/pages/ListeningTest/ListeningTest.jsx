@@ -7,7 +7,7 @@ import ListeningTestComponent from "../../components/ListeningTest/ListeningTest
 import './styles.css'
 
 const ListeningTest = () => {
-    const { level } = useParams();
+    const { level, topicId } = useParams();
     const [activeLevel, setActiveLevel] = useState(level || "A1");
 
     const getLevelDescription = (level) => {
@@ -44,7 +44,7 @@ const ListeningTest = () => {
                     <h2 className="listening-test-level-title">
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
-                    <ListeningTestComponent currentLevel={activeLevel} />
+                    <ListeningTestComponent currentLevel={activeLevel} topicId={topicId} />
                 </div>
             </div>
         </div>

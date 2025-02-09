@@ -1,11 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from "react";
-import { Drawer, Progress } from "antd";
-import { BellOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import React, {useState, useEffect} from "react";
+import {Drawer, Progress} from "antd";
+import {BellOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
 import './styles.css';
 import avatar from './images/avatar.png';
 import exit from './images/exit.png';
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const icons = {
     avatar: avatar,
@@ -16,6 +17,7 @@ const UpperMenu = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [user, setUser] = useState(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -73,15 +75,13 @@ const UpperMenu = () => {
                 }
             };
 
-            // Замените /friendships/ на правильный endpoint
             const response = await axios.put(
                 `http://localhost:8084/friendships/${friendshipId}?status=${status}`,
-                {}, // Пустое тело запроса, т.к. status передается как query parameter
+                {},
                 config
             );
 
             if (response.status === 200) {
-                // Успешно обновлено - обновляем список уведомлений, удаляя обработанное
                 setNotifications(prevNotifications =>
                     prevNotifications.filter(notification => notification.contextId !== friendshipId)
                 );
@@ -104,6 +104,28 @@ const UpperMenu = () => {
 
     const getAvatarUrl = (photo) => {
         return `http://localhost:9999/files/images/show?bucket=PROFILE&file=${photo}`;
+    };
+
+    const handleLogout = async () => {
+        try {
+            const refreshToken = localStorage.getItem('refreshToken');
+            const response = await axios.post('http://localhost:8888/logout', refreshToken, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                }
+            );
+
+            if (response.status === 200) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                navigate('/'); // Redirect to login page
+            } else {
+                console.error('Logout failed:', response);
+            }
+        } catch (error) {
+            console.error('Ошибка при выходе:', error);
+        }
     };
 
     return (
@@ -138,10 +160,8 @@ const UpperMenu = () => {
                         />
                     </div>
                 )}
-                <div className={`header-icon exit-icon`} onClick={() => {
-                    window.location.href = '/exit';
-                }}>
-                    <img src={icons.exit} alt="Выход" />
+                <div className={`header-icon exit-icon`} onClick={handleLogout}>
+                    <img src={icons.exit} alt="Выход"/>
                 </div>
             </div>
 

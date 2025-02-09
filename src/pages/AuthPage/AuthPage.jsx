@@ -41,7 +41,12 @@ const AuthPage = () => {
 
             if (response.status === 200) {
                 const token = response.data.access_token;
+                const refreshToken = response.data.refresh_token;
+                const expiresInSeconds = response.data.expires_in;
+                const expiryTime = Date.now() + expiresInSeconds * 1000;
+                localStorage.setItem('expiryTime', expiryTime);
                 localStorage.setItem('accessToken', token);
+                localStorage.setItem('refreshToken', refreshToken);
                 navigate('/statistics');
                 message.success('Успешная авторизация!');
             } else {

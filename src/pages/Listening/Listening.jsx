@@ -4,10 +4,13 @@ import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import './styles.css'
 import {Link, useParams} from "react-router-dom";
+import axios from "axios";
 
 const Listening = () => {
     const { level } = useParams();
     const [activeLevel, setActiveLevel] = useState(level || "A1");
+    const [lessons, setLessons] = useState([]);
+    const accessToken = localStorage.getItem('accessToken');
 
     const getLevelDescription = (level) => {
         switch (level) {
@@ -28,19 +31,29 @@ const Listening = () => {
         }
     };
 
-    // Mock data for topics relevant to the A1 level
-    const topics = [
-        { id: 1, title: "Introduction to English" },
-        { id: 2, title: "Simple Present Tense" },
-        { id: 3, title: "Wh- Questions" },
-        { id: 4, title: "Countable and Uncountable Nouns" },
-        { id: 5, title: "Common Adjectives" },
-        { id: 6, title: "Everyday Vocabulary" }
-    ];
-
     useEffect(() => {
         setActiveLevel(level);
     }, [level]);
+
+    useEffect(() => {
+        const fetchLessons = async () => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:8083/lessons?level=${activeLevel}&type=LISTENING`, // Type is GRAMMAR
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`, // Include access token
+                        },
+                    }
+                );
+                setLessons(response.data); // Update state with fetched lessons
+            } catch (error) {
+                console.error("Error fetching lessons:", error);
+            }
+        };
+
+        fetchLessons();
+    }, [activeLevel, accessToken]); // Add accessToken as dependency
 
     return (
         <div className="listening-page">
@@ -54,9 +67,9 @@ const Listening = () => {
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
                     <ul className="listening-topics">
-                        {topics.map((topic) => (
-                            <li key={topic.id}>
-                                <Link to={`/listening/${activeLevel}/${topic.id}`}> {/*  Link для перехода  */}
+                        {lessons.map((topic) => (
+                            <li key={topic.lessonId}>
+                                <Link to={`/listening/${activeLevel}/${topic.lessonId}`}> {/*  Link для перехода  */}
                                     {topic.title}
                                 </Link>
                             </li>

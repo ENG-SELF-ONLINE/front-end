@@ -6,7 +6,7 @@ import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import TestComponent from "../../components/Test/TestComponent.jsx";
 
 const Test = () => {
-    const { level } = useParams();
+    const { level, topicId } = useParams(); // Extract both level and topicId
     const [activeLevel, setActiveLevel] = useState(level || "A1");
 
     const getLevelDescription = (level) => {
@@ -43,7 +43,7 @@ const Test = () => {
                     <h2 className="topic-level-title">
                         {activeLevel}: {getLevelDescription(activeLevel)}
                     </h2>
-                    <TestComponent currentLevel={activeLevel}/>
+                    <TestComponent currentLevel={activeLevel} topicId={topicId} />
                 </div>
             </div>
         </div>
