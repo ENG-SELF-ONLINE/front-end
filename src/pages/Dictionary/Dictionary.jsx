@@ -8,125 +8,72 @@ import Search from "antd/es/input/Search.js";
 import {useNavigate} from "react-router-dom";
 import Deck from "../../components/Deck/Deck.jsx";
 import {Button} from "@mui/base";
+import axios from "axios";
 
 const ITEMS_PER_PAGE = 15;
 
 const Dictionary = () => {
-    const navigate = useNavigate(); // Инициализация navigate
-    const [decks, setDecks] = useState([
-        {
-            id: 1,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 2,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 3,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 4,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 5,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 6,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 7,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 8,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 9,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 10,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 11,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 12,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 13,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 14,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Грибы",
-            author: "24 слова"
-        },
-        {
-            id: 15,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-        {
-            id: 16,
-            coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-            title: "Животные",
-            author: "24 слова"
-        },
-    ]);
-
+    const navigate = useNavigate();
+    const [decks, setDecks] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
-    const [imageUrl, setImageUrl] = useState(null);
+    const [image, setImage] = useState(null);
+    const [coverImageUrl, setCoverImageUrl] = useState(null);
+    const accessToken = localStorage.getItem('accessToken');
+    const [deckWordsCount, setDeckWordsCount] = useState({});
+    const [totalDecks, setTotalDecks] = useState(0);
 
     useEffect(() => {
-        // Заглушка для fetchBooks
+        fetchDecks();
     }, [currentPage]);
+
+    const fetchDecks = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8081/decks`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+                params: {
+                    page: currentPage - 1,
+                    size: ITEMS_PER_PAGE
+                }
+            });
+            setDecks(response.data.content);
+            setTotalDecks(response.data.totalElements)
+
+            if (response.data.content.length > 0) {
+                await fetchAllDeckWordCounts(response.data.content);
+            }
+        } catch (error) {
+            console.error("Error fetching decks", error);
+        }
+    };
+
+    const fetchAllDeckWordCounts = async (decks) => {
+        const counts = {};
+        for (const deck of decks) {
+            try {
+                const response = await axios.get(`http://localhost:8081/word-progress/decks/${deck.deckId}/statistics`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    },
+                });
+                counts[deck.deckId] = response.data.totalWords;
+            } catch (error) {
+                console.error(`Error fetching word count for deck ${deck.deckId}`, error);
+                counts[deck.deckId] = 'Error';
+            }
+        }
+        setDeckWordsCount(counts);
+    };
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    const handleBookClick = (deckId) => {
+    const handleDeckClick = (deckId) => {
         navigate(`/decks/${deckId}`);
     };
 
@@ -136,31 +83,54 @@ const Dictionary = () => {
     };
 
     const filteredDecks = decks.filter(deck =>
-        deck.title.toLowerCase().includes(searchTerm.toLowerCase())
+        deck.deckName && deck.deckName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleCreate = () => {
-        const newDeck = {
-            id: decks.length + 1, // Простой способ генерации уникального ID
-            coverImage: imageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
-            title: cardTitle || 'Название колоды',
-            author: '0 слов'
-        };
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=DECKS&file=${coverImage}`;
+    };
 
-        setDecks([...decks, newDeck]); // Добавляем новую колоду в состояние
+    const getDeckWordsCount = (deckId) => {
+        return deckWordsCount[deckId] || 0;
+    };
+
+    const handleCreate = async () => {
+        const formData = new FormData();
+        formData.append("name", cardTitle);
+
+        if (image) {
+            formData.append("file", image);
+        } else {
+            const defaultImageUrl = 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5';
+            const response = await fetch(defaultImageUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'default-image.png', { type: 'image/png' });
+            formData.append("file", file);
+        }
+
+        try {
+            const response = await axios.post(`http://localhost:8081/decks`, formData, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log(response);
+            fetchDecks();
+        } catch (error) {
+            console.error("Error creating deck", error);
+        }
         resetModal();
     };
 
     const resetModal = () => {
         setCardTitle('');
-        setImageUrl(null);
+        setImage(null);
+        setCoverImageUrl(null);
         setIsModalVisible(false);
     };
 
-    const totalDecks = filteredDecks.length;
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentDecks = filteredDecks.slice(startIndex, endIndex);
+    const currentDecks = filteredDecks.slice(0, ITEMS_PER_PAGE);
 
     return (
         <div className="container">
@@ -179,7 +149,11 @@ const Dictionary = () => {
                     <h2 className="level-title">Ваши колоды:</h2>
                     <div className="decks-grid">
                         {currentDecks.map((deck) => (
-                            <Deck key={deck.id} deckData={deck} onClick={() => handleBookClick(deck.id)} />
+                            <Deck key={deck.deckId} deckData={{
+                                coverImage: getCoverImageUrl(deck.deckPhoto),
+                                deckName: deck.deckName,
+                                author: getDeckWordsCount(deck.deckId),
+                            }} onClick={() => handleDeckClick(deck.deckId)} />
                         ))}
                     </div>
                     <div className="pagination-container">
@@ -195,7 +169,6 @@ const Dictionary = () => {
                 </div>
             </div>
 
-            {/* Модальное окно создания карточки */}
             {isModalVisible && (
                 <div className="modal-overlay">
                     <Modal
@@ -214,19 +187,25 @@ const Dictionary = () => {
                                     size="large"
                                 />
                                 <div style={{ margin: '30px 0' }}>
-                                    <Button onClick={() => {
-                                        const imageUrl = prompt("Введите URL изображения:");
-                                        if (imageUrl) {
-                                            setImageUrl(imageUrl);
-                                        }
-                                    }}>Выбрать фотографию</Button>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                setImage(file);
+                                                setCoverImageUrl(URL.createObjectURL(file));
+                                            }
+                                        }}
+                                        style={{ display: 'block', margin: '20px 0' }}
+                                    />
                                 </div>
                             </div>
                             <div className="right-container">
                                 <Deck
                                     deckData={{
-                                        coverImage: imageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
-                                        title: cardTitle || 'Название колоды',
+                                        coverImage: coverImageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
+                                        deckName: cardTitle || 'Название колоды',
                                         author: '0 слов',
                                     }}
                                 />

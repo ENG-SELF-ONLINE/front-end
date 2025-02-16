@@ -1,91 +1,113 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import CardMenuContainer from "../../components/CardMenuContainer/CardMenuContainer.jsx";
-import { Button, Input, Modal } from "antd";
-import Deck from "../../components/Deck/Deck.jsx";
-
-const mockDecks = [
-    {
-        id: 1, title: "Животные", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5",
-        newItems: 10, learning: 5, repeatable: 15, words: [
-            {
-                id: 1,
-                word: "Cat",
-                translation: "Кот",
-                image: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5"
-            },
-            {
-                id: 2,
-                word: "Dog",
-                translation: "Собака",
-                image: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5"
-            },
-            {
-                id: 3,
-                word: "Bird",
-                translation: "Птица",
-                image: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5"
-            }
-        ]
-    }
-];
+import {Button, Input, Modal} from "antd";
+import {useParams} from "react-router-dom";
+import axios from "axios";
+import Word from "../../components/Word/Word.jsx";
 
 const WordList = () => {
-    const [selectedDeck, setSelectedDeck] = useState(mockDecks[0]);
+    const [selectedDeck, setSelectedDeck] = useState(null);
+    const [words, setWords] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [currentWordId, setCurrentWordId] = useState(null);
-    const [cardTitle, setCardTitle] = useState('');
     const [imageUrl, setImageUrl] = useState(null);
     const [word, setWord] = useState('');
     const [translation, setTranslation] = useState('');
+    const accessToken = localStorage.getItem('accessToken');
+    const {deckId} = useParams();
+    const [image, setImage] = useState(null);
+    const [coverImageUrl, setCoverImageUrl] = useState(null);
 
-    const handleChangeDeck = () => {
-        if (currentWordId !== null) {
-            const updatedWords = selectedDeck.words.map(item => {
-                if (item.id === currentWordId) {
-                    return { ...item, word: cardTitle, translation: translation };
-                }
-                return item;
+    const fetchDeck = useCallback(async () => {
+        try {
+            const deckResponse = await axios.get(`http://localhost:8081/decks/${deckId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
             });
+            setSelectedDeck(deckResponse.data);
 
-            setSelectedDeck({ ...selectedDeck, words: updatedWords });
+            const wordsResponse = await axios.get(`http://localhost:8081/word-progress/decks/${deckId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setWords(wordsResponse.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
-        resetModal();
-    };
+    }, [deckId, accessToken]);
+
+    useEffect(() => {
+        fetchDeck();
+    }, [fetchDeck, deckId, accessToken]);
 
     const resetModal = () => {
         setIsModalVisible(false);
         setWord('');
         setTranslation('');
-        setCardTitle('');
         setImageUrl(null);
         setCurrentWordId(null);
     };
 
     const openEditModal = (item) => {
-        setCurrentWordId(item.id);
-        setWord(item.word);
-        setTranslation(item.translation);
-        setCardTitle(item.word);
-        setImageUrl(item.image);
+        setCurrentWordId(item.word.wordId);
+        setWord(item.word.commonWord.wordName);
+        setTranslation(item.word.wordTranslation ? item.word.wordTranslation : item.word.commonWord.wordTranslation);
+        setImageUrl(item.word.wordPhoto);
         setIsModalVisible(true);
     };
 
+    const handleUpdateWord = async () => {
+        if (currentWordId !== null) {
+            const updatedWordDTO = {
+                wordId: currentWordId,
+                wordTranslation: translation,
+                wordPhoto: imageUrl,
+            };
+
+            try {
+                await axios.put(`http://localhost:8081/words/${currentWordId}`, updatedWordDTO, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                await fetchDeck();
+            } catch (error) {
+                console.error('Error updating word:', error);
+            }
+        }
+        resetModal();
+    };
+
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=DECKS&file=${coverImage}`;
+    };
+
+    if (!selectedDeck) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="word-list-page">
-            <Sidebar />
+            <Sidebar/>
             <div className="word-list-main">
                 <div className="word-list-upper-content">
                     <UpperMenu/>
                 </div>
                 <div className="word-list-container">
-                    <h1 className="word-list-title">{selectedDeck.title}</h1>
+                    <h1 className="word-list-title">{selectedDeck.deckName}</h1>
                     <div className="word-list-container-with-stats">
                         <div className="word-list-stats-container1">
-                            <CardMenuContainer deckData={selectedDeck}/>
+                            <CardMenuContainer deckData={{
+                                coverImage: getCoverImageUrl(selectedDeck.deckPhoto),
+                                deckName: selectedDeck.deckName,
+                                id: selectedDeck.deckId,
+                            }}/>
                         </div>
                         <div className="word-list-stats-container2">
                             <div className="vertical-centered-container">
@@ -96,15 +118,19 @@ const WordList = () => {
                                     <p className="word-translation-display-style">Действие</p>
                                 </div>
                                 <div className="animal-info-container">
-                                    {selectedDeck.words.map((item) => (
-                                        <div key={item.id} className="flex-row-with-buttons">
+                                    {words.map((item) => (
+                                        <div key={item.wordProgressId} className="flex-row-with-buttons">
                                             <div className="flex-container-with-buttons">
-                                                <p className="animal-title">{item.word}</p>
+                                                <p className="animal-title">{item.word.commonWord.wordName}</p>
                                             </div>
                                             <div className="flex-container-with-buttons">
-                                                <p className="animal-title-text-style">{item.translation}</p>
+                                                <p className="animal-title-text-style">
+                                                    {item.word.wordTranslation ? item.word.wordTranslation : item.word.commonWord.wordTranslation}
+                                                </p>
                                             </div>
-                                            <p className="animal-title-text-style">25.11.2024</p>
+                                            <p className="animal-title-text-style">
+                                                {item.nextReviewDate && new Intl.DateTimeFormat('ru-RU').format(new Date(item.nextReviewDate))}
+                                            </p>
                                             <div className="flex-container-with-buttons">
                                                 <Button className="button-style-primary"
                                                         onClick={() => openEditModal(item)}>Изменить</Button>
@@ -130,43 +156,46 @@ const WordList = () => {
                     >
                         <div className="modal-containers">
                             <div className="left-container">
-                                <p className="word-card-menu">Введите слово</p>
+                                <p className="word-card-menu">Слово</p>
                                 <Input
                                     value={word}
                                     placeholder="Слово"
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setWord(value);
-                                        setCardTitle(value); // Сохраняем значение
-                                    }}
+                                    readOnly
                                     size="large"
                                 />
                                 <p className="word-card-menu">Введите перевод</p>
                                 <Input
                                     value={translation}
                                     placeholder="Перевод"
-                                    onChange={(e) => setTranslation(e.target.value)} // Исправлено
+                                    onChange={(e) => setTranslation(e.target.value)}
                                     size="large"
                                 />
                                 <div style={{margin: '30px 0'}}>
-                                    <Button onClick={() => {
-                                        const newImageUrl = prompt("Введите URL изображения:");
-                                        if (newImageUrl) {
-                                            setImageUrl(newImageUrl);
-                                        }
-                                    }}>Выбрать фотографию</Button>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                setImage(file);
+                                                setCoverImageUrl(URL.createObjectURL(file));
+                                            }
+                                        }}
+                                        style={{display: 'block', margin: '20px 0'}}
+                                    />
                                 </div>
                             </div>
                             <div className="right-container">
-                                <Deck
-                                    deckData={{
-                                        coverImage: imageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
-                                        title: cardTitle || 'Слово',
+                                <Word
+                                    wordData={{
+                                        image: coverImageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
+                                        word: word || 'Слово',
                                     }}
                                 />
                             </div>
                         </div>
-                        <Button className="create-button-modal" type="primary" onClick={handleChangeDeck}>Изменить</Button>
+                        <Button className="create-button-modal" type="primary"
+                                onClick={handleUpdateWord}>Изменить</Button>
                     </Modal>
                 </div>
             )}

@@ -4,7 +4,6 @@ import "./styles.css";
 import PropTypes from "prop-types";
 
 const Deck = ({ deckData, onClick }) => {
-    // bookData - это объект, который передается из BooksPage
 
     return (
         <div className="deck-card" onClick={onClick}>
@@ -18,7 +17,7 @@ const Deck = ({ deckData, onClick }) => {
                         }}
                     />
                     <div className="deck-info">
-                        <h3 className="title">{deckData.title}</h3>
+                        <h3 className="deckName">{deckData.deckName}</h3>
                         <p className="author">{deckData.author}</p>
                     </div>
                 </>
@@ -30,8 +29,8 @@ const Deck = ({ deckData, onClick }) => {
 Deck.propTypes = {
     deckData: PropTypes.shape({
         coverImage: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        author: PropTypes.string,
+        deckName: PropTypes.string.isRequired,
+        author: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }).isRequired,
     onClick: PropTypes.func,
 };

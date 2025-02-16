@@ -37,7 +37,6 @@ const MainPage = () => {
     const [totalTime, setTotalTime] = useState(0);
     const [wordData, setWordData] = useState(null);
     const [learnData, setLearnData] = useState(null);
-    const [hasNextWeekData, setHasNextWeekData] = useState(false);
     const [activeWeek, setActiveWeek] = useState(0);
 
     useEffect(() => {
@@ -56,7 +55,9 @@ const MainPage = () => {
                 const formattedStartDate = startDate.toISOString();
                 const formattedEndDate = endDate.toISOString();
 
-                console.log('API Data:', startDate, endDate);
+                console.log('Fetching data for week:', activeWeek);
+                console.log('Start Date:', formattedStartDate);
+                console.log('End Date:', formattedEndDate);
 
                 const response = await axios.get(
                     `http://localhost:8086/statistics/activity?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
@@ -64,12 +65,10 @@ const MainPage = () => {
                 );
 
                 const apiData = response.data;
-
                 console.log('API Data:', apiData);
 
                 if (apiData) {
                     const transformedWeekData = transformActivitiesData(apiData.activities);
-
                     setWeekData(transformedWeekData);
                     setTotalTime(apiData.totalTime);
 
@@ -89,21 +88,6 @@ const MainPage = () => {
                         repeatingWords: apiData.deckStatisticsDTO.repeatingWords
                     });
 
-                    const nextWeekStartDate = getStartDateForWeek(activeWeek + 1).toISOString();
-                    const nextWeekEndDate = getEndDateForWeek(activeWeek + 1).toISOString();
-
-                    const nextWeekResponse = await axios.get(
-                        `http://localhost:8086/statistics/activity?startDate=${nextWeekStartDate}&endDate=${nextWeekEndDate}`,
-                        config
-                    );
-
-                    const nextWeekApiData = nextWeekResponse.data;
-
-                    setHasNextWeekData(
-                        nextWeekApiData !== null &&
-                        (nextWeekApiData.activities !== null && Object.keys(nextWeekApiData.activities).length > 0)
-                    );
-
                 } else {
                     resetData();
                 }
@@ -122,21 +106,26 @@ const MainPage = () => {
         setTotalTime(0);
         setWordData(null);
         setLearnData(null);
-        setHasNextWeekData(false);
     };
 
     const getStartDateForWeek = (weekNumber) => {
         const now = new Date();
-        const dayOfWeek = now.getDay();
-        const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-        return new Date(now.setDate(diff + (weekNumber * 7)));
+        const dayOfWeek = now.getUTCDay();
+        const diff = now.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+
+        const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff + (weekNumber * 7)));
+        startDate.setUTCHours(0, 0, 0, 0);
+        return startDate;
     };
 
     const getEndDateForWeek = (weekNumber) => {
         const now = new Date();
-        const dayOfWeek = now.getDay();
-        const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-        return new Date(now.setDate(diff + 6 + (weekNumber * 7)));
+        const dayOfWeek = now.getUTCDay();
+        const diff = now.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+
+        const endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff + 6 + (weekNumber * 7)));
+        endDate.setUTCHours(23, 59, 59, 999);
+        return endDate;
     };
 
     const transformActivitiesData = (activitiesMap) => {
@@ -146,13 +135,11 @@ const MainPage = () => {
             grammar: new Array(7).fill(0)
         };
 
-        // Helper function to get the day of the week from a date
         const getDayOfWeek = (dateString) => {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', {weekday: 'short'});
         };
 
-        // Helper function to convert activity to a particular day
         const daysOfWeek = {
             'Mon': 0,
             'Tue': 1,
@@ -178,13 +165,11 @@ const MainPage = () => {
     };
 
     const handlePrevWeek = () => {
-        setActiveWeek(prevWeek => (prevWeek > 0 ? prevWeek - 1 : 0));
+        setActiveWeek(prevWeek => (prevWeek - 1));
     };
 
-    const handleNextWeek = () => {
-        if (hasNextWeekData) {
-            setActiveWeek(prevWeek => prevWeek + 1);
-        }
+    const handleNextWeek = async () => {
+        setActiveWeek(prevWeek => prevWeek + 1);
     };
 
     const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -221,7 +206,7 @@ const MainPage = () => {
             },
             title: {
                 display: true,
-                text: `Недельная активность - ${totalTime} hours`,
+                text: `Недельная активность (${getStartDateForWeek(activeWeek).toLocaleDateString()} - ${getEndDateForWeek(activeWeek).toLocaleDateString()}) - ${totalTime} hours`,
             },
         },
         scales: {
@@ -316,13 +301,14 @@ const MainPage = () => {
             <div className="main-page">
                 <div className="center-content">
                     <div className="week-nav">
-                        <button className={`prev-week ${activeWeek === 0 ? 'disabled' : ''}`} onClick={handlePrevWeek} disabled={activeWeek === 0}>
+                        <button className={`prev-week`} onClick={handlePrevWeek}>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </button>
                         <div className="chart-container">
                             <Bar data={data} options={options}/>
                         </div>
-                        <button className={`next-week ${!hasNextWeekData ? 'disabled' : ''}`} onClick={handleNextWeek} disabled={!hasNextWeekData}>
+                        <button
+                            className={`next-week`} onClick={handleNextWeek} disabled={activeWeek === 0}>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </button>
                     </div>
