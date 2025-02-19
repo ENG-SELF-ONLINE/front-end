@@ -1,31 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
-import { Button, Drawer, Pagination } from "antd"; // Изменяем на Drawer
+import React, {useEffect, useState} from "react";
+import {Button, Drawer, Pagination} from "antd";
 import "./styles.css";
 import move from "./images/move.png";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import Deck from "../../components/Deck/Deck.jsx";
-
-// Пример колод, которые могли бы быть у вас
-const decks = [
-    { id: 1, title: "English-Russian Vocabulary", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 2, title: "Programming Terms", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 3, title: "Math Formulas", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 4, title: "History Facts", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 5, title: "Science Terms", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 6, title: "Literature Quotes", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 7, title: "Art Styles", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 8, title: "Political Theories", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 9, title: "Economics Basics", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 10, title: "Social Studies", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 11, title: "Geography Terms", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 12, title: "Health Facts", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 13, title: "Music Theory", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 14, title: "Film Studies", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 15, title: "Architecture Styles", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-    { id: 16, title: "Psychology Basics", author: "22", coverImage: "https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5" },
-];
+import axios from "axios";
 
 const ITEMS_PER_PAGE = 15;
 
@@ -33,31 +14,126 @@ const Translator = () => {
     const [textToTranslate, setTextToTranslate] = useState("");
     const [translatedText, setTranslatedText] = useState("");
     const [isEnglishLeft, setIsEnglishLeft] = useState(true);
-    const [isDrawerVisible, setDrawerVisible] = useState(false); // Изменяем на isDrawerVisible
+    const [isDrawerVisible, setDrawerVisible] = useState(false);
     const [selectedDeckId, setSelectedDeckId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [decks, setDecks] = useState([]);
+    const accessToken = localStorage.getItem('accessToken');
+    const [totalDecks, setTotalDecks] = useState(0);
+    const [deckWordsCount, setDeckWordsCount] = useState({});
     const isDeckSelected = (deckId) => selectedDeckId === deckId ? '' : 'deck-dimmed';
 
-    const handleTranslate = () => {
-        const translation = `${textToTranslate}`;
-        setTranslatedText(translation);
-    };
+    useEffect(() => {
+        fetchDecks();
+    }, [currentPage]);
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const handleAddToDictionary = () => {
-        setDrawerVisible(true); // Показываем Drawer
-    };
-
-    const handleAddToDeck = () => {
-        if (selectedDeckId) {
-            const deckToUpdate = decks.find(deck => deck.id === selectedDeckId);
-            console.log("Adding to deck:", deckToUpdate.title, "with word:", textToTranslate);
-            // Здесь вы можете добавить логику для добавления слова в колоду (например, отправка на сервер или обновление состояния)
+    const handleTranslate = async () => {
+        let targetLanguage;
+        let sourceLanguage;
+        if (isEnglishLeft) {
+            targetLanguage = "ru"
+            sourceLanguage = "en"
+        } else {
+            targetLanguage = "en";
+            sourceLanguage = "ru";
         }
-        setDrawerVisible(false); // Закрыть модальное окно
+
+        try {
+            const response = await fetch(`http://localhost:8081/common-words/translate/${textToTranslate}?targetLanguage=${targetLanguage}&sourceLanguage=${sourceLanguage}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                const data = await response.text();
+                setTranslatedText(data);
+            } else {
+                console.error('Ошибка при переводе слова:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Ошибка сети:', error);
+        }
+    };
+
+    const fetchDecks = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8081/decks`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+                params: {
+                    page: currentPage - 1,
+                    size: ITEMS_PER_PAGE
+                }
+            });
+            setDecks(response.data.content);
+            setTotalDecks(response.data.totalElements)
+
+            if (response.data.content.length > 0) {
+                await fetchAllDeckWordCounts(response.data.content);
+            }
+        } catch (error) {
+            console.error("Error fetching decks", error);
+        }
+    };
+
+    const fetchAllDeckWordCounts = async (decks) => {
+        const counts = {};
+        for (const deck of decks) {
+            try {
+                const response = await axios.get(`http://localhost:8081/word-progress/decks/${deck.deckId}/statistics`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    },
+                });
+                counts[deck.deckId] = response.data.totalWords;
+            } catch (error) {
+                console.error(`Error fetching word count for deck ${deck.deckId}`, error);
+                counts[deck.deckId] = 'Error';
+            }
+        }
+        setDeckWordsCount(counts);
+    };
+
+    const handleAddToDeck = async () => {
+        if (selectedDeckId) {
+            let wordDTO;
+            if (isEnglishLeft) {
+                wordDTO = {
+                    commonWord: {wordName: textToTranslate},
+                    wordTranslation: translatedText
+                };
+            } else {
+                wordDTO = {
+                    commonWord: {wordName: translatedText},
+                    wordTranslation: textToTranslate
+                };
+            }
+
+            const formData = new FormData();
+            formData.append("wordDTO", new Blob([JSON.stringify(wordDTO)], {type: "application/json"}));
+
+            try {
+                const response = await fetch(`http://localhost:8081/words/decks/${selectedDeckId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    console.log("Слово добавлено в колоду");
+                } else {
+                    console.error('Ошибка при добавлении слова в колоду:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Ошибка сети:', error);
+            }
+        }
+        setDrawerVisible(false);
         setSelectedDeckId(null);
     };
 
@@ -65,18 +141,26 @@ const Translator = () => {
         setSelectedDeckId(deckId);
     };
 
-    // Вычисляем индексы для текущей страницы
-    const indexOfLastDeck = currentPage * ITEMS_PER_PAGE;
-    const indexOfFirstDeck = indexOfLastDeck - ITEMS_PER_PAGE;
-    const currentDecks = decks.slice(indexOfFirstDeck, indexOfLastDeck);
-    const totalPages = Math.ceil(decks.length / ITEMS_PER_PAGE);
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=DECKS&file=${coverImage}`;
+    };
+
+    const getDeckWordsCount = (deckId) => {
+        return deckWordsCount[deckId] || 0;
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const currentDecks = decks.slice(0, ITEMS_PER_PAGE);
 
     return (
         <div className="translator-page">
-            <Sidebar />
+            <Sidebar/>
             <div className="translator-main">
                 <div className="translator-upper-content">
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="translation-container">
                     <h1 className="translator-title">Translator</h1>
@@ -86,11 +170,10 @@ const Translator = () => {
                                 {isEnglishLeft ? "Английский" : "Русский"}
                             </p>
                             <textarea
-                                value={isEnglishLeft ? textToTranslate : translatedText}
+                                value={textToTranslate}
                                 onChange={
-                                    isEnglishLeft
-                                        ? (e) => setTextToTranslate(e.target.value)
-                                        : (e) => setTranslatedText(e.target.value)
+                                    (e) => setTextToTranslate(e.target.value)
+
                                 }
                                 className="translation-input"
                                 wrap="soft"
@@ -100,14 +183,14 @@ const Translator = () => {
                             className="text-image-container"
                             onClick={() => setIsEnglishLeft(!isEnglishLeft)}
                         >
-                            <img src={move} alt="" />
+                            <img src={move} alt=""/>
                         </div>
                         <div className="input-container">
                             <p className="language-heading-style">
                                 {isEnglishLeft ? "Русский" : "Английский"}
                             </p>
                             <textarea
-                                value={isEnglishLeft ? translatedText : textToTranslate}
+                                value={translatedText}
                                 readOnly
                                 className="translation-output"
                                 wrap="soft"
@@ -119,7 +202,7 @@ const Translator = () => {
                     <Button className="translate-button-style" onClick={handleTranslate}>
                         Перевести
                     </Button>
-                    <Button className="move-button-style" onClick={handleAddToDictionary}>
+                    <Button className="move-button-style" onClick={() => setDrawerVisible(true)}>
                         В словарь
                     </Button>
                 </div>
@@ -130,29 +213,33 @@ const Translator = () => {
                 visible={isDrawerVisible}
                 onClose={() => {
                     setDrawerVisible(false);
-                    setSelectedDeckId(null); // Сброс выбора колоды
+                    setSelectedDeckId(null);
                 }}
                 width={1200}
             >
                 <div className="deck-containers">
-                    {currentDecks.map(deck => (
+                    {currentDecks.map((deck) => (
                         <div
-                            key={deck.id}
-                            className={`deck-option ${isDeckSelected(deck.id)}`}
-                            onClick={() => handleDeckSelect(deck.id)}
+                            key={deck.deckId}
+                            className={`deck-option ${isDeckSelected(deck.deckId)}`}
+                            onClick={() => handleDeckSelect(deck.deckId)}
                         >
-                            <Deck deckData={deck} style={{opacity: isDeckSelected(deck.id)}} />
+                            <Deck key={deck.deckId} deckData={{
+                                coverImage: getCoverImageUrl(deck.deckPhoto),
+                                deckName: deck.deckName,
+                                author: getDeckWordsCount(deck.deckId),
+                            }} onClick={() => handleDeckSelect(deck.deckId)}/>
                         </div>
                     ))}
                 </div>
                 <Pagination
                     current={currentPage}
                     onChange={handlePageChange}
-                    total={totalPages}
+                    total={totalDecks}
                     showSizeChanger={false}
-                    pageSize={1}
+                    pageSize={ITEMS_PER_PAGE}
                 />
-                <Button type="primary" onClick={handleAddToDeck} disabled={!selectedDeckId} style={{ marginTop: '30px' }}>
+                <Button type="primary" onClick={handleAddToDeck} disabled={!selectedDeckId} style={{marginTop: '30px'}}>
                     Добавить слово
                 </Button>
             </Drawer>
