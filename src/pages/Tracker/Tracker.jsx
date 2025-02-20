@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-unused-vars
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles.css';
 import Sidebar from '../../components/MainMenu/Sidebar.jsx';
 import UpperMenu from '../../components/UpperMenu/UpperMenu.jsx';
-import {Select, Button, TimePicker} from 'antd';
+import {Button, Select, TimePicker} from 'antd';
 import DatePicker from 'react-datepicker';
 import ActivityLog from '../../components/ActivityLog/ActivityLog.jsx';
 import {PlusOutlined} from '@ant-design/icons';
@@ -11,6 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
+import axios from 'axios';
 
 const {Option} = Select;
 
@@ -21,8 +22,40 @@ const Tracker = () => {
     const [dateActivity, setDateActivity] = useState(new Date());
     const [activityLogs, setActivityLogs] = useState({});
     const [activeWeek, setActiveWeek] = useState(0);
-    const [hasNextWeekData] = useState(true);
+    const accessToken = localStorage.getItem('accessToken');
 
+    useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const startDate = getStartDateForWeek(activeWeek);
+                const endDate = getEndDateForWeek(activeWeek);
+
+                const formattedStartDate = startDate.toISOString();
+                const formattedEndDate = endDate.toISOString();
+
+                const response = await axios.get(`http://localhost:8085/trackers?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                const fetchedLogs = response.data.reduce((acc, activity) => {
+                    const activityDate = moment(activity.startTime).local().format('YYYY-MM-DD');
+                    if (!acc[activityDate]) {
+                        acc[activityDate] = {date: activityDate, activities: []};
+                    }
+                    acc[activityDate].activities.push(activity);
+                    return acc;
+                }, {});
+
+                setActivityLogs(fetchedLogs);
+            } catch (error) {
+                console.error('Error fetching activities:', error);
+            }
+        };
+
+        fetchActivities();
+    }, [activeWeek, accessToken]);
 
     const handleStartTimeChange = (date) => {
         setStartTime(date);
@@ -32,7 +65,7 @@ const Tracker = () => {
         setEndTime(date);
     };
 
-    const calculateDuration = (dateActivity, startTime, endTime) => {
+    const createNewActivity = (activityType, dateActivity, startTime, endTime) => {
         const startMoment = moment(dateActivity).set({
             hours: startTime.hour(),
             minutes: startTime.minute(),
@@ -43,71 +76,87 @@ const Tracker = () => {
             minutes: endTime.minute(),
         });
 
-        const durationInSeconds = endMoment.diff(startMoment, 'seconds');
-        const duration = moment.utc(moment.duration(durationInSeconds, 'seconds').asMilliseconds()).format('HH:mm:ss');
+        const durationInSeconds = endMoment.diff(startMoment, 'minutes');
+        const duration = moment.utc(durationInSeconds * 60 * 1000).format('HH:mm:ss');
 
-        return {durationInSeconds, duration};
-    };
-
-    const createNewActivity = (activityType, dateActivity, startTime, endTime) => {
-        const {durationInSeconds, duration} = calculateDuration(dateActivity, startTime, endTime);
         return {
-            id: Date.now(),
-            type: activityType,
+            activityType: activityType,
             date: moment(dateActivity).format('YYYY-MM-DD'),
-            startTime: moment(dateActivity).set({
-                hours: startTime.hour(),
-                minutes: startTime.minute(),
-            }).format('HH:mm'),
-            endTime: moment(dateActivity).set({
-                hours: endTime.hour(),
-                minutes: endTime.minute(),
-            }).format('HH:mm'),
+            startTime: startMoment.format('YYYY-MM-DDTHH:mm'),
+            endTime: endMoment.format('YYYY-MM-DDTHH:mm'),
             duration: durationInSeconds,
             durationFormat: duration,
         };
     };
 
-    const handleAddActivity = () => {
+    const handleAddActivity = async () => {
         if (activityType && startTime && endTime && endTime.isAfter(startTime)) {
-            const {durationInSeconds} = calculateDuration(dateActivity, startTime, endTime)
-
-            if (durationInSeconds > 86400) {
-                alert('Активность не может превышать 24 часа.');
-                return;
-            }
-
-
             const newActivity = createNewActivity(activityType, dateActivity, startTime, endTime);
             const activityDate = newActivity.date;
 
-            setActivityLogs((prevLogs) => {
-                if (prevLogs[activityDate]) {
-                    return {
-                        ...prevLogs,
-                        [activityDate]: {
-                            ...prevLogs[activityDate],
-                            activities: [...prevLogs[activityDate].activities, newActivity],
-                        },
-                    };
-                } else {
-                    return {
-                        ...prevLogs,
-                        [activityDate]: {
-                            date: activityDate,
-                            activities: [newActivity],
-                        },
-                    };
-                }
-            });
-
-            setActivityType('');
-            setStartTime(null);
-            setEndTime(null);
-            setDateActivity(new Date());
+            try {
+                await axios.post('http://localhost:8085/trackers', {
+                    activityType: activityType,
+                    startTime: newActivity.startTime,
+                    endTime: newActivity.endTime,
+                    duration: newActivity.duration,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                // Обновляем логи активности
+                setActivityLogs((prevLogs) => {
+                    if (prevLogs[activityDate]) {
+                        return {
+                            ...prevLogs,
+                            [activityDate]: {
+                                ...prevLogs[activityDate],
+                                activities: [...prevLogs[activityDate].activities, newActivity],
+                            },
+                        };
+                    } else {
+                        return {
+                            ...prevLogs,
+                            [activityDate]: {
+                                date: activityDate,
+                                activities: [newActivity],
+                            },
+                        };
+                    }
+                });
+                // Сбрасываем состояние
+                setActivityType('');
+                setStartTime(null);
+                setEndTime(null);
+                setDateActivity(new Date());
+            } catch (error) {
+                console.error('Ошибка при добавлении активности:', error);
+                alert('Произошла ошибка при добавлении активности. Пожалуйста, попробуйте снова.');
+            }
         } else {
             alert('Пожалуйста, убедитесь, что все поля заполнены корректно.');
         }
+    };
+
+    const getStartDateForWeek = (weekNumber) => {
+        const now = new Date();
+        const dayOfWeek = now.getUTCDay();
+        const diff = now.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+
+        const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff + (weekNumber * 7)));
+        startDate.setUTCHours(0, 0, 0, 0);
+        return startDate;
+    };
+
+    const getEndDateForWeek = (weekNumber) => {
+        const now = new Date();
+        const dayOfWeek = now.getUTCDay();
+        const diff = now.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+
+        const endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff + 6 + (weekNumber * 7)));
+        endDate.setUTCHours(23, 59, 59, 999);
+        return endDate;
     };
 
     // Сортируем activityLogs по дате (убывание)
@@ -119,13 +168,11 @@ const Tracker = () => {
         }, {});
 
     const handlePrevWeek = () => {
-        setActiveWeek(prevWeek => (prevWeek > 0 ? prevWeek - 1 : 0));
+        setActiveWeek(prevWeek => (prevWeek - 1));
     };
 
-    const handleNextWeek = () => {
-        if (hasNextWeekData) {
-            setActiveWeek(prevWeek => prevWeek + 1);
-        }
+    const handleNextWeek = async () => {
+        setActiveWeek(prevWeek => prevWeek + 1);
     };
 
     return (
@@ -145,9 +192,9 @@ const Tracker = () => {
                                 onChange={setActivityType}
                                 style={{width: 200}}
                             >
-                                <Option value="Reading">Reading</Option>
-                                <Option value="Grammar">Grammar</Option>
-                                <Option value="Listening">Listening</Option>
+                                <Option value="READING">READING</Option>
+                                <Option value="GRAMMAR">GRAMMAR</Option>
+                                <Option value="LISTENING">LISTENING</Option>
                             </Select>
                         </div>
                         <div className="project-info-container">
@@ -174,8 +221,7 @@ const Tracker = () => {
                         </div>
                     </div>
                     <div className="activity-middle-content">
-                        <button className={`prev-week ${activeWeek === 0 ? 'disabled' : ''}`} onClick={handlePrevWeek}
-                                disabled={activeWeek === 0}>
+                        <button className={`prev-week`} onClick={handlePrevWeek}>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </button>
                         <div className="weekly-activity">
@@ -183,21 +229,20 @@ const Tracker = () => {
                             <p>
                                 Всего{' '}
                                 {(() => {
-                                    const totalSeconds = Object.values(activityLogs).reduce((total, log) => {
+                                    const totalMinutes = Object.values(activityLogs).reduce((total, log) => {
                                         return total + log.activities.reduce((sum, activity) => sum + activity.duration, 0);
                                     }, 0);
 
-                                    const hours = Math.floor(totalSeconds / 3600);
-                                    const minutes = Math.floor((totalSeconds % 3600) / 60);
-                                    const seconds = totalSeconds % 60;
+                                    const hours = Math.floor(totalMinutes / 60);
+                                    const minutes = Math.floor(totalMinutes % 60);
+                                    const seconds = 0;
 
-                                    // Форматируем с добавлением нуля перед числом, если оно меньше 10
                                     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
                                 })()}
                             </p>
                         </div>
-                        <button className={`next-week ${!hasNextWeekData ? 'disabled' : ''}`} onClick={handleNextWeek}
-                                disabled={!hasNextWeekData}>
+                        <button
+                            className={`next-week`} onClick={handleNextWeek} disabled={activeWeek === 0}>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </button>
                     </div>
@@ -208,13 +253,12 @@ const Tracker = () => {
                                     <ActivityLog activities={log.activities}
                                                  onActivitiesChange={(updatedActivities) => {
                                                      setActivityLogs(prevLogs => ({
-                                                             ...prevLogs,
-                                                             [log.date]: {
-                                                                 ...prevLogs[log.date],
-                                                                 activities: updatedActivities
-                                                             }
+                                                         ...prevLogs,
+                                                         [log.date]: {
+                                                             ...prevLogs[log.date],
+                                                             activities: updatedActivities
                                                          }
-                                                     ))
+                                                     }));
                                                  }}/>
                                 </div>
                             ))}
