@@ -1,34 +1,54 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import avatar from "./images/avatar.png";
 import visible from "./images/visible.png";
-import { Button, Switch, Modal, Input } from "antd";
+import {Button, Input, Modal, Switch} from "antd";
+import axios from "axios";
 
 const Settings = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [userData, setUserData] = useState({
-        login: "user123",
-        password: "password123",
-        firstName: "Иван",
-        lastName: "Иванов",
-        emailNotifications: true,
-    });
+    const [userData, setUserData] = useState(null);
     const [newPassword, setNewPassword] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [photo, setPhoto] = useState(avatar);
-    const fileInputRef = useRef(null); // Создаем реф для input
+    const [photo, setPhoto] = useState(null);
+    const [tempPhoto, setTempPhoto] = useState(null);
+    const [hasChanges, setHasChanges] = useState(false);
+    const fileInputRef = useRef(null);
+    const accessToken = localStorage.getItem('accessToken');
+
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=PROFILE&file=${coverImage}`;
+    };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8084/users/api', {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                setUserData(response.data);
+                setPhoto(getCoverImageUrl(response.data.photo));
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, [accessToken]);
 
     const handleChangePhoto = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhoto(reader.result);
-            };
-            reader.readAsDataURL(file);
+            const imageUrl = URL.createObjectURL(file);
+            setTempPhoto(imageUrl);
+            setPhoto(file);
+            setHasChanges(true); // Фото изменено
+        } else {
+            setTempPhoto(null);
         }
     };
 
@@ -36,21 +56,57 @@ const Settings = () => {
         setIsModalVisible(true);
     };
 
-    const handleOk = () => {
-        setUserData((prevData) => ({
-            ...prevData,
-            password: newPassword,
-        }));
-        setNewPassword('');
-        setIsModalVisible(false);
+    const handleOk = async () => {
+        try {
+            await axios.put('http://localhost:8084/users/api', {
+                ...userData,
+                password: newPassword,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setNewPassword('');
+            setIsModalVisible(false);
+            const updatedUserData = await axios.get('http://localhost:8084/users/api', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setUserData(updatedUserData.data);
+            setHasChanges(true);
+        } catch (error) {
+            console.error('Error updating password:', error);
+        }
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
     };
 
-    const handleSave = () => {
-        console.log("SAVE", userData);
+    const handleSave = async () => {
+        try {
+            await axios.put('http://localhost:8084/users/api', userData, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (tempPhoto) {
+                const formData = new FormData();
+                formData.append("image", photo);
+                await axios.post('http://localhost:8084/users/api/photo', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+            }
+
+            window.location.reload();
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
     };
 
     const handleToggleNotifications = () => {
@@ -58,48 +114,55 @@ const Settings = () => {
             ...prevData,
             emailNotifications: !prevData.emailNotifications,
         }));
+        setHasChanges(true); // Изменения в уведомлениях
     };
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
+    if (!photo || !userData) {
+        return <div></div>;
+    }
+
     const handleInputChange = (e) => {
-        const { id, value } = e.target;
+        const {id, value} = e.target;
         setUserData((prevData) => ({
             ...prevData,
             [id]: value,
         }));
+        setHasChanges(true); // Поля изменены
     };
 
     const handleChangePhotoClick = () => {
-        fileInputRef.current.click(); // Программно вызываем клик на input
+        fileInputRef.current.click();
     };
 
     return (
         <div className="settings-page">
-            <Sidebar />
+            <Sidebar/>
             <div className="settings-main-info">
                 <div className="settings-upper-content">
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="settings-main-content">
                     <h1 className="settings-title">Settings</h1>
                     <div className="user-profile-card">
                         <div className="user-info">
                             <div className="user-photo-block">
-                                <img style={{height: '235px', width: '200px', borderRadius: '30px'}} src={photo} alt="Аватар" />
+                                <img style={{height: '235px', width: '200px', borderRadius: '30px'}}
+                                     src={tempPhoto || photo} alt="Аватар"/>
                                 <input
                                     type="file"
                                     accept="image/*"
                                     onChange={handleChangePhoto}
                                     className="change-photo-input"
                                     ref={fileInputRef}
-                                    style={{ display: 'none' }} // Скрываем input
+                                    style={{display: 'none'}}
                                 />
                                 <span
                                     className="change-photo"
-                                    onClick={handleChangePhotoClick} // Добавляем обработчик клика
+                                    onClick={handleChangePhotoClick}
                                 >
                                     Изменить фото
                                 </span>
@@ -111,7 +174,7 @@ const Settings = () => {
                                         <input
                                             type="text"
                                             id="login"
-                                            value={userData.login}
+                                            value={userData.email}
                                             readOnly
                                         />
                                         <div className="notification-block">
@@ -147,7 +210,7 @@ const Settings = () => {
                                                 />
                                                 <div className="password-visible" type={'button'}
                                                      onClick={handleShowPassword}>
-                                                    <img src={visible} alt="Показать/Скрыть пароль" />
+                                                    <img src={visible} alt="Показать/Скрыть пароль"/>
                                                 </div>
                                             </div>
                                             <span onClick={handleChangePassword} className="change-password">
@@ -168,7 +231,13 @@ const Settings = () => {
                             </div>
                         </div>
                         <div className="save-button-container">
-                            <Button className="save-button-style" onClick={handleSave}>Сохранить</Button>
+                            <Button
+                                className="save-button-style"
+                                onClick={handleSave}
+                                disabled={!hasChanges}
+                            >
+                                Сохранить
+                            </Button>
                         </div>
                     </div>
                 </div>
