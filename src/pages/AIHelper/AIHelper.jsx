@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
@@ -8,37 +8,172 @@ import { SendOutlined, StopOutlined, AudioOutlined } from '@ant-design/icons';
 
 const AIHelper = () => {
     const [messages, setMessages] = useState([]);
-    const [inputText, setInputText] = useState('');
+    const [inputText, setInputText] = useState('Следующее');
     const [isRecording, setIsRecording] = useState(false);
-    const recording = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const [language] = useState('en');
+    const [aiMessageTitle, setAiMessageTitle] = useState('');
 
-    const handleSendText = () => {
+    const handleSendText = async () => {
         if (inputText.trim() === '') return;
+        const userMessage = inputText;
         setMessages(prevMessages => [
             ...prevMessages,
-            { type: 'user', text: inputText }
+            { type: 'user', text: userMessage }
         ]);
-        setInputText('');
-        simulateAIResponse();
+        setInputText('Следующее'); // Reset input to "Следующее"
+
+        await getNextSample(); // Get the next AI message
     };
 
-    const handleStartRecording = () => {
+    const getNextSample = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:3000/getSample', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: 1,
+                    language: 'en'
+                })
+            });
+            const data = await response.json();
+            const aiMessage = data.real_transcript;
+            setAiMessageTitle(aiMessage); // Store the AI message title
+            setMessages(prevMessages => [
+                ...prevMessages,
+                { type: 'ai', text: aiMessage }
+            ]);
+        } catch (error) {
+            console.error('Error getting next sample:', error);
+        }
+    };
+
+    const handleStartRecording = async () => {
         setIsRecording(true);
-        console.log("Start recording");
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+
+        mediaRecorderRef.current.ondataavailable = async (event) => {
+            const audioBlob = event.data;
+            await sendAudio(audioBlob);
+        };
+
+        mediaRecorderRef.current.start();
     };
 
     const handleStopRecording = () => {
         setIsRecording(false);
-        console.log("Stop recording");
-        simulateAIResponse();
+        mediaRecorderRef.current.stop();
     };
 
-    const simulateAIResponse = () => {
-        setTimeout(() => {
-            const aiMessage = { type: 'ai', text: 'Это ответ AI-бота!' };
-            setMessages(prevMessages => [...prevMessages, aiMessage]);
-        }, 500);
+    const sendAudio = async (audioBlob) => {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(audioBlob);
+        reader.onloadend = async () => {
+            const audioBuffer = reader.result;
+            const base64Audio = `data:audio/ogg;;base64,${btoa(String.fromCharCode(...new Uint8Array(audioBuffer)))}`;
+
+            const payload = {
+                base64Audio,
+                language: language,
+                title: aiMessageTitle
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:3000/GetAccuracyFromRecordedAudio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error sending audio:', error);
+            }
+        };
     };
+
+    const displayResults = (data) => {
+        const userTranscript = data.real_transcript;
+        const aiTranscript = data.real_transcripts;
+        const pronunciationAccuracy = data.pronunciation_accuracy;
+
+        setMessages(prevMessages => [
+            ...prevMessages,
+            { type: 'user', text: <>{userTranscript}</> }, // Ensure this is safe for rendering
+        ]);
+
+        setMessages(prevMessages => [
+            ...prevMessages,
+            { type: 'ai', text: compareTranscripts(userTranscript, aiTranscript) },
+            { type: 'ai', text: `Точность произношения: ${pronunciationAccuracy}%` }
+        ]);
+    };
+
+    const compareTranscripts = (userTranscript, aiTranscript) => {
+        if (typeof userTranscript !== 'string' || typeof aiTranscript !== 'string') {
+            return null; // или обработайте случай соответствующим образом
+        }
+
+        const userWords = userTranscript.trim().toLowerCase().split(' ');
+        const aiWords = aiTranscript.trim().toLowerCase().split(' ');
+        const highlightedWords = [];
+        let userIndex = 0;
+        let aiIndex = 0;
+
+        while (userIndex < userWords.length || aiIndex < aiWords.length) {
+            const userWord = userWords[userIndex] || '';
+            const aiWord = aiWords[aiIndex] || '';
+
+            if (userWord === aiWord) {
+                // Слова совпадают
+                highlightedWords.push(<span key={`${userIndex}-${aiIndex}`}>{userWords[userIndex]} </span>);
+                userIndex++;
+                aiIndex++;
+            } else {
+                // Слова не совпадают.  Попробуем найти соответствие.
+
+                // Попробуем пропустить слово в userTranscript
+                if (userIndex + 1 < userWords.length && userWords[userIndex + 1] === aiWord) {
+                    highlightedWords.push(
+                        <span key={`${userIndex}-${aiIndex}`} style={{ color: 'red' }}>{userWord} </span>,
+                        <span key={`${userIndex + 1}-${aiIndex}`} >{userWords[userIndex+1]} </span>
+                    );
+
+                    userIndex += 2;
+                    aiIndex++;
+
+                }
+
+                // Попробуем пропустить слово в aiTranscript
+                else if (aiIndex + 1 < aiWords.length && userWord === aiWords[aiIndex+1]) {
+                    highlightedWords.push(
+                        <span key={`${userIndex}-${aiIndex}`} >{userWord} </span>,
+                        <span key={`${userIndex}-${aiIndex+1}`} style={{ color: 'red' }}>{aiWords[aiIndex+1]} </span>
+                    );
+                    userIndex++;
+                    aiIndex += 2;
+                }
+
+                // Если ничего не нашли - подсвечиваем оба слова как неправильные
+                else {
+                    highlightedWords.push(
+                        <span key={`${userIndex}-${aiIndex}`} style={{ color: 'red' }}>{userWord} </span>,
+                        <span key={`${userIndex}-${aiIndex}-correct`} style={{ color: 'green', textDecoration: 'underline' }}>{aiWord} </span>
+                    );
+                    userIndex++;
+                    aiIndex++;
+                }
+            }
+        }
+
+        return <>{highlightedWords}</>;
+    };
+
 
     return (
         <div className="helper-page">
