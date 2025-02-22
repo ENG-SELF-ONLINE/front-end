@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useRef, useState} from 'react';
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import { Button, Input } from 'antd';
-import { SendOutlined, StopOutlined, AudioOutlined } from '@ant-design/icons';
+import {Button, Input} from 'antd';
+import {AudioOutlined, SendOutlined, StopOutlined} from '@ant-design/icons';
 
 const AIHelper = () => {
     const [messages, setMessages] = useState([]);
@@ -19,11 +19,11 @@ const AIHelper = () => {
         const userMessage = inputText;
         setMessages(prevMessages => [
             ...prevMessages,
-            { type: 'user', text: userMessage }
+            {type: 'user', text: userMessage}
         ]);
-        setInputText('Следующее'); // Reset input to "Следующее"
+        setInputText('Следующее');
 
-        await getNextSample(); // Get the next AI message
+        await getNextSample();
     };
 
     const getNextSample = async () => {
@@ -40,10 +40,10 @@ const AIHelper = () => {
             });
             const data = await response.json();
             const aiMessage = data.real_transcript;
-            setAiMessageTitle(aiMessage); // Store the AI message title
+            setAiMessageTitle(aiMessage);
             setMessages(prevMessages => [
                 ...prevMessages,
-                { type: 'ai', text: aiMessage }
+                {type: 'ai', text: aiMessage}
             ]);
         } catch (error) {
             console.error('Error getting next sample:', error);
@@ -52,7 +52,7 @@ const AIHelper = () => {
 
     const handleStartRecording = async () => {
         setIsRecording(true);
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true});
         mediaRecorderRef.current = new MediaRecorder(stream);
 
         mediaRecorderRef.current.ondataavailable = async (event) => {
@@ -104,19 +104,19 @@ const AIHelper = () => {
 
         setMessages(prevMessages => [
             ...prevMessages,
-            { type: 'user', text: <>{userTranscript}</> }, // Ensure this is safe for rendering
+            {type: 'user', text: <>{userTranscript}</>},
         ]);
 
         setMessages(prevMessages => [
             ...prevMessages,
-            { type: 'ai', text: compareTranscripts(userTranscript, aiTranscript) },
-            { type: 'ai', text: `Точность произношения: ${pronunciationAccuracy}%` }
+            {type: 'ai', text: compareTranscripts(userTranscript, aiTranscript)},
+            {type: 'ai', text: `Точность произношения: ${pronunciationAccuracy}%`}
         ]);
     };
 
     const compareTranscripts = (userTranscript, aiTranscript) => {
         if (typeof userTranscript !== 'string' || typeof aiTranscript !== 'string') {
-            return null; // или обработайте случай соответствующим образом
+            return null;
         }
 
         const userWords = userTranscript.trim().toLowerCase().split(' ');
@@ -130,40 +130,33 @@ const AIHelper = () => {
             const aiWord = aiWords[aiIndex] || '';
 
             if (userWord === aiWord) {
-                // Слова совпадают
                 highlightedWords.push(<span key={`${userIndex}-${aiIndex}`}>{userWords[userIndex]} </span>);
                 userIndex++;
                 aiIndex++;
             } else {
-                // Слова не совпадают.  Попробуем найти соответствие.
-
-                // Попробуем пропустить слово в userTranscript
                 if (userIndex + 1 < userWords.length && userWords[userIndex + 1] === aiWord) {
                     highlightedWords.push(
-                        <span key={`${userIndex}-${aiIndex}`} style={{ color: 'red' }}>{userWord} </span>,
-                        <span key={`${userIndex + 1}-${aiIndex}`} >{userWords[userIndex+1]} </span>
+                        <span key={`${userIndex}-${aiIndex}`} style={{color: 'red'}}>{userWord} </span>,
+                        <span key={`${userIndex + 1}-${aiIndex}`}>{userWords[userIndex + 1]} </span>
                     );
 
                     userIndex += 2;
                     aiIndex++;
 
                 }
-
-                // Попробуем пропустить слово в aiTranscript
-                else if (aiIndex + 1 < aiWords.length && userWord === aiWords[aiIndex+1]) {
+                else if (aiIndex + 1 < aiWords.length && userWord === aiWords[aiIndex + 1]) {
                     highlightedWords.push(
-                        <span key={`${userIndex}-${aiIndex}`} >{userWord} </span>,
-                        <span key={`${userIndex}-${aiIndex+1}`} style={{ color: 'red' }}>{aiWords[aiIndex+1]} </span>
+                        <span key={`${userIndex}-${aiIndex}`}>{userWord} </span>,
+                        <span key={`${userIndex}-${aiIndex + 1}`} style={{color: 'red'}}>{aiWords[aiIndex + 1]} </span>
                     );
                     userIndex++;
                     aiIndex += 2;
                 }
-
-                // Если ничего не нашли - подсвечиваем оба слова как неправильные
                 else {
                     highlightedWords.push(
-                        <span key={`${userIndex}-${aiIndex}`} style={{ color: 'red' }}>{userWord} </span>,
-                        <span key={`${userIndex}-${aiIndex}-correct`} style={{ color: 'green', textDecoration: 'underline' }}>{aiWord} </span>
+                        <span key={`${userIndex}-${aiIndex}`} style={{color: 'red'}}>{userWord} </span>,
+                        <span key={`${userIndex}-${aiIndex}-correct`}
+                              style={{color: 'green', textDecoration: 'underline'}}>{aiWord} </span>
                     );
                     userIndex++;
                     aiIndex++;
@@ -177,10 +170,10 @@ const AIHelper = () => {
 
     return (
         <div className="helper-page">
-            <Sidebar />
+            <Sidebar/>
             <div className="helper-main-info">
                 <div className="helper-upper-content">
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="helper-main-content">
                     <h1 className="helper-title">AI Helper</h1>
@@ -199,8 +192,9 @@ const AIHelper = () => {
                             placeholder="Введите сообщение..."
                         />
                         <div className='button-container'>
-                            <Button shape="circle" icon={<SendOutlined />} onClick={handleSendText} />
-                            <Button shape="circle" icon={isRecording ? <StopOutlined onClick={handleStopRecording} /> : <AudioOutlined onClick={handleStartRecording} />} />
+                            <Button shape="circle" icon={<SendOutlined/>} onClick={handleSendText}/>
+                            <Button shape="circle" icon={isRecording ? <StopOutlined onClick={handleStopRecording}/> :
+                                <AudioOutlined onClick={handleStartRecording}/>}/>
                         </div>
                     </div>
                 </div>
