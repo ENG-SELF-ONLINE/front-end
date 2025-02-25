@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, {useState, useEffect} from "react";
-import {Drawer, Progress} from "antd";
-import {BellOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
+import React, { useState, useEffect } from "react";
+import { Drawer, Progress } from "antd";
+import { BellOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import './styles.css';
 import avatar from './images/avatar.png';
 import exit from './images/exit.png';
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const icons = {
     avatar: avatar,
@@ -17,7 +17,9 @@ const UpperMenu = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [user, setUser] = useState(null);
-    const navigate = useNavigate()
+    const [nextLevel, setNextLevel] = useState(null);
+    const [progressPercentage, setProgressPercentage] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -50,10 +52,44 @@ const UpperMenu = () => {
             }
         };
 
+        const fetchNextLevel = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                };
+                const response = await axios.get('http://localhost:8084/users/next-level', config);
+                setNextLevel(response.data);
+            } catch (error) {
+                console.error('Ошибка при получении следующего уровня:', error);
+            }
+        };
+
+        const fetchProgressPercentage = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                };
+                const response = await axios.get('http://localhost:8086/statistics/common-progress/percent', config);
+                setProgressPercentage(response.data);
+            } catch (error) {
+                console.error('Ошибка при получении процента прогресса:', error);
+            }
+        };
+
         fetchNotifications();
         fetchUserData();
+        fetchNextLevel();
+        fetchProgressPercentage();
 
-        const timer = setInterval(fetchNotifications, 5000);
+        const timer = setInterval(() => {
+            fetchNotifications();
+        }, 5000);
 
         return () => clearInterval(timer);
     }, []);
@@ -110,11 +146,10 @@ const UpperMenu = () => {
         try {
             const refreshToken = localStorage.getItem('refreshToken');
             const response = await axios.post('http://localhost:8888/logout', refreshToken, {
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    }
+                headers: {
+                    'Content-Type': 'text/plain'
                 }
-            );
+            });
 
             if (response.status === 200) {
                 localStorage.removeItem('accessToken');
@@ -135,13 +170,13 @@ const UpperMenu = () => {
                     {user && <span className="level">{user.level}</span>}
                     <div className="progress-bar">
                         {window.innerWidth > 1070 && (
-                            <Progress percent={50} showInfo={false}/>
+                            <Progress percent={progressPercentage} showInfo={false} />
                         )}
                     </div>
-                    {user && <span className="level">{user.nextLevel}</span>}
+                    {nextLevel && <span className="level">{nextLevel}</span>}
                 </div>
                 <div className="header-icon ring-icon" onClick={handleOpenDrawer}>
-                    <BellOutlined style={{fontSize: '25px', cursor: 'pointer'}}/>
+                    <BellOutlined style={{ fontSize: '25px', cursor: 'pointer' }} />
                     {notifications.length > 0 && <span className="notification-indicator"></span>}
                 </div>
                 {user && (
@@ -161,7 +196,7 @@ const UpperMenu = () => {
                     </div>
                 )}
                 <div className={`header-icon exit-icon`} onClick={handleLogout}>
-                    <img src={icons.exit} alt="Выход"/>
+                    <img src={icons.exit} alt="Выход" />
                 </div>
             </div>
 
@@ -170,9 +205,9 @@ const UpperMenu = () => {
                 visible={drawerVisible}
                 onClose={handleCloseDrawer}
                 width={400}
-                bodyStyle={{padding: 0}}
+                bodyStyle={{ padding: 0 }}
             >
-                <div className="notification-list" style={{maxHeight: '400px', overflowY: 'auto'}}>
+                <div className="notification-list" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                     {notifications.length > 0 ? notifications.map((notification) => (
                         <div className="notification-item" key={notification.notificationId}>
                             <img
@@ -182,20 +217,20 @@ const UpperMenu = () => {
                             />
                             <div className="notification-text">
                                 <span>{notification.sender.firstName} {notification.sender.lastName}</span>
-                                <div className="notification-buttons" style={{display: 'flex', gap: '10px'}}>
+                                <div className="notification-buttons" style={{ display: 'flex', gap: '10px' }}>
                                     <CheckOutlined
-                                        style={{cursor: 'pointer', fontSize: '20px', color: 'green'}}
+                                        style={{ cursor: 'pointer', fontSize: '20px', color: 'green' }}
                                         onClick={() => handleAccept(notification.contextId)}
                                     />
                                     <CloseOutlined
-                                        style={{cursor: 'pointer', fontSize: '20px', color: 'red'}}
+                                        style={{ cursor: 'pointer', fontSize: '20px', color: 'red' }}
                                         onClick={() => handleDecline(notification.contextId)}
                                     />
                                 </div>
                             </div>
                         </div>
                     )) : (
-                        <div/>
+                        <div />
                     )}
                 </div>
             </Drawer>
