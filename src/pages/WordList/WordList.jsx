@@ -84,6 +84,20 @@ const WordList = () => {
         resetModal();
     };
 
+    const handleDeleteWord = async (wordProgressId) => {
+        try {
+            await axios.delete(`http://localhost:8081/word-progress/${wordProgressId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            setWords(words.filter(word => word.wordProgressId !== wordProgressId));
+        } catch (error) {
+            console.error('Ошибка при удалении слова:', error);
+        }
+    };
+
     const getCoverImageUrl = (coverImage) => {
         return `http://localhost:9999/files/images/show?bucket=DECKS&file=${coverImage}`;
     };
@@ -134,7 +148,12 @@ const WordList = () => {
                                             <div className="flex-container-with-buttons">
                                                 <Button className="button-style-primary"
                                                         onClick={() => openEditModal(item)}>Изменить</Button>
-                                                <Button className="action-button">Удалить</Button>
+                                                <Button
+                                                    className="action-button"
+                                                    onClick={() => handleDeleteWord(item.wordProgressId)} // Добавляем обработчик удаления
+                                                >
+                                                    Удалить
+                                                </Button>
                                             </div>
                                         </div>
                                     ))}
