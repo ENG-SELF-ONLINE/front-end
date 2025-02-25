@@ -52,36 +52,56 @@ const WordList = () => {
         setTranslation('');
         setImageUrl(null);
         setCurrentWordId(null);
+        setImage(null);
+        setCoverImageUrl(null);
+    };
+
+    const getCoverImageUrl = (coverImage) => {
+        return `http://localhost:9999/files/images/show?bucket=WORDS&file=${coverImage}`;
     };
 
     const openEditModal = (item) => {
         setCurrentWordId(item.word.wordId);
         setWord(item.word.commonWord.wordName);
         setTranslation(item.word.wordTranslation ? item.word.wordTranslation : item.word.commonWord.wordTranslation);
-        setImageUrl(item.word.wordPhoto);
+        setImageUrl(getCoverImageUrl(item.word.wordPhoto));
         setIsModalVisible(true);
     };
 
     const handleUpdateWord = async () => {
         if (currentWordId !== null) {
+            const formData = new FormData();
+
             const updatedWordDTO = {
                 wordId: currentWordId,
-                wordTranslation: translation,
-                wordPhoto: imageUrl,
             };
 
+            if (translation !== null && translation !== '') {
+                updatedWordDTO.wordTranslation = translation;
+            }
+
+            if (image) {
+                formData.append('file', image);
+            }
+
+            formData.append('wordDTO', new Blob([JSON.stringify(updatedWordDTO)], {
+                type: 'application/json',
+            }));
+
             try {
-                await axios.put(`http://localhost:8081/words/${currentWordId}`, updatedWordDTO, {
+                await axios.put(`http://localhost:8081/words/${currentWordId}`, formData, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'multipart/form-data', // Указываем тип контента
                     },
                 });
+
                 await fetchDeck();
+                resetModal();
             } catch (error) {
                 console.error('Error updating word:', error);
             }
         }
-        resetModal();
     };
 
     const handleDeleteWord = async (wordProgressId) => {
@@ -96,10 +116,6 @@ const WordList = () => {
         } catch (error) {
             console.error('Ошибка при удалении слова:', error);
         }
-    };
-
-    const getCoverImageUrl = (coverImage) => {
-        return `http://localhost:9999/files/images/show?bucket=DECKS&file=${coverImage}`;
     };
 
     if (!selectedDeck) {
@@ -150,7 +166,7 @@ const WordList = () => {
                                                         onClick={() => openEditModal(item)}>Изменить</Button>
                                                 <Button
                                                     className="action-button"
-                                                    onClick={() => handleDeleteWord(item.wordProgressId)} // Добавляем обработчик удаления
+                                                    onClick={() => handleDeleteWord(item.wordProgressId)}
                                                 >
                                                     Удалить
                                                 </Button>
@@ -207,7 +223,7 @@ const WordList = () => {
                             <div className="right-container">
                                 <Word
                                     wordData={{
-                                        image: coverImageUrl || 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5',
+                                        image: coverImageUrl || imageUrl,
                                         word: word || 'Слово',
                                     }}
                                 />
