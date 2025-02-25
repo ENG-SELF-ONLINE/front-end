@@ -43,6 +43,9 @@ const GuessWord = () => {
             if (data.length > 0) {
                 setLength(data.length);
                 setCurrentWord(data[nextOrder]);
+            } else {
+                setCurrentWord(null);
+                setLength(0);
             }
         } catch (error) {
             console.error('Error fetching next words:', error);
