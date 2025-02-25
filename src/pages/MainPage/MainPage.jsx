@@ -108,6 +108,12 @@ const MainPage = () => {
         setLearnData(null);
     };
 
+    const formatTime = (decimalHours) => {
+        const hours = Math.floor(decimalHours);
+        const minutes = Math.round((decimalHours - hours) * 60);
+        return `${hours} ч ${minutes} мин`;
+    };
+
     const getStartDateForWeek = (weekNumber) => {
         const now = new Date();
         const dayOfWeek = now.getUTCDay();
@@ -206,7 +212,7 @@ const MainPage = () => {
             },
             title: {
                 display: true,
-                text: `Недельная активность (${getStartDateForWeek(activeWeek).toLocaleDateString()} - ${getEndDateForWeek(activeWeek).toLocaleDateString()}) - ${totalTime} hours`,
+                text: `Недельная активность (${getStartDateForWeek(activeWeek).toLocaleDateString()} - ${getEndDateForWeek(activeWeek).toLocaleDateString()}) - ${formatTime(totalTime)}`,
             },
         },
         scales: {
@@ -316,15 +322,15 @@ const MainPage = () => {
                         <div className="main-list">
                             <div className="main-item">
                                 <span>Reading:</span>
-                                <span>{learnData ? (learnData.reading.reduce((sum, value) => sum + value, 0)) || 0 : 0}</span>
+                                <span>{learnData ? formatTime(learnData.reading.reduce((sum, value) => sum + value, 0)) : '0 ч 0 мин'}</span>
                             </div>
                             <div className="main-item">
                                 <span>Listening:</span>
-                                <span>{learnData ? (learnData.listening.reduce((sum, value) => sum + value, 0)) || 0 : 0}</span>
+                                <span>{learnData ? formatTime(learnData.listening.reduce((sum, value) => sum + value, 0)) : '0 ч 0 мин'}</span>
                             </div>
                             <div className="main-item">
                                 <span>Grammar:</span>
-                                <span>{learnData ? (learnData.grammar.reduce((sum, value) => sum + value, 0)) || 0 : 0}</span>
+                                <span>{learnData ? formatTime(learnData.grammar.reduce((sum, value) => sum + value, 0)) : '0 ч 0 мин'}</span>
                             </div>
                         </div>
                         <div className="main-chart">
