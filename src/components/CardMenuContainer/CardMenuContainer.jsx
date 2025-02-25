@@ -30,17 +30,6 @@ const CardMenuContainer = ({deckData}) => {
 
         if (image) {
             formData.append("file", image);
-        } else {
-            const defaultImageUrl = 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5';
-            try {
-                const response = await fetch(defaultImageUrl);
-                const blob = await response.blob();
-                const file = new File([blob], 'default-image.png', {type: 'image/png'});
-                formData.append("file", file);
-            } catch (error) {
-                console.error("Error fetching default image:", error);
-                return;
-            }
         }
 
         try {
