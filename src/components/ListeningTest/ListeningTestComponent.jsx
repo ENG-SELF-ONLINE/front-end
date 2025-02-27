@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles.css';
-import { Button } from "antd";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import {Button} from "antd";
+import {useNavigate} from "react-router-dom";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 // eslint-disable-next-line react/prop-types
-const ListeningTestComponent = ({ currentLevel, topicId }) => {
+const ListeningTestComponent = ({currentLevel, topicId}) => {
     const [showAnswers, setShowAnswers] = useState(false);
     const [testPassed, setTestPassed] = useState(false);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
@@ -20,7 +20,7 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
         const fetchTestAndQuestions = async () => {
             try {
                 setIsLoading(true);
-                const testResponse = await axios.get(`http://localhost:8083/tests/lessons/${topicId}`, {
+                const testResponse = await axiosInstance.get(`http://localhost:8083/tests/lessons/${topicId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -28,7 +28,7 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
 
                 const testId = testResponse.data.testId;
 
-                const questionsResponse = await axios.get(`http://localhost:8083/questions/tests/${testId}`, {
+                const questionsResponse = await axiosInstance.get(`http://localhost:8083/questions/tests/${testId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -36,12 +36,12 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
 
                 const questionsWithAnswers = await Promise.all(
                     questionsResponse.data.map(async (question) => {
-                        const answersResponse = await axios.get(`http://localhost:8083/answer-options/questions/${question.questionId}`, {
+                        const answersResponse = await axiosInstance.get(`http://localhost:8083/answer-options/questions/${question.questionId}`, {
                             headers: {
                                 Authorization: `Bearer ${accessToken}`
                             }
                         });
-                        return { ...question, answers: answersResponse.data };
+                        return {...question, answers: answersResponse.data};
                     })
                 );
 
@@ -49,7 +49,7 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
                 setSelectedQuestions(getRandomQuestions(questionsWithAnswers, numQuestions));
                 setSelectedAnswers(Array(numQuestions).fill(null));
 
-                const lessonMaterialsResponse = await axios.get(`http://localhost:8083/lesson-materials/lessons/${topicId}`, {
+                const lessonMaterialsResponse = await axiosInstance.get(`http://localhost:8083/lesson-materials/lessons/${topicId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -108,7 +108,7 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
 
     const handleNext = async () => {
         try {
-            await axios.post(`http://localhost:8083/user-test-results/lessons/${topicId}/mark-passed`, {}, {
+            await axiosInstance.post(`http://localhost:8083/user-test-results/lessons/${topicId}/mark-passed`, {}, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
@@ -138,8 +138,8 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
                 <p>Loading...</p>
             ) : (
                 audioSrc && (
-                    <audio controls style={{ marginBottom: '20px' }}>
-                        <source src={audioSrc} type="audio/mpeg" />
+                    <audio controls style={{marginBottom: '20px'}}>
+                        <source src={audioSrc} type="audio/mpeg"/>
                         Ваш браузер не поддерживает аудиоплеер.
                     </audio>
                 )
@@ -167,7 +167,7 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
                             ))}
                         </ul>
                         {showAnswers && (
-                            <p style={{ marginBottom: '20px' }}>
+                            <p style={{marginBottom: '20px'}}>
                                 Правильный ответ: {question.answers.find(a => a.isCorrect)?.text}
                             </p>
                         )}
@@ -179,7 +179,7 @@ const ListeningTestComponent = ({ currentLevel, topicId }) => {
                     type="primary"
                     size="large"
                     onClick={showAnswers ? (testPassed ? handleNext : resetTest) : checkAnswers}
-                    style={{ margin: '20px auto' }}
+                    style={{margin: '20px auto'}}
                 >
                     {showAnswers && testPassed ? 'Next' : showAnswers ? 'Пройти еще раз' : 'Проверить'}
                 </Button>

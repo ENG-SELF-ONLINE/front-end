@@ -8,7 +8,7 @@ import Search from "antd/es/input/Search.js";
 import {useNavigate} from "react-router-dom";
 import Deck from "../../components/Deck/Deck.jsx";
 import {Button} from "@mui/base";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const ITEMS_PER_PAGE = 15;
 
@@ -31,7 +31,7 @@ const Dictionary = () => {
 
     const fetchDecks = async () => {
         try {
-            const response = await axios.get(`http://localhost:8081/decks`, {
+            const response = await axiosInstance.get(`http://localhost:8081/decks`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },
@@ -55,7 +55,7 @@ const Dictionary = () => {
         const counts = {};
         for (const deck of decks) {
             try {
-                const response = await axios.get(`http://localhost:8081/word-progress/decks/${deck.deckId}/statistics`, {
+                const response = await axiosInstance.get(`http://localhost:8081/word-progress/decks/${deck.deckId}/statistics`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     },
@@ -104,12 +104,12 @@ const Dictionary = () => {
             const defaultImageUrl = 'https://cdn.culture.ru/images/313ee15f-c840-5488-a7b0-7d48547cf8b5';
             const response = await fetch(defaultImageUrl);
             const blob = await response.blob();
-            const file = new File([blob], 'default-image.png', { type: 'image/png' });
+            const file = new File([blob], 'default-image.png', {type: 'image/png'});
             formData.append("file", file);
         }
 
         try {
-            const response = await axios.post(`http://localhost:8081/decks`, formData, {
+            const response = await axiosInstance.post(`http://localhost:8081/decks`, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'multipart/form-data'
@@ -134,7 +134,7 @@ const Dictionary = () => {
 
     return (
         <div className="container">
-            <Sidebar />
+            <Sidebar/>
             <div className="main-container-book">
                 <div className="upper-container">
                     <Search
@@ -143,7 +143,7 @@ const Dictionary = () => {
                         size="large"
                         onSearch={handleSearch}
                     />
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="dictionary-content">
                     <h2 className="level-title">Ваши колоды:</h2>
@@ -153,7 +153,7 @@ const Dictionary = () => {
                                 coverImage: getCoverImageUrl(deck.deckPhoto),
                                 deckName: deck.deckName,
                                 author: getDeckWordsCount(deck.deckId),
-                            }} onClick={() => handleDeckClick(deck.deckId)} />
+                            }} onClick={() => handleDeckClick(deck.deckId)}/>
                         ))}
                     </div>
                     <div className="pagination-container">
@@ -176,7 +176,7 @@ const Dictionary = () => {
                         visible={isModalVisible}
                         footer={null}
                         onCancel={resetModal}
-                        style={{ font: "16px 'GOST Type A', cursive" }}
+                        style={{font: "16px 'GOST Type A', cursive"}}
                     >
                         <div className="modal-containers">
                             <div className="left-container">
@@ -186,7 +186,7 @@ const Dictionary = () => {
                                     onChange={(e) => setCardTitle(e.target.value)}
                                     size="large"
                                 />
-                                <div style={{ margin: '30px 0' }}>
+                                <div style={{margin: '30px 0'}}>
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -197,7 +197,7 @@ const Dictionary = () => {
                                                 setCoverImageUrl(URL.createObjectURL(file));
                                             }
                                         }}
-                                        style={{ display: 'block', margin: '20px 0' }}
+                                        style={{display: 'block', margin: '20px 0'}}
                                     />
                                 </div>
                             </div>

@@ -18,7 +18,7 @@ import {
 import {Bar, Doughnut} from 'react-chartjs-2';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 ChartJS.register(
     CategoryScale,
@@ -59,7 +59,7 @@ const MainPage = () => {
                 console.log('Start Date:', formattedStartDate);
                 console.log('End Date:', formattedEndDate);
 
-                const response = await axios.get(
+                const response = await axiosInstance.get(
                     `http://localhost:8086/statistics/activity?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
                     config
                 );

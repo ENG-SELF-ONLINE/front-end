@@ -11,7 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
-import axios from 'axios';
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const {Option} = Select;
 
@@ -33,7 +33,7 @@ const Tracker = () => {
                 const formattedStartDate = startDate.toISOString();
                 const formattedEndDate = endDate.toISOString();
 
-                const response = await axios.get(`http://localhost:8085/trackers?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, {
+                const response = await axiosInstance.get(`http://localhost:8085/trackers?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
@@ -95,7 +95,7 @@ const Tracker = () => {
             const activityDate = newActivity.date;
 
             try {
-                await axios.post('http://localhost:8085/trackers', {
+                await axiosInstance.post('http://localhost:8085/trackers', {
                     activityType: activityType,
                     startTime: newActivity.startTime,
                     endTime: newActivity.endTime,

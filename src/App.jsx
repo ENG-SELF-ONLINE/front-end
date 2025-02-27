@@ -21,13 +21,8 @@ import ListeningTest from "./pages/ListeningTest/ListeningTest.jsx";
 import Friends from "./pages/Friends/Friends.jsx";
 import FriendProfile from "./pages/FriendProfile/FriendProfile.jsx";
 import AIHelper from "./pages/AIHelper/AIHelper.jsx";
-// import setupAxiosInterceptors from "./setupAxiosInterceptors.jsx";
 
 function App() {
-
-    // useEffect(() => {
-    //     setupAxiosInterceptors();
-    // }, []);
 
     return (
         <BrowserRouter>

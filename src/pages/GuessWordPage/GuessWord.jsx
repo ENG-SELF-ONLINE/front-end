@@ -6,7 +6,7 @@ import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import CardMenuContainer from "../../components/CardMenuContainer/CardMenuContainer.jsx";
 import Word from "../../components/Word/Word.jsx";
 import {useParams} from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const GuessWord = () => {
     const [currentWord, setCurrentWord] = useState(null);
@@ -25,7 +25,7 @@ const GuessWord = () => {
 
     const fetchNextWord = async (nextOrder) => {
         try {
-            const deckResponse = await axios.get(`http://localhost:8081/decks/${deckId}`, {
+            const deckResponse = await axiosInstance.get(`http://localhost:8081/decks/${deckId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },

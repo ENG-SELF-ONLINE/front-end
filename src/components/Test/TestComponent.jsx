@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles.css';
-import { Button } from "antd";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import {Button} from "antd";
+import {useNavigate} from "react-router-dom";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 // eslint-disable-next-line react/prop-types
-const TestComponent = ({ currentLevel, topicId }) => {
+const TestComponent = ({currentLevel, topicId}) => {
     const [showAnswers, setShowAnswers] = useState(false);
     const [testPassed, setTestPassed] = useState(false);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
@@ -17,7 +17,7 @@ const TestComponent = ({ currentLevel, topicId }) => {
     useEffect(() => {
         const fetchTestAndQuestions = async () => {
             try {
-                const testResponse = await axios.get(`http://localhost:8083/tests/lessons/${topicId}`, {
+                const testResponse = await axiosInstance.get(`http://localhost:8083/tests/lessons/${topicId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -25,7 +25,7 @@ const TestComponent = ({ currentLevel, topicId }) => {
 
                 const testId = testResponse.data.testId;
 
-                const questionsResponse = await axios.get(`http://localhost:8083/questions/tests/${testId}`, {
+                const questionsResponse = await axiosInstance.get(`http://localhost:8083/questions/tests/${testId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -33,12 +33,12 @@ const TestComponent = ({ currentLevel, topicId }) => {
 
                 const questionsWithAnswers = await Promise.all(
                     questionsResponse.data.map(async (question) => {
-                        const answersResponse = await axios.get(`http://localhost:8083/answer-options/questions/${question.questionId}`, {
+                        const answersResponse = await axiosInstance.get(`http://localhost:8083/answer-options/questions/${question.questionId}`, {
                             headers: {
                                 Authorization: `Bearer ${accessToken}`
                             }
                         });
-                        return { ...question, answers: answersResponse.data };
+                        return {...question, answers: answersResponse.data};
                     })
                 );
 
@@ -90,7 +90,7 @@ const TestComponent = ({ currentLevel, topicId }) => {
 
     const handleNext = async () => {
         try {
-            await axios.post(`http://localhost:8083/user-test-results/lessons/${topicId}/mark-passed`, {}, {
+            await axiosInstance.post(`http://localhost:8083/user-test-results/lessons/${topicId}/mark-passed`, {}, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
@@ -145,7 +145,9 @@ const TestComponent = ({ currentLevel, topicId }) => {
                 </div>
             ))}
             <div className="test-button-container">
-                <Button type="primary" size="large" onClick={showAnswers ? (testPassed ? handleNext : resetTest) : checkAnswers} style={{ margin: '20px auto' }}>
+                <Button type="primary" size="large"
+                        onClick={showAnswers ? (testPassed ? handleNext : resetTest) : checkAnswers}
+                        style={{margin: '20px auto'}}>
                     {showAnswers && testPassed ? 'Next' : showAnswers ? 'Пройти еще раз' : 'Проверить'}
                 </Button>
             </div>

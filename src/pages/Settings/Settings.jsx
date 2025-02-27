@@ -5,7 +5,7 @@ import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import visible from "./images/visible.png";
 import {Button, Input, Modal, Switch} from "antd";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const Settings = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +25,7 @@ const Settings = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get('http://localhost:8084/users/api', {
+                const response = await axiosInstance.get('http://localhost:8084/users/api', {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
@@ -58,7 +58,7 @@ const Settings = () => {
 
     const handleOk = async () => {
         try {
-            await axios.put('http://localhost:8084/users/api', {
+            await axiosInstance.put('http://localhost:8084/users/api', {
                 ...userData,
                 password: newPassword,
             }, {
@@ -68,7 +68,7 @@ const Settings = () => {
             });
             setNewPassword('');
             setIsModalVisible(false);
-            const updatedUserData = await axios.get('http://localhost:8084/users/api', {
+            const updatedUserData = await axiosInstance.get('http://localhost:8084/users/api', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -86,7 +86,7 @@ const Settings = () => {
 
     const handleSave = async () => {
         try {
-            await axios.put('http://localhost:8084/users/api', userData, {
+            await axiosInstance.put('http://localhost:8084/users/api', userData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -95,7 +95,7 @@ const Settings = () => {
             if (tempPhoto) {
                 const formData = new FormData();
                 formData.append("image", photo);
-                await axios.post('http://localhost:8084/users/api/photo', formData, {
+                await axiosInstance.post('http://localhost:8084/users/api/photo', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${accessToken}`,

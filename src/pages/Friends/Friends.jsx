@@ -1,13 +1,13 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import { Button, Input, Modal } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import {Button, Input, Modal} from 'antd';
+import {SearchOutlined} from '@ant-design/icons';
+import {useNavigate} from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const Friends = () => {
     const [friends, setFriends] = useState([]);
@@ -42,7 +42,7 @@ const Friends = () => {
 
             const token = getAccessToken();
             try {
-                const response = await axios.get('http://localhost:8084/friendships', {
+                const response = await axiosInstance.get('http://localhost:8084/friendships', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -60,7 +60,7 @@ const Friends = () => {
             const token = getAccessToken();
             try {
                 // Отправка запроса на добавление друга
-                await axios.post(`http://localhost:8084/friendships/${foundUser.userId}`, {}, {
+                await axiosInstance.post(`http://localhost:8084/friendships/${foundUser.userId}`, {}, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -77,7 +77,7 @@ const Friends = () => {
     const handleDeleteFriend = async (friendId) => {
         const token = getAccessToken();
         try {
-            await axios.delete(`http://localhost:8084/friendships/${friendId}`, {
+            await axiosInstance.delete(`http://localhost:8084/friendships/${friendId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -90,7 +90,7 @@ const Friends = () => {
 
     const handleVisitFriendProfile = async (friendId, friendUser) => {
         try {
-            navigate(`/friends/${friendId}`, { state: { user: friendUser } });
+            navigate(`/friends/${friendId}`, {state: {user: friendUser}});
         } catch (error) {
             console.error("Could not navigate to friends profile", error);
         }
@@ -99,7 +99,7 @@ const Friends = () => {
     const handleSearchUser = async () => {
         const token = getAccessToken();
         try {
-            const response = await axios.get(`http://localhost:8084/users/api/email?email=${email}`, {
+            const response = await axiosInstance.get(`http://localhost:8084/users/api/email?email=${email}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -126,10 +126,10 @@ const Friends = () => {
 
     return (
         <div className="friends-page">
-            <Sidebar />
+            <Sidebar/>
             <div className="friends-main-info">
                 <div className="friends-upper-content">
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="friends-main-content">
                     <h1 className="friends-title">Friends</h1>
@@ -187,14 +187,15 @@ const Friends = () => {
                         {foundUser && (
                             <>
                                 <div className="found-user"
-                                     style={{marginTop: '20px', display: 'flex', alignItems: 'center' }}>
-                                    <img src={foundUser.photo ? getAvatarUrl(foundUser.photo) : null} alt={foundUser.firstName} className="friends-avatar" />
+                                     style={{marginTop: '20px', display: 'flex', alignItems: 'center'}}>
+                                    <img src={foundUser.photo ? getAvatarUrl(foundUser.photo) : null}
+                                         alt={foundUser.firstName} className="friends-avatar"/>
                                     <div>
                                         <span>{foundUser.firstName} {foundUser.lastName}</span>
                                     </div>
                                 </div>
                                 <Button
-                                    style={{ marginTop: '20px' }}
+                                    style={{marginTop: '20px'}}
                                     onClick={handleAddFriend}
                                     disabled={!foundUser}
                                 >

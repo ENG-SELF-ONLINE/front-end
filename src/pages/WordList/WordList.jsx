@@ -6,8 +6,8 @@ import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import CardMenuContainer from "../../components/CardMenuContainer/CardMenuContainer.jsx";
 import {Button, Input, Modal} from "antd";
 import {useParams} from "react-router-dom";
-import axios from "axios";
 import Word from "../../components/Word/Word.jsx";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const WordList = () => {
     const [selectedDeck, setSelectedDeck] = useState(null);
@@ -24,14 +24,14 @@ const WordList = () => {
 
     const fetchDeck = useCallback(async () => {
         try {
-            const deckResponse = await axios.get(`http://localhost:8081/decks/${deckId}`, {
+            const deckResponse = await axiosInstance.get(`http://localhost:8081/decks/${deckId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             setSelectedDeck(deckResponse.data);
 
-            const wordsResponse = await axios.get(`http://localhost:8081/word-progress/decks/${deckId}`, {
+            const wordsResponse = await axiosInstance.get(`http://localhost:8081/word-progress/decks/${deckId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -89,7 +89,7 @@ const WordList = () => {
             }));
 
             try {
-                await axios.put(`http://localhost:8081/words/${currentWordId}`, formData, {
+                await axiosInstance.put(`http://localhost:8081/words/${currentWordId}`, formData, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                         'Content-Type': 'multipart/form-data', // Указываем тип контента
@@ -106,7 +106,7 @@ const WordList = () => {
 
     const handleDeleteWord = async (wordProgressId) => {
         try {
-            await axios.delete(`http://localhost:8081/word-progress/${wordProgressId}`, {
+            await axiosInstance.delete(`http://localhost:8081/word-progress/${wordProgressId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },

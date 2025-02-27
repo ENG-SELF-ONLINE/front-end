@@ -6,7 +6,7 @@ import move from "./images/move.png";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import Deck from "../../components/Deck/Deck.jsx";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const ITEMS_PER_PAGE = 15;
 
@@ -59,7 +59,7 @@ const Translator = () => {
 
     const fetchDecks = async () => {
         try {
-            const response = await axios.get(`http://localhost:8081/decks`, {
+            const response = await axiosInstance.get(`http://localhost:8081/decks`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },
@@ -83,7 +83,7 @@ const Translator = () => {
         const counts = {};
         for (const deck of decks) {
             try {
-                const response = await axios.get(`http://localhost:8081/word-progress/decks/${deck.deckId}/statistics`, {
+                const response = await axiosInstance.get(`http://localhost:8081/word-progress/decks/${deck.deckId}/statistics`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     },

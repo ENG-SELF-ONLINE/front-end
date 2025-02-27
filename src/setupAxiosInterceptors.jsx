@@ -1,66 +1,83 @@
 import axios from 'axios';
-import refreshTokenFn from './refreshTokenFn';
 
-const setupAxiosInterceptors = () => {
-    axios.interceptors.request.use(
-        async config => {
-            const accessToken = localStorage.getItem('accessToken');
-            if (accessToken) {
-                const expiryTime = localStorage.getItem('expiryTime');
-                if (expiryTime && Date.now() >= expiryTime) {
-                    const tokenData = await refreshTokenFn();
+let isRefreshing = false;
+let failedQueue = [];
 
-                    if (tokenData) {
-                        localStorage.setItem('accessToken', tokenData.accessToken);
-                        localStorage.setItem('refreshToken', tokenData.refreshToken)
-                        const newConfig = {
-                            ...config,
-                            headers: {
-                                ...config.headers,
-                                'Authorization': `Bearer ${tokenData.accessToken}`
-                            }
-                        }
-                        return newConfig
-                    } else {
-                        console.error("Token refresh failed")
-                        localStorage.removeItem('accessToken');
-                        localStorage.removeItem('refreshToken');
-                        window.location.href = "/"
-                        return config
-                    }
-                }
-                config.headers['Authorization'] = `Bearer ${accessToken}`;
-            }
-            return config;
-        },
-        error => {
-            return Promise.reject(error);
+const processQueue = (error, token = null) => {
+    failedQueue.forEach((prom) => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
         }
-    );
+    });
 
-    axios.interceptors.response.use(
-        (response) => {
-            return response;
-        },
-        async (error) => {
-            const originalRequest = error.config;
-
-            if (error.response && error.response.status === 401 && !originalRequest._retry) {
-                originalRequest._retry = true; // Prevent infinite loops
-
-                const tokenData = await refreshTokenFn()
-
-                if (tokenData) {
-                    originalRequest.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
-                    return axios(originalRequest);
-                } else {
-                    window.location.href = "/"
-                }
-            }
-
-            return Promise.reject(error);
-        }
-    );
+    failedQueue = [];
 };
 
-export default setupAxiosInterceptors;
+const axiosInstance = axios.create();
+
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            config.headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                })
+                    .then((token) => {
+                        originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                        return axiosInstance(originalRequest);
+                    })
+                    .catch((err) => {
+                        return Promise.reject(err);
+                    });
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                const refreshToken = localStorage.getItem('refreshToken');
+                const response = await axios.post('http://localhost:8888/refresh-token', { refreshToken });
+
+                const { access_token: newAccessToken, refresh_token: newRefreshToken } = response.data;
+
+                localStorage.setItem('accessToken', newAccessToken);
+                localStorage.setItem('refreshToken', newRefreshToken);
+
+                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+                processQueue(null, newAccessToken);
+
+                return axiosInstance(originalRequest);
+            } catch (refreshError) {
+                processQueue(refreshError, null);
+                console.error('Failed to refresh token:', refreshError);
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                // window.location.href = '/';
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export default axiosInstance;

@@ -4,10 +4,10 @@ import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import './styles.css'
 import {Link, useParams} from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const Grammar = () => {
-    const { level } = useParams();
+    const {level} = useParams();
     const [activeLevel, setActiveLevel] = useState(level || "A1");
     const [lessons, setLessons] = useState([]);
     const accessToken = localStorage.getItem('accessToken');
@@ -38,7 +38,7 @@ const Grammar = () => {
     useEffect(() => {
         const fetchLessons = async () => {
             try {
-                const response = await axios.get(
+                const response = await axiosInstance.get(
                     `http://localhost:8083/lessons?level=${activeLevel}&type=GRAMMAR`, // Type is GRAMMAR
                     {
                         headers: {
@@ -57,10 +57,10 @@ const Grammar = () => {
 
     return (
         <div className="grammar-page">
-            <Sidebar />
+            <Sidebar/>
             <div className="grammar-main">
                 <div className="grammar-upper-content">
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="grammar-content">
                     <h2 className="grammar-level-title">

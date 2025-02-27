@@ -1,14 +1,14 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import { Button, Progress } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { Bar, Doughnut } from "react-chartjs-2";
+import {Button, Progress} from "antd";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
+import {Bar, Doughnut} from "react-chartjs-2";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const FriendProfile = () => {
     const [activeWeek, setActiveWeek] = useState(0);
@@ -35,7 +35,7 @@ const FriendProfile = () => {
     const handleDeleteFriend = async () => {
         const token = getAccessToken();
         try {
-            let response = await axios.delete(`http://localhost:8084/friendships/${friendId}`, {
+            let response = await axiosInstance.delete(`http://localhost:8084/friendships/${friendId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -83,7 +83,7 @@ const FriendProfile = () => {
                 console.log('Start Date:', formattedStartDate);
                 console.log('End Date:', formattedEndDate);
 
-                const response = await axios.get(
+                const response = await axiosInstance.get(
                     `http://localhost:8086/statistics/activity?startDate=${formattedStartDate}&endDate=${formattedEndDate}&userId=${friendData.userId}`,
                     config
                 );
@@ -124,7 +124,7 @@ const FriendProfile = () => {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 };
-                const response = await axios.get(`http://localhost:8084/users/next-level?friendId=${friendData.userId}`, config);
+                const response = await axiosInstance.get(`http://localhost:8084/users/next-level?friendId=${friendData.userId}`, config);
                 setNextLevel(response.data);
             } catch (error) {
                 console.error('Ошибка при получении следующего уровня:', error);
@@ -139,7 +139,7 @@ const FriendProfile = () => {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 };
-                const response = await axios.get(`http://localhost:8086/statistics/common-progress/percent?userId=${friendData.userId}`, config);
+                const response = await axiosInstance.get(`http://localhost:8086/statistics/common-progress/percent?userId=${friendData.userId}`, config);
                 setProgressPercentage(response.data);
             } catch (error) {
                 console.error('Ошибка при получении процента прогресса:', error);

@@ -6,7 +6,7 @@ import {Input, Modal} from "antd";
 import PropTypes from "prop-types";
 import {useNavigate} from "react-router-dom";
 import Word from "../Word/Word.jsx";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const CardMenuContainer = ({deckData}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -33,7 +33,7 @@ const CardMenuContainer = ({deckData}) => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8081/words/decks/${deckData.id}`, formData, {
+            const response = await axiosInstance.post(`http://localhost:8081/words/decks/${deckData.id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'multipart/form-data'

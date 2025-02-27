@@ -3,12 +3,12 @@ import React, {useEffect, useState} from 'react';
 import './styles.css'
 import {Button} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const Article = () => {
     const navigate = useNavigate();
-    const { topicId } = useParams();
-    const { level } = useParams();
+    const {topicId} = useParams();
+    const {level} = useParams();
     const [article, setArticle] = useState(null);
     const [lessonMaterialId, setLessonMaterialId] = useState(null);
     const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ const Article = () => {
     useEffect(() => {
         const fetchArticleData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8083/lesson-materials/lessons/${topicId}`, {
+                const response = await axiosInstance.get(`http://localhost:8083/lesson-materials/lessons/${topicId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
@@ -38,7 +38,7 @@ const Article = () => {
             if (!lessonMaterialId) return;
 
             try {
-                const materialResponse = await axios.get(
+                const materialResponse = await axiosInstance.get(
                     `http://localhost:8083/lesson-materials/${lessonMaterialId}`,
                     {
                         headers: {
@@ -47,7 +47,7 @@ const Article = () => {
                     }
                 );
 
-                const detailsResponse = await axios.get(
+                const detailsResponse = await axiosInstance.get(
                     `http://localhost:8083/lesson-materials/${lessonMaterialId}/details`,
                     {
                         headers: {
@@ -115,7 +115,7 @@ const Article = () => {
                     <h2>{article.lesson.title}</h2>
                     {renderContent(article.materials.content)}
                     <div className="test-button-container">
-                        <Button type="primary" size="large" style={{ margin: '20px auto' }} onClick={handleStartTest}>
+                        <Button type="primary" size="large" style={{margin: '20px auto'}} onClick={handleStartTest}>
                             Пройти тест
                         </Button>
                     </div>

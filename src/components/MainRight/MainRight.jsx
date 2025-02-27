@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Progress} from 'antd';
 import './styles.css';
 import UpperMenu from "../UpperMenu/UpperMenu.jsx";
-import axios from "axios";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const icons = {
     grammar: 'src/components/MainRight/images/pen.png',
@@ -40,9 +40,9 @@ const MainRight = () => {
                     }
                 };
 
-                const readingResponse = await axios.get('http://localhost:8086/statistics/book-progress/percent', config);
-                const grammarResponse = await axios.get('http://localhost:8086/statistics/testing-progress/percent?type=GRAMMAR', config);
-                const listeningResponse = await axios.get('http://localhost:8086/statistics/testing-progress/percent?type=LISTENING', config);
+                const readingResponse = await axiosInstance.get('http://localhost:8086/statistics/book-progress/percent', config);
+                const grammarResponse = await axiosInstance.get('http://localhost:8086/statistics/testing-progress/percent?type=GRAMMAR', config);
+                const listeningResponse = await axiosInstance.get('http://localhost:8086/statistics/testing-progress/percent?type=LISTENING', config);
 
                 const newProgressItems = [
                     {icon: 'grammar', title: 'Grammar', subtext: 'Advanced', percent: grammarResponse.data},

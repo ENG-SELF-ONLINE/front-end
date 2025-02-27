@@ -6,7 +6,7 @@ import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import {Button} from "@mui/base";
 import CardMenuContainer from "../../components/CardMenuContainer/CardMenuContainer.jsx";
 import {useNavigate, useParams} from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const DeckPage = () => {
     const {deckId} = useParams();
@@ -18,14 +18,14 @@ const DeckPage = () => {
     useEffect(() => {
         const fetchDeckAndStatistics = async () => {
             try {
-                const deckResponse = await axios.get(`http://localhost:8081/decks/${deckId}`, {
+                const deckResponse = await axiosInstance.get(`http://localhost:8081/decks/${deckId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     },
                 });
                 setDeck(deckResponse.data);
 
-                const statisticsResponse = await axios.get(`http://localhost:8081/word-progress/decks/${deckId}/statistics`, {
+                const statisticsResponse = await axiosInstance.get(`http://localhost:8081/word-progress/decks/${deckId}/statistics`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     },

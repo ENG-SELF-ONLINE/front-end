@@ -1,32 +1,32 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import './styles.css';
-import { Button, message } from "antd";
+import {Button, message} from "antd";
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
-import { HeartOutlined, HeartFilled } from '@ant-design/icons';
+import {HeartFilled, HeartOutlined} from '@ant-design/icons';
 import download from './images/download.png';
-import axios from 'axios';
 import {useParams} from "react-router-dom";
+import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const BookInfoPage = () => {
     const [bookData, setBookData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
-    const { bookId } = useParams();
+    const {bookId} = useParams();
     const accessToken = localStorage.getItem('accessToken');
 
     useEffect(() => {
         const fetchBookData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8082/books/${bookId}`, {
+                const response = await axiosInstance.get(`http://localhost:8082/books/${bookId}`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
                 }); // Adjust the URL based on your API
                 setBookData(response.data);
 
-                const favoritesResponse = await axios.get(`http://localhost:8082/favourites`, {
+                const favoritesResponse = await axiosInstance.get(`http://localhost:8082/favourites`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
@@ -49,7 +49,7 @@ const BookInfoPage = () => {
 
     const handleDownload = async () => {
         try {
-            const response = await axios.get(`http://localhost:8082/books/${bookId}/download`, {
+            const response = await axiosInstance.get(`http://localhost:8082/books/${bookId}/download`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -72,7 +72,7 @@ const BookInfoPage = () => {
         try {
             if (isFavorite) {
                 // Remove from favorites
-                await axios.delete(`http://localhost:8082/favourites/books/${bookId}`, {
+                await axiosInstance.delete(`http://localhost:8082/favourites/books/${bookId}`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
@@ -80,7 +80,7 @@ const BookInfoPage = () => {
                 message.success('Removed from favorites');
             } else {
                 // Add to favorites
-                await axios.post(`http://localhost:8082/favourites/books/${bookId}`, {}, {
+                await axiosInstance.post(`http://localhost:8082/favourites/books/${bookId}`, {}, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
@@ -97,7 +97,7 @@ const BookInfoPage = () => {
     const handleCompleted = async () => {
 
         try {
-            await axios.post(`http://localhost:8082/book-progress/${bookId}/mark-completed`, {}, {
+            await axiosInstance.post(`http://localhost:8082/book-progress/${bookId}/mark-completed`, {}, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -112,7 +112,7 @@ const BookInfoPage = () => {
     const handleCancel = async () => {
 
         try {
-            await axios.post(`http://localhost:8082/book-progress/${bookId}/unmark-completed`, {}, {
+            await axiosInstance.post(`http://localhost:8082/book-progress/${bookId}/unmark-completed`, {}, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -138,22 +138,23 @@ const BookInfoPage = () => {
 
     return (
         <div className={'book-info-page'}>
-            <Sidebar />
+            <Sidebar/>
             <div className="book-main-info">
                 <div className="book-info-upper-content">
-                    <UpperMenu />
+                    <UpperMenu/>
                 </div>
                 <div className="story-container1">
                     <div className="story-container">
                         <div className="card-container1">
-                            <img src={bookData.coverImage ? getCoverImageUrl(bookData.coverImage) : null} alt="Book Cover" className="image-container-with-text" />
+                            <img src={bookData.coverImage ? getCoverImageUrl(bookData.coverImage) : null}
+                                 alt="Book Cover" className="image-container-with-text"/>
                             <div className="numeric-info-container">
                                 <div className="flex-row-container">
-                                    <img src={download} className="image-with-text-overlay2" alt="Downloads" />
+                                    <img src={download} className="image-with-text-overlay2" alt="Downloads"/>
                                     <p className="number-text-divider">{bookData.downloads}</p>
                                 </div>
                                 <div className="flex-row-container">
-                                    <HeartOutlined className="image-with-text-overlay1" alt="Likes" />
+                                    <HeartOutlined className="image-with-text-overlay1" alt="Likes"/>
                                     <p className="number-text-divider">{bookData.likes}</p>
                                 </div>
                             </div>
@@ -164,9 +165,10 @@ const BookInfoPage = () => {
                                     <p className="epic-title-text-style">{bookData.title}</p>
                                     <div className="fantasy-container" onClick={toggleFavorite}>
                                         {isFavorite ? (
-                                            <HeartFilled className="fantasy-image-style" style={{ color: 'red' }} alt="Remove from Favorites" />
+                                            <HeartFilled className="fantasy-image-style" style={{color: 'red'}}
+                                                         alt="Remove from Favorites"/>
                                         ) : (
-                                            <HeartOutlined className="fantasy-image-style" alt="Add to Favorites" />
+                                            <HeartOutlined className="fantasy-image-style" alt="Add to Favorites"/>
                                         )}
                                     </div>
                                     <p className="fantasy-title">{bookData.genre}</p>
