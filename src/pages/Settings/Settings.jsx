@@ -4,14 +4,12 @@ import './styles.css';
 import Sidebar from "../../components/MainMenu/Sidebar.jsx";
 import UpperMenu from "../../components/UpperMenu/UpperMenu.jsx";
 import visible from "./images/visible.png";
-import {Button, Input, Modal, Switch} from "antd";
+import {Button, Switch} from "antd";
 import axiosInstance from "../../setupAxiosInterceptors.jsx";
 
 const Settings = () => {
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword] = useState(false);
     const [userData, setUserData] = useState(null);
-    const [newPassword, setNewPassword] = useState('');
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const [photo, setPhoto] = useState(null);
     const [tempPhoto, setTempPhoto] = useState(null);
     const [hasChanges, setHasChanges] = useState(false);
@@ -46,42 +44,10 @@ const Settings = () => {
             const imageUrl = URL.createObjectURL(file);
             setTempPhoto(imageUrl);
             setPhoto(file);
-            setHasChanges(true); // Фото изменено
+            setHasChanges(true);
         } else {
             setTempPhoto(null);
         }
-    };
-
-    const handleChangePassword = () => {
-        setIsModalVisible(true);
-    };
-
-    const handleOk = async () => {
-        try {
-            await axiosInstance.put('http://localhost:8084/users/api', {
-                ...userData,
-                password: newPassword,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            setNewPassword('');
-            setIsModalVisible(false);
-            const updatedUserData = await axiosInstance.get('http://localhost:8084/users/api', {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            setUserData(updatedUserData.data);
-            setHasChanges(true);
-        } catch (error) {
-            console.error('Error updating password:', error);
-        }
-    };
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
     };
 
     const handleSave = async () => {
@@ -114,11 +80,7 @@ const Settings = () => {
             ...prevData,
             emailNotifications: !prevData.emailNotifications,
         }));
-        setHasChanges(true); // Изменения в уведомлениях
-    };
-
-    const handleShowPassword = () => {
-        setShowPassword(!showPassword);
+        setHasChanges(true);
     };
 
     if (!photo || !userData) {
@@ -131,7 +93,7 @@ const Settings = () => {
             ...prevData,
             [id]: value,
         }));
-        setHasChanges(true); // Поля изменены
+        setHasChanges(true);
     };
 
     const handleChangePhotoClick = () => {
@@ -205,15 +167,16 @@ const Settings = () => {
                                                 <input
                                                     type={showPassword ? "text" : "password"}
                                                     id="password"
-                                                    value={userData.password}
+                                                    value="********"
                                                     readOnly
                                                 />
-                                                <div className="password-visible" type={'button'}
-                                                     onClick={handleShowPassword}>
+                                                <div className="password-visible" type={'button'}>
                                                     <img src={visible} alt="Показать/Скрыть пароль"/>
                                                 </div>
                                             </div>
-                                            <span onClick={handleChangePassword} className="change-password">
+                                            <span onClick={() => {
+                                            }} className="change-password"
+                                                  style={{cursor: 'not-allowed', opacity: 0.5}}>
                                                 Изменить пароль
                                             </span>
                                         </div>
@@ -242,13 +205,6 @@ const Settings = () => {
                     </div>
                 </div>
             </div>
-            <Modal title="Изменить пароль" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-                <Input.Password
-                    placeholder="Введите новый пароль"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                />
-            </Modal>
         </div>
     );
 };
