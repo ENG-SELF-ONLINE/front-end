@@ -23,7 +23,7 @@ const BookInfoPage = () => {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
-                }); // Adjust the URL based on your API
+                });
                 setBookData(response.data);
 
                 const favoritesResponse = await axiosInstance.get(`http://localhost:8082/favourites`, {
@@ -62,6 +62,11 @@ const BookInfoPage = () => {
             document.body.appendChild(link);
             link.click();
             message.success('Download started');
+
+            setBookData((prevData) => ({
+                ...prevData,
+                downloads: prevData.downloads + 1,
+            }));
         } catch (error) {
             console.error('Error downloading book:', error);
             message.error('Download failed');
@@ -71,23 +76,31 @@ const BookInfoPage = () => {
     const toggleFavorite = async () => {
         try {
             if (isFavorite) {
-                // Remove from favorites
                 await axiosInstance.delete(`http://localhost:8082/favourites/books/${bookId}`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
                 });
                 message.success('Removed from favorites');
+
+                setBookData((prevData) => ({
+                    ...prevData,
+                    favourites: prevData.favourites - 1,
+                }));
             } else {
-                // Add to favorites
                 await axiosInstance.post(`http://localhost:8082/favourites/books/${bookId}`, {}, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                     },
                 });
                 message.success('Added to favorites');
+
+                setBookData((prevData) => ({
+                    ...prevData,
+                    favourites: prevData.favourites + 1,
+                }));
             }
-            setIsFavorite(!isFavorite); // Toggle favorite state
+            setIsFavorite(!isFavorite);
         } catch (error) {
             console.error('Error toggling favorite:', error);
             message.error('Failed to update favorites');
@@ -95,7 +108,6 @@ const BookInfoPage = () => {
     };
 
     const handleCompleted = async () => {
-
         try {
             await axiosInstance.post(`http://localhost:8082/book-progress/${bookId}/mark-completed`, {}, {
                 headers: {
@@ -110,7 +122,6 @@ const BookInfoPage = () => {
     };
 
     const handleCancel = async () => {
-
         try {
             await axiosInstance.post(`http://localhost:8082/book-progress/${bookId}/unmark-completed`, {}, {
                 headers: {
@@ -155,7 +166,7 @@ const BookInfoPage = () => {
                                 </div>
                                 <div className="flex-row-container">
                                     <HeartOutlined className="image-with-text-overlay1" alt="Likes"/>
-                                    <p className="number-text-divider">{bookData.likes}</p>
+                                    <p className="number-text-divider">{bookData.favourites}</p>
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 let isRefreshing = false;
 let failedQueue = [];
+let connectionErrorCount = 0;
 
 const processQueue = (error, token = null) => {
     failedQueue.forEach((prom) => {
@@ -29,9 +30,23 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        connectionErrorCount = 0;
+        return response;
+    },
     async (error) => {
         const originalRequest = error.config;
+
+        if (error.code === 'ERR_NETWORK') {
+            connectionErrorCount++;
+
+            if (connectionErrorCount >= 3) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.location.href = '/';
+                return Promise.reject(error);
+            }
+        }
 
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
             if (isRefreshing) {
