@@ -53,28 +53,33 @@ const MainRight = () => {
                 setProgressItems(newProgressItems);
             } catch (error) {
                 console.error('Ошибка при получении данных:', error);
-                if (error.response && error.response.status === 401) {
-                    // Обработка ошибки 401 (Unauthorized) - например, перенаправление на страницу авторизации
-                    // window.location.href = '/auth'; // Замените '/auth' на путь к вашей странице авторизации
-                }
             }
         };
 
-        // Пример получения данных для activityItems (ЗАМЕНИТЬ ДАННЫМИ ИЗ ВАШЕГО API)
         const fetchActivityData = async () => {
             try {
-                // Здесь нужно заменить на вызов вашего API, который возвращает данные об активности
-                // Пример: const activityResponse = await axios.get('http://ваш-api/activity');
-                // Предположим, что API возвращает массив объектов с полями icon, title, subtext
+                const activityResponse = await axiosInstance.get('http://localhost:8085/trackers/activities');
 
-                // Пока используем статические данные, чтобы не было ошибок
-                const staticActivityData = [
-                    {icon: 'grammar', title: 'Grammar - Present simple', subtext: '27 Oct 2020, Tuesday'},
-                    {icon: 'reading', title: 'Reading - Past simple', subtext: '28 Oct 2020, Wednesday'},
-                    {icon: 'listening', title: 'Listening - Future simple', subtext: '29 Oct 2020, Thursday'}
-                ];
+                const formattedActivityData = activityResponse.data.map(activity => {
 
-                setActivityItems(staticActivityData); // Замените на activityResponse.data, если API возвращает данные
+                    const formattedType = activity.activityType.charAt(0) + activity.activityType.slice(1).toLowerCase();
+
+                    const date = new Date(activity.activityDate);
+                    const day = date.getDate();
+                    const month = date.toLocaleString('en-GB', { month: 'short' });
+                    const year = date.getFullYear();
+                    const weekday = date.toLocaleString('en-GB', { weekday: 'long' });
+
+                    const formattedDate = `${day} ${month} ${year}, ${weekday}`;
+
+                    return {
+                        icon: activity.activityType.toLowerCase(),
+                        title: `${formattedType} - ${activity.activityTitle}`,
+                        subtext: formattedDate
+                    };
+                });
+
+                setActivityItems(formattedActivityData);
             } catch (error) {
                 console.error('Ошибка при получении данных об активности:', error);
             }
