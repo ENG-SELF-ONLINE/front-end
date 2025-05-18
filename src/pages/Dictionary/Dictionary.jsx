@@ -123,6 +123,21 @@ const Dictionary = () => {
         resetModal();
     };
 
+    const handleDeleteDeck = async (deckId) => {
+        if (window.confirm('Вы уверены, что хотите удалить эту колоду?')) {
+            try {
+                await axiosInstance.delete(`http://localhost:8081/decks/${deckId}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+                fetchDecks();
+            } catch (error) {
+                console.error("Error deleting deck", error);
+            }
+        }
+    };
+
     const resetModal = () => {
         setCardTitle('');
         setImage(null);
@@ -149,11 +164,16 @@ const Dictionary = () => {
                     <h2 className="level-title">Ваши колоды:</h2>
                     <div className="decks-grid">
                         {currentDecks.map((deck) => (
-                            <Deck key={deck.deckId} deckData={{
-                                coverImage: getCoverImageUrl(deck.deckPhoto),
-                                deckName: deck.deckName,
-                                author: getDeckWordsCount(deck.deckId),
-                            }} onClick={() => handleDeckClick(deck.deckId)}/>
+                            <Deck
+                                key={deck.deckId}
+                                deckData={{
+                                    coverImage: getCoverImageUrl(deck.deckPhoto),
+                                    deckName: deck.deckName,
+                                    author: getDeckWordsCount(deck.deckId),
+                                }}
+                                onClick={() => handleDeckClick(deck.deckId)}
+                                onDelete={() => handleDeleteDeck(deck.deckId)}
+                            />
                         ))}
                     </div>
                     <div className="pagination-container">
@@ -179,7 +199,7 @@ const Dictionary = () => {
                         style={{font: "16px 'GOST Type A', cursive"}}
                     >
                         <div className="modal-containers">
-                            <div className="left-container">
+                        <div className="left-container">
                                 <Input
                                     placeholder="Название колоды"
                                     value={cardTitle}
