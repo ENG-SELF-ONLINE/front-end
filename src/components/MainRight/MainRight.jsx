@@ -45,9 +45,9 @@ const MainRight = () => {
                 const listeningResponse = await axiosInstance.get('http://localhost:8086/statistics/testing-progress/percent?type=LISTENING', config);
 
                 const newProgressItems = [
-                    {icon: 'grammar', title: 'Grammar', subtext: 'Advanced', percent: grammarResponse.data},
-                    {icon: 'reading', title: 'Reading', subtext: 'Intermediate', percent: readingResponse.data},
-                    {icon: 'listening', title: 'Listening', subtext: 'Beginner', percent: listeningResponse.data}
+                    {icon: 'grammar', title: 'Грамматика', subtext: '', percent: grammarResponse.data},
+                    {icon: 'reading', title: 'Чтение', subtext: '', percent: readingResponse.data},
+                    {icon: 'listening', title: 'Аудирование', subtext: '', percent: listeningResponse.data}
                 ];
 
                 setProgressItems(newProgressItems);
@@ -66,9 +66,9 @@ const MainRight = () => {
 
                     const date = new Date(activity.activityDate);
                     const day = date.getDate();
-                    const month = date.toLocaleString('en-GB', { month: 'short' });
+                    const month = date.toLocaleString('ru-RU', { month: 'short' });
                     const year = date.getFullYear();
-                    const weekday = date.toLocaleString('en-GB', { weekday: 'long' });
+                    const weekday = date.toLocaleString('ru-RU', { weekday: 'long' });
 
                     const formattedDate = `${day} ${month} ${year}, ${weekday}`;
 

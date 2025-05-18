@@ -176,7 +176,7 @@ const AIHelper = () => {
                     <UpperMenu/>
                 </div>
                 <div className="helper-main-content">
-                    <h1 className="helper-title">AI Helper</h1>
+                    <h1 className="helper-title">ИИ-Тренажер</h1>
                     <div className="message-container">
                         {messages.map((message, index) => (
                             <div key={index} className={`message ${message.type}`}>

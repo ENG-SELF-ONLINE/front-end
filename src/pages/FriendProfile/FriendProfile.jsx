@@ -186,17 +186,17 @@ const FriendProfile = () => {
 
         const getDayOfWeek = (dateString) => {
             const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {weekday: 'short'});
+            return date.toLocaleDateString('ru-RU', { weekday: 'short' });
         };
 
         const daysOfWeek = {
-            'Mon': 0,
-            'Tue': 1,
-            'Wed': 2,
-            'Thu': 3,
-            'Fri': 4,
-            'Sat': 5,
-            'Sun': 6
+            'пн': 0,
+            'вт': 1,
+            'ср': 2,
+            'чт': 3,
+            'пт': 4,
+            'сб': 5,
+            'вс': 6
         };
 
         for (const activityType in activitiesMap) {
@@ -213,25 +213,25 @@ const FriendProfile = () => {
         return transformedData;
     };
 
-    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const labels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
     const data = {
         labels: labels,
         datasets: [
             {
-                label: 'Reading',
+                label: 'Чтение',
                 data: weekData ? weekData.reading : new Array(7).fill(0),
                 backgroundColor: '#0CC3E7',
                 stack: 'Stack 0',
             },
             {
-                label: 'Listening',
+                label: 'Аудирование',
                 data: weekData ? weekData.listening : new Array(7).fill(0),
                 backgroundColor: '#FFAE33',
                 stack: 'Stack 0',
             },
             {
-                label: 'Grammar',
+                label: 'Грамматика',
                 data: weekData ? weekData.grammar : new Array(7).fill(0),
                 backgroundColor: '#5E81F4',
                 stack: 'Stack 0',
@@ -255,7 +255,7 @@ const FriendProfile = () => {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Hours',
+                    text: 'Часы',
                 },
             },
         },
@@ -267,7 +267,7 @@ const FriendProfile = () => {
     };
 
     const mainData = {
-        labels: ['Reading', 'Listening', 'Grammar'],
+        labels: ['Чтение', 'Аудирование', 'Грамматика'],
         datasets: [
             {
                 data: weekData ? [
@@ -298,7 +298,7 @@ const FriendProfile = () => {
             },
             title: {
                 display: true,
-                text: 'Learn Statistics',
+                text: 'Статистика обучения',
             },
         },
     };
@@ -360,15 +360,15 @@ const FriendProfile = () => {
                             <div className="main-stats">
                                 <div className="main-list">
                                     <div className="main-item">
-                                        <span>Reading:</span>
+                                        <span>Чтение:</span>
                                         <span>{learnData ? formatTime(learnData.reading.reduce((sum, value) => sum + value, 0)) : '0 ч 0 мин'}</span>
                                     </div>
                                     <div className="main-item">
-                                        <span>Listening:</span>
+                                        <span>Аудирование:</span>
                                         <span>{learnData ? formatTime(learnData.listening.reduce((sum, value) => sum + value, 0)) : '0 ч 0 мин'}</span>
                                     </div>
                                     <div className="main-item">
-                                        <span>Grammar:</span>
+                                        <span>Грамматика:</span>
                                         <span>{learnData ? formatTime(learnData.grammar.reduce((sum, value) => sum + value, 0)) : '0 ч 0 мин'}</span>
                                     </div>
                                 </div>

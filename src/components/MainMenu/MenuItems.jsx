@@ -42,67 +42,67 @@ const menuItems = [
     {
         key: '1',
         icon: <BarChartOutlined/>,
-        label: 'Statistics',
+        label: 'Статистика',
         path: '/statistics', // Добавляем путь для Statistics
     },
     {
         key: '2',
         icon: <UsergroupAddOutlined/>, // Изменяем иконку на друзей
-        label: 'Friends',
+        label: 'Друзья',
         path: '/friends', // Добавляем путь для Friends
     },
     {
         key: '3',
         icon: <HeartOutlined/>, // Изменяем иконку на сердечко
-        label: 'Favourites',
+        label: 'Избранные книги',
         path: '/favourites', // Добавляем путь для Favourites
     },
     {
         key: 'sub1',
-        label: 'Reading',
+        label: 'Чтение',
         icon: <ReadOutlined/>,
         children: generateLevelItems('Reading'),
     },
     {
         key: 'sub2',
-        label: 'Grammar',
+        label: 'Грамматика',
         icon: <FileWordOutlined/>,
         children: generateLevelItems('Grammar'),
     },
     {
         key: 'sub3',
-        label: 'Listening',
+        label: 'Аудирование',
         icon: <SoundOutlined/>,
         children: generateLevelItems('Listening'),
     },
     {
         key: '4',
         icon: <UnorderedListOutlined/>,
-        label: 'Dictionary',
+        label: 'Словарь',
         path: '/dictionary', // Добавляем путь для Dictionary
     },
     {
         key: '5',
         icon: <TranslationOutlined/>,
-        label: 'Translator',
+        label: 'Переводчик',
         path: '/translator', // Добавляем путь для Translator
     },
     {
         key: '6',
         icon: <ClockCircleOutlined/>,
-        label: 'Tracker',
+        label: 'Трекер',
         path: '/tracker', // Добавляем путь для Tracker
     },
     {
         key: '7',
         icon: <RobotOutlined/>, // Изменяем иконку на робота
-        label: 'AI Helper',
+        label: 'ИИ-Тренажер',
         path: '/helper', // Добавляем путь для AI Helper
     },
     {
         key: '8',
         icon: <SettingOutlined/>,
-        label: 'Settings',
+        label: 'Профиль',
         path: '/settings', // Добавляем путь для Settings
     },
 ];
@@ -172,7 +172,7 @@ const MenuItems = () => {
     };
 
     return (
-        <div style={{width: 256, maxHeight: '80vh', overflowY: 'auto', marginTop: '33px'}}>
+        <div style={{width: 256, maxHeight: '80vh', overflowY: 'auto'}}>
             <StyledMenu
                 defaultSelectedKeys={[selectedKey || '1']} // Используем selectedKey или '1' по умолчанию
                 selectedKeys={[selectedKey || '1']} // Используем selectedKey или '1' по умолчанию

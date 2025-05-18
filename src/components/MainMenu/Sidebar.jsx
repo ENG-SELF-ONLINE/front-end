@@ -32,7 +32,7 @@ const SidebarContainerClone = styled.div`
 `;
 
 const Logo = styled.img`
-    margin-bottom: 53px; /* Отступ снизу 53px */
+    margin-bottom: 37px; /* Отступ снизу 53px */
     margin-top: 37px; /* Отступ сверху 37px */
 `;
 
@@ -56,9 +56,6 @@ const Sidebar = () => {
             <SidebarContainerClone/>
             <SidebarContainer>
                 <Logo src={logo} alt="Логотип"/>
-                <Link to="/weekly-tasks">
-                    <AuthButton>Weekly tasks</AuthButton>
-                </Link>
                 <MenuItems/>
             </SidebarContainer>
         </div>

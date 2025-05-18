@@ -108,7 +108,7 @@ const Settings = () => {
                     <UpperMenu/>
                 </div>
                 <div className="settings-main-content">
-                    <h1 className="settings-title">Settings</h1>
+                    <h1 className="settings-title">Профиль</h1>
                     <div className="user-profile-card">
                         <div className="user-info">
                             <div className="user-photo-block">
@@ -132,24 +132,6 @@ const Settings = () => {
                             <div className="user-data">
                                 <div className="first-line">
                                     <div className="user-data-item">
-                                        <label htmlFor="login">E-mail</label>
-                                        <input
-                                            type="text"
-                                            id="login"
-                                            value={userData.email}
-                                            readOnly
-                                        />
-                                        <div className="notification-block">
-                                            <p className="notification-title">Уведомления на почту:</p>
-                                            <Switch
-                                                checked={userData.emailNotifications}
-                                                onChange={handleToggleNotifications}
-                                                id="emailNotifications"
-                                                size='small'
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="user-data-item">
                                         <label htmlFor="firstName">Имя</label>
                                         <input
                                             type="text"
@@ -158,29 +140,17 @@ const Settings = () => {
                                             onChange={handleInputChange}
                                         />
                                     </div>
+                                    <div className="user-data-item">
+                                        <label htmlFor="login">E-mail</label>
+                                        <input
+                                            type="text"
+                                            id="login"
+                                            value={userData.email}
+                                            readOnly
+                                        />
+                                    </div>
                                 </div>
                                 <div className="second-line">
-                                    <div className="password-data-item">
-                                        <div className="password-data">
-                                            <label htmlFor="password">Пароль</label>
-                                            <div className="password-block">
-                                                <input
-                                                    type={showPassword ? "text" : "password"}
-                                                    id="password"
-                                                    value="********"
-                                                    readOnly
-                                                />
-                                                <div className="password-visible" type={'button'}>
-                                                    <img src={visible} alt="Показать/Скрыть пароль"/>
-                                                </div>
-                                            </div>
-                                            <span onClick={() => {
-                                            }} className="change-password"
-                                                  style={{cursor: 'not-allowed', opacity: 0.5}}>
-                                                Изменить пароль
-                                            </span>
-                                        </div>
-                                    </div>
                                     <div className="user-data-item">
                                         <label htmlFor="lastName">Фамилия</label>
                                         <input

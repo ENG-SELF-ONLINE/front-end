@@ -132,7 +132,7 @@ const Friends = () => {
                     <UpperMenu/>
                 </div>
                 <div className="friends-main-content">
-                    <h1 className="friends-title">Friends</h1>
+                    <h1 className="friends-title">Друзья</h1>
                     <div className="friends-info">
                         <span className="friends-col">Все друзья: {friends.length}</span>
                         <Button type="primary" onClick={() => setIsModalVisible(true)}>

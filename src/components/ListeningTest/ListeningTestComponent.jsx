@@ -181,7 +181,7 @@ const ListeningTestComponent = ({currentLevel, topicId}) => {
                     onClick={showAnswers ? (testPassed ? handleNext : resetTest) : checkAnswers}
                     style={{margin: '20px auto'}}
                 >
-                    {showAnswers && testPassed ? 'Next' : showAnswers ? 'Пройти еще раз' : 'Проверить'}
+                    {showAnswers && testPassed ? 'Далее' : showAnswers ? 'Пройти еще раз' : 'Проверить'}
                 </Button>
             </div>
         </div>

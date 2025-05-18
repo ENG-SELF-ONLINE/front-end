@@ -163,7 +163,7 @@ const Translator = () => {
                     <UpperMenu/>
                 </div>
                 <div className="translation-container">
-                    <h1 className="translator-title">Translator</h1>
+                    <h1 className="translator-title">Переводчик</h1>
                     <div className="input-containers">
                         <div className="input-container">
                             <p className="language-heading-style">

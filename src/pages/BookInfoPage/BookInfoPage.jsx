@@ -190,16 +190,16 @@ const BookInfoPage = () => {
                         </div>
                     </div>
                     <p className="book-summary-text-style">
-                        <span className="strong-emphasis-text-style">Hard words:</span>
+                        <span className="strong-emphasis-text-style">Сложные слова:</span>
                         <span>{" "}{bookData.hardWords}</span>
                     </p>
                     <div className="download-section2">
                         <div className="flex-row-container">
-                            <Button className="download-button-style" onClick={handleDownload}>Download</Button>
+                            <Button className="download-button-style" onClick={handleDownload}>Скачать</Button>
                         </div>
                         <div className="download-section">
-                            <Button className="completed-button-style" onClick={handleCompleted}>Completed</Button>
-                            <Button className="cancel-button-style" onClick={handleCancel}>Cancel</Button>
+                            <Button className="completed-button-style" onClick={handleCompleted}>Прочитано</Button>
+                            <Button className="cancel-button-style" onClick={handleCancel}>Отменить</Button>
                         </div>
                     </div>
                 </div>

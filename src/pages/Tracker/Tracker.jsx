@@ -183,7 +183,7 @@ const Tracker = () => {
                     <UpperMenu/>
                 </div>
                 <div className="activity-container">
-                    <h1 className="activity-titleTrackerh1">Tracker</h1>
+                    <h1 className="activity-title">Трекер</h1>
                     <div className="project-timer-container">
                         <div className="project-info-container1">
                             <Select
@@ -192,9 +192,9 @@ const Tracker = () => {
                                 onChange={setActivityType}
                                 style={{width: 200}}
                             >
-                                <Option value="READING">READING</Option>
-                                <Option value="GRAMMAR">GRAMMAR</Option>
-                                <Option value="LISTENING">LISTENING</Option>
+                                <Option value="READING">Чтение</Option>
+                                <Option value="GRAMMAR">Грамматика</Option>
+                                <Option value="LISTENING">Аудирование</Option>
                             </Select>
                         </div>
                         <div className="project-info-container">
