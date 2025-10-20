@@ -1,0 +1,43 @@
+.activity-log {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    padding: 10px;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+
+.activity-log {
+    display: flex;
+    justify-content: space-between;
+}
+
+.activity-log .activities {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    flex-direction: row;
+    gap: 10px; /* Добавить промежуток между элементами */
+}
+
+.activity-info-1 {
+    display: flex;
+    gap: 10px; /* Добавить промежуток между элементами внутри блока */
+}
+
+.activity-controls {
+    display: flex;
+    gap: 10px; /* Добавить промежуток между кнопками управления */
+}
+
+.head {
+    display: flex;
+    justify-content: space-between;
+}

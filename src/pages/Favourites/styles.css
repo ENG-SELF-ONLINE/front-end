@@ -1,0 +1,81 @@
+.upper-container {
+    display: flex;
+    align-items: center;
+    margin-left: 44px;
+    justify-content: space-between;
+    height: 60px;
+    margin-top: 19px;
+}
+
+.container {
+    display: flex;
+}
+
+.main-container-book {
+    display: flex;
+    flex-direction: column; /* Изменяем flex-direction на column */
+    width: 100%;
+}
+
+.favourites-content {
+    width: 1250px;
+    margin: auto;
+    display: flex;
+    flex-direction: column; /* Добавляем flex-direction: column */
+}
+
+.books-grid-favourites {
+    display: grid; /* Используем grid вместо flex, чтобы гибко управлять расположением */
+    grid-template-columns: repeat(5, 0fr); /* 5 колонок одинаковой ширины */
+    min-height: 720px;
+    padding-top: 30px;
+    justify-content: space-between;
+}
+
+.level-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.pagination-container {
+    display: flex;
+}
+
+.search-input {
+    width: 472px; /* Default width */
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1540px) {
+    .books-grid-favourites {
+        grid-template-columns: repeat(4, 0fr); /* Меняем на 3 колонки */
+        gap: 40px;
+    }
+    .favourites-content {
+        width: 915px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .pagination-container {
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 1240px) {
+    .favourites-content {
+        max-width: 700px;
+    }
+
+    .search-input {
+        width: 300px; /* Adjusted width for smaller screens */
+    }
+
+    .books-grid-favourites {
+        grid-template-columns: repeat(3, 0fr); /* Меняем на 3 колонки */
+    }
+}
+
+@media (max-width: 1024px) {
+
+}

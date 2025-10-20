@@ -1,0 +1,18 @@
+.sources, .youtube-links {
+    margin-top: 20px;
+}
+
+.sources ul, .youtube-links ul {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.test-button-container {
+    text-align: center; /* Центрируем кнопку */
+    margin-top: 20px;   /* Добавляем отступ сверху */
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+}

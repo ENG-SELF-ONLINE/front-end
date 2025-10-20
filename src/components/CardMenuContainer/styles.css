@@ -1,0 +1,91 @@
+.guess-menu-container {
+    flex: 0 0 auto;
+}
+
+.guess-button-group {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: 31.5px;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    background: rgba(149, 170, 211, 0.3);
+    border-radius: 20px;
+}
+
+.guess-button {
+    font: 24px 'GOST Type A', cursive;
+    color: black;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.guess-separator {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 1px;
+    height: 51px;
+    border-left: 1px solid black;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    /*justify-content: space-around;*/
+    justify-content: center;
+}
+
+.ant-modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-containers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.right-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-items: end;
+    height: 100%;
+}
+
+.create-button-modal {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    margin-top: 20px;
+    width: 150px;
+    min-width: 150px;
+    height: 36px;
+    font: 16px 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: #95AAD3;
+    border: none;
+    border-radius: 10px;
+}
+
+.word-card-menu {
+    font-size: 16px;
+    margin-top: 8px;
+}

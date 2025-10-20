@@ -1,0 +1,40 @@
+.book-card {
+    width: 177px;
+    height: 324px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.cover {
+    width: 177px;
+    height: 280px;
+    background-size: cover;
+    background-position: center;
+}
+
+.book-info {
+    height: 44px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-info .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.author {
+    font-size: 14px;
+    color: #000000;
+    opacity: 0.4;
+}
+
+h3, p {
+    margin: 0;
+    font-family: 'GOST Type A', cursive;
+}

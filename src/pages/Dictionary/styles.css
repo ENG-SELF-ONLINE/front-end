@@ -1,0 +1,154 @@
+.upper-container {
+    display: flex;
+    align-items: center;
+    margin-left: 44px;
+    justify-content: space-between;
+    height: 60px;
+    margin-top: 19px;
+}
+
+.container {
+    display: flex;
+}
+
+.main-container-book {
+    display: flex;
+    flex-direction: column; /* Изменяем flex-direction на column */
+    width: 100%;
+}
+
+.dictionary-content {
+    width: 1250px;
+    margin: auto;
+    display: flex;
+    flex-direction: column; /* Добавляем flex-direction: column */
+}
+
+.decks-grid {
+    display: grid; /* Используем grid вместо flex, чтобы гибко управлять расположением */
+    grid-template-columns: repeat(5, 0fr); /* 5 колонок одинаковой ширины */
+    min-height: 720px;
+    padding-top: 30px;
+    justify-content: space-between;
+}
+
+.level-title {
+    margin-bottom: 0;
+    font-family: 'GOST Type A', cursive;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.create-button {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    width: 100px;
+    min-width: 100px;
+    height: 32px;
+    font: 16px 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: #583D3D;
+    border: none;
+    border-radius: 10px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    /*justify-content: space-around;*/
+    justify-content: center;
+}
+
+.ant-modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-containers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.right-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-items: end;
+    height: 100%;
+}
+
+.create-button-modal {
+    box-sizing: border-box;
+    display: block;
+    flex: 0 0 auto;
+    margin-top: 20px;
+    width: 150px;
+    min-width: 150px;
+    height: 36px;
+    font: 16px 'GOST Type A', cursive;
+    color: white;
+    cursor: pointer;
+    background: #95AAD3;
+    border: none;
+    border-radius: 10px;
+}
+
+.dictionary-search {
+    width: 472px; /* Default width */
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1540px) {
+    .decks-grid {
+        grid-template-columns: repeat(4, 0fr); /* Меняем на 3 колонки */
+        gap: 40px;
+    }
+    .dictionary-content {
+        width: 1050px;
+    }
+    .pagination-container {
+        margin-top: 30px;
+    }
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1370px) {
+    .decks-grid {
+        grid-template-columns: repeat(3, 0fr); /* Меняем на 3 колонки */
+    }
+    .dictionary-content {
+        width: 750px;
+    }
+    .dictionary-search {
+        width: 300px; /* Adjusted width for smaller screens */
+    }
+}
+
+/* Медиа запрос для экранов с шириной менее 1540px */
+@media (max-width: 1070px) {
+    .decks-grid {
+        grid-template-columns: repeat(2, 0fr); /* Меняем на 3 колонки */
+    }
+    .dictionary-content {
+        width: 450px;
+    }
+}
